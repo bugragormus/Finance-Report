@@ -104,7 +104,10 @@ def generate_pdf_report(
             pdf.image(tmp_img.name, w=pdf.w - 40)
 
     pdf_data = pdf.output(dest="S")
-    return bytes(pdf_data)
+    # Ensure the data is bytes (encode if necessary)
+    if isinstance(pdf_data, str):
+        return pdf_data.encode('latin-1')
+    return pdf_data
 
 
 def main():
