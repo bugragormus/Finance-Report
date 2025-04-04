@@ -5,3 +5,4 @@ XlsxWriter==3.2.2
 plotly
 streamlit-aggrid==0.3.3
 fpdf==1.7.2
+kaleido==0.2.1
