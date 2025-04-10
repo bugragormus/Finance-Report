@@ -194,7 +194,18 @@ def main():
     with tabs_analiz[4]:
         group_by_option = st.selectbox(
             "Gruplama Kriteri",
-            ["İlgili 1", "Masraf Yeri Adı", "Masraf Çeşidi Grubu 1"],
+            [
+                "İlgili 1",
+                "İlgili 2",
+                "İlgili 3",
+                "Masraf Yeri",
+                "Masraf Yeri Adı",
+                "Masraf Çeşidi",
+                "Masraf Çeşidi Adı",
+                "Masraf Çeşidi Grubu 1",
+                "Masraf Çeşidi Grubu 2",
+                "Masraf Çeşidi Grubu 3",
+            ],
         )
         show_comparative_analysis(final_df, group_by_col=group_by_option)
 
