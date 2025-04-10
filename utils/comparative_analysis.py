@@ -12,6 +12,9 @@ pio.kaleido.scope.default_colorway = px.colors.qualitative.Plotly
 pio.kaleido.scope.default_paper_bgcolor = "white"
 pio.kaleido.scope.default_plot_bgcolor = "white"
 
+from config.constants import (
+    MONTHS
+)
 
 def show_comparative_analysis(df, group_by_col="İlgili 1"):
     st.subheader(f"📊 {group_by_col} Bazında Harcama Karşılaştırması")
@@ -20,22 +23,43 @@ def show_comparative_analysis(df, group_by_col="İlgili 1"):
         st.warning(f"{group_by_col} sütunu bulunamadı!")
         return
 
-    group_cols = ["Kümüle Bütçe", "Kümüle Fiili"]
+    # Kullanıcıya ay seçme seçeneği ekle
+    selected_month = st.selectbox(
+        "📅 Ay Seçimi (İsteğe Bağlı)", ["Kümüle"] + MONTHS, index=0
+    )
+
+    # Bütçe ve Fiili kolonlarının adı
+    if selected_month == "Kümüle":
+        group_cols = ["Kümüle Bütçe", "Kümüle Fiili"]
+    else:
+        # Seçilen ay ismi ile uygun Bütçe ve Fiili kolonlarını oluşturuyoruz
+        month_budget_col = f"{selected_month} Bütçe"
+        month_actual_col = f"{selected_month} Fiili"
+
+        # Kolonların mevcut olup olmadığını kontrol et
+        if month_budget_col not in df.columns or month_actual_col not in df.columns:
+            st.warning(f"{selected_month} için Bütçe veya Fiili verisi eksik.")
+            return
+
+        group_cols = [month_budget_col, month_actual_col]
+
     for col in group_cols:
         if col not in df.columns:
             st.warning(f"{col} sütunu eksik.")
             return
 
     grouped = df.groupby(group_by_col)[group_cols].sum().reset_index()
-    grouped["Kullanım (%)"] = (grouped["Kümüle Fiili"] / grouped["Kümüle Bütçe"]) * 100
+
+    # Kullanım yüzdesi
+    grouped["Kullanım (%)"] = (grouped[group_cols[1]] / grouped[group_cols[0]]) * 100
 
     # Grafik oluşturma
     fig = px.bar(
-        grouped.sort_values("Kümüle Fiili", ascending=False),
+        grouped.sort_values(group_cols[1], ascending=False),
         x=group_by_col,
-        y=["Kümüle Bütçe", "Kümüle Fiili"],
+        y=group_cols,
         barmode="group",
-        title=f"{group_by_col} Bazında Kümüle Karşılaştırma",
+        title=f"{group_by_col} Bazında {selected_month} Karşılaştırması",
         color_discrete_sequence=["#636EFA", "#EF553B"],
     )  # Mavi ve kırmızı renkler
 
@@ -52,7 +76,7 @@ def show_comparative_analysis(df, group_by_col="İlgili 1"):
 
     # Tablo gösterimi
     st.dataframe(
-        grouped.sort_values("Kümüle Fiili", ascending=False), use_container_width=True
+        grouped.sort_values(group_cols[1], ascending=False), use_container_width=True
     )
 
     st.markdown("---")
@@ -70,13 +94,13 @@ def show_comparative_analysis(df, group_by_col="İlgili 1"):
         st.download_button(
             label="📥 İndir (PNG)",
             data=bar_img_buffer,
-            file_name="combined_charts.png",
+            file_name="comparative_analysis.png",
             mime="image/png",
             key="download_image",  # Added unique key here
         )
 
     excel_buffer = BytesIO()
-    grouped.sort_values("Kümüle Fiili", ascending=False).to_excel(
+    grouped.sort_values(group_cols[1], ascending=False).to_excel(
         excel_buffer, index=False
     )
     excel_buffer.seek(0)
