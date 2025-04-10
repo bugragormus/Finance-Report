@@ -9,6 +9,12 @@ from utils.filters import apply_filters
 from utils.metrics import calculate_metrics
 from utils.report import generate_pdf_report
 from config.constants import MONTHS, GENERAL_COLUMNS, REPORT_BASE_COLUMNS
+from utils.kpi import show_kpi_panel
+from utils.category_analysis import show_category_charts
+from utils.comparative_analysis import show_comparative_analysis
+from utils.warning_system import style_warning_rows
+from utils.pivot_table import show_pivot_table
+from utils.insight_generator import generate_insights
 
 def main():
     st.set_page_config(layout="wide", page_title="Finansal Performans Analiz Paneli")
@@ -22,6 +28,24 @@ def main():
         return
 
     with st.sidebar:
+
+        st.sidebar.subheader("🧩 Görüntülenecek Modüller")
+
+        available_modules = {
+            "📌 KPI Panosu": "kpi",
+            "📊 Kategori Analizi": "category",
+            "📈 Karşılaştırmalı Analiz": "compare",
+            "📎 Pivot Tablo": "pivot",
+            "💡Otomatik Özet": "insight"
+        }
+
+        selected_modules = st.sidebar.multiselect(
+            "Aktif modüller", list(available_modules.keys()),
+            default=list(available_modules.keys()), key="active_modules"
+        )
+
+        st.sidebar.markdown("---")
+
         st.header("🔧 Filtre & Grafik Ayarları")
         filtered_df = apply_filters(df, GENERAL_COLUMNS, "filter")
 
@@ -73,16 +97,24 @@ def main():
     col2.metric("Toplam Fiili", f"{total_actual:,.0f} ₺")
     col3.metric("Bütçe Fazlası", f"{variance:,.0f} ₺ ({variance_pct:.2f}%)")
 
-    tab1, tab2, tab3, tab4 = st.tabs(["📊 Veri", "📈 Trend", "🗂️ ZIP", "📄 PDF"])
+    # Create a list of all tab titles
+    tab_titles = ["📊 Veri", "📈 Trend", "🗂️ ZIP", "📄 PDF"] + [module for module in selected_modules]
 
-    with tab1:
-        st.dataframe(final_df, use_container_width=True)
+    # Create tabs dynamically based on the selected modules
+    tabs = st.tabs(tab_titles)
+
+    # Handle the first 4 tabs (fixed ones)
+    with tabs[0]:
+        st.subheader("📋 Filtrelenmiş Veriler")
+        styled_df = style_warning_rows(final_df.copy())
+        st.dataframe(styled_df, use_container_width=True)
+
         excel_buffer = BytesIO()
         with pd.ExcelWriter(excel_buffer, engine="openpyxl") as writer:
             final_df.to_excel(writer, index=False)
         st.download_button("📥 Excel İndir", data=excel_buffer.getvalue(), file_name="filtrelenmis_rapor.xlsx")
 
-    with tab2:
+    with tabs[1]:
         trend_data = []
         for month in selected_months:
             b_col, a_col = f"{month} Bütçe", f"{month} Fiili"
@@ -107,7 +139,7 @@ def main():
         else:
             img_buffer = None
 
-    with tab3:
+    with tabs[2]:
         zip_buffer = BytesIO()
         with zipfile.ZipFile(zip_buffer, "w") as zip_file:
             zip_file.writestr("veri.xlsx", excel_buffer.getvalue())
@@ -115,10 +147,43 @@ def main():
                 zip_file.writestr("trend.png", img_buffer.getvalue())
         st.download_button("⬇️ ZIP İndir", data=zip_buffer.getvalue(), file_name="rapor.zip")
 
-    with tab4:
+    with tabs[3]:
         if st.button("📄 PDF Raporu Oluştur"):
             pdf = generate_pdf_report(total_budget, total_actual, variance, variance_pct, img_buffer)
             st.download_button("PDF İndir", data=pdf, file_name="rapor.pdf", mime="application/pdf")
+
+    # Handle dynamically added modules
+    current_index = 4  # Start from index 4, after the first 4 fixed tabs
+
+    if "📌 KPI Panosu" in selected_modules:
+        with tabs[current_index]:
+            show_kpi_panel(total_budget, total_actual, variance, variance_pct)
+        current_index += 1
+
+    if "📊 Kategori Analizi" in selected_modules:
+        with tabs[current_index]:
+            show_category_charts(final_df)
+        current_index += 1
+
+    if "📎 Pivot Tablo" in selected_modules:
+        with tabs[current_index]:
+            show_pivot_table(final_df)
+        current_index += 1
+
+    if "📈 Karşılaştırmalı Analiz" in selected_modules:
+        with tabs[current_index]:
+            group_by_option = st.selectbox("Gruplama Kriteri", ["İlgili 1", "Masraf Yeri Adı", "Masraf Çeşidi Grubu 1"])
+            show_comparative_analysis(final_df, group_by_col=group_by_option)
+        current_index += 1
+
+    if "💡Otomatik Özet" in selected_modules:
+        with tabs[current_index]:
+            insights = generate_insights(final_df)
+            if insights:
+                for i, insight in enumerate(insights, 1):
+                    st.markdown(f"{i}. {insight}")
+            else:
+                st.info("İçgörü üretilemedi.")
 
 if __name__ == "__main__":
     main()
