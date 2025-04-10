@@ -8,7 +8,7 @@ from utils.loader import load_data
 from utils.filters import apply_filters
 from utils.metrics import calculate_metrics
 from utils.report import generate_pdf_report
-from config.constants import MONTHS, GENERAL_COLUMNS, REPORT_BASE_COLUMNS
+from config.constants import MONTHS, GENERAL_COLUMNS, REPORT_BASE_COLUMNS, CUMULATIVE_COLUMNS
 from utils.kpi import show_kpi_panel
 from utils.category_analysis import show_category_charts
 from utils.comparative_analysis import show_comparative_analysis
@@ -59,7 +59,7 @@ def main():
         if "Hepsi" in selected_report_bases:
             selected_report_bases = REPORT_BASE_COLUMNS
 
-        cumulative_columns = ["Kümüle " + col for col in REPORT_BASE_COLUMNS]
+        cumulative_columns = ["Kümüle " + col for col in CUMULATIVE_COLUMNS]
         selected_cumulative = st.multiselect("📈 Kümülatif Veriler", ["Hepsi"] + cumulative_columns, default=["Hepsi"], key="cumulative_filter")
         if "Hepsi" in selected_cumulative:
             selected_cumulative = cumulative_columns
@@ -91,11 +91,6 @@ def main():
 
     final_df = filtered_df[selected_columns]
     total_budget, total_actual, variance, variance_pct = calculate_metrics(final_df)
-
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Toplam Bütçe", f"{total_budget:,.0f} ₺")
-    col2.metric("Toplam Fiili", f"{total_actual:,.0f} ₺")
-    col3.metric("Bütçe Fazlası", f"{variance:,.0f} ₺ ({variance_pct:.2f}%)")
 
     # Create a list of all tab titles
     tab_titles = ["📊 Veri", "📈 Trend", "🗂️ ZIP", "📄 PDF"] + [module for module in selected_modules]
@@ -157,7 +152,7 @@ def main():
 
     if "📌 KPI Panosu" in selected_modules:
         with tabs[current_index]:
-            show_kpi_panel(total_budget, total_actual, variance, variance_pct)
+            show_kpi_panel(final_df)
         current_index += 1
 
     if "📊 Kategori Analizi" in selected_modules:

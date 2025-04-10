@@ -12,10 +12,11 @@ def style_warning_rows(df: pd.DataFrame):
                 else:
                     usage_pct = actual / budget
 
+                # Kümüle Bütçe ve Kümüle Fiili hücrelerine stil uygula
                 if actual > budget:
-                    style = ['background-color: #ffcccc'] * len(row)  # Red
-                elif usage_pct < 0.1:
-                    style = ['background-color: #e0e0e0'] * len(row)  # Grey
+                    style[row.index.get_loc("Kümüle Bütçe")] = 'background-color: #ffcccc'  # Red for Kümüle Bütçe
+                    style[row.index.get_loc("Kümüle Fiili")] = 'background-color: #ffcccc'  # Red for Kümüle Fiili
+                    style[row.index.get_loc("Masraf Yeri")] = 'background-color: #ffcccc'  # Red for Kümüle Bütçe
             except:
                 pass
         return style

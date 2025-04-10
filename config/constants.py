@@ -15,3 +15,9 @@ REPORT_BASE_COLUMNS = [
     "Fiili", "Fiili ÇKG", "Fiili Karşılık Masrafı", "Fiili Bakiye",
     "Bütçe-Fiili Fark Bakiye", "BE", "BE-Fiili Fark Bakiye"
 ]
+
+CUMULATIVE_COLUMNS = [
+    "Bütçe", "Bütçe ÇKG", "Bütçe Karşılık Masrafı", "Bütçe Bakiye",
+    "Fiili", "Fiili ÇKG", "Fiili Karşılık Masrafı", "Fiili Bakiye",
+    "Bütçe-Fiili Fark Bakiye", "BE Bakiye", "BE-Fiili Fark Bakiye"
+]
