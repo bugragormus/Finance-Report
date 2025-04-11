@@ -1,5 +1,6 @@
 from fpdf import FPDF
 
+
 def generate_pdf_report(
     total_budget, total_actual, variance, variance_pct, img_buffer=None
 ):
@@ -38,5 +39,5 @@ def generate_pdf_report(
     pdf_data = pdf.output(dest="S")
     # Ensure the data is bytes (encode if necessary)
     if isinstance(pdf_data, str):
-        return pdf_data.encode('latin-1')
+        return pdf_data.encode("latin-1")
     return pdf_data

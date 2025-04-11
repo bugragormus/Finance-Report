@@ -12,17 +12,20 @@ pio.kaleido.scope.default_colorway = px.colors.qualitative.Plotly
 pio.kaleido.scope.default_paper_bgcolor = "white"
 pio.kaleido.scope.default_plot_bgcolor = "white"
 
+
 def show_pivot_table(df):
     st.subheader("📊 Dinamik Pivot Tablo Oluşturucu")
 
-    numeric_cols = df.select_dtypes(include='number').columns.tolist()
+    numeric_cols = df.select_dtypes(include="number").columns.tolist()
     non_numeric_cols = [col for col in df.columns if col not in numeric_cols]
 
     row_col = st.multiselect("🧱 Satır Alanları", non_numeric_cols)
     col_col = st.multiselect("📏 Sütun Alanları", non_numeric_cols)
     val_col = st.selectbox("🔢 Değer Alanı", numeric_cols)
 
-    agg_func = st.selectbox("🔧 Toplama Fonksiyonu", ["sum", "mean", "max", "min", "count"])
+    agg_func = st.selectbox(
+        "🔧 Toplama Fonksiyonu", ["sum", "mean", "max", "min", "count"]
+    )
 
     if row_col and col_col and val_col:
         try:
@@ -32,7 +35,7 @@ def show_pivot_table(df):
                 columns=col_col,
                 values=val_col,
                 aggfunc=agg_func,
-                fill_value=0
+                fill_value=0,
             )
 
             st.dataframe(pivot, use_container_width=True)
@@ -45,12 +48,14 @@ def show_pivot_table(df):
                 label="⬇ İndir (Excel)",
                 data=excel_buffer.getvalue(),
                 file_name="pivot_tablo.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             )
 
             # 📊 PNG export
             if len(pivot.columns) <= 15:
-                fig = px.imshow(pivot, text_auto=True, aspect="auto", color_continuous_scale='Blues')
+                fig = px.imshow(
+                    pivot, text_auto=True, aspect="auto", color_continuous_scale="Blues"
+                )
                 st.plotly_chart(fig, use_container_width=True)
 
                 png_bytes = fig.to_image(format="png")
@@ -58,7 +63,7 @@ def show_pivot_table(df):
                     label="⬇ İndir (PNG)",
                     data=png_bytes,
                     file_name="pivot_grafik.png",
-                    mime="image/png"
+                    mime="image/png",
                 )
 
             return excel_buffer  # ZIP için geri dön

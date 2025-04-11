@@ -2,6 +2,7 @@ import pandas as pd
 import streamlit as st
 from datetime import datetime
 
+
 @st.cache_data(show_spinner="Veri yükleniyor...")
 def load_data(uploaded_file):
     try:
@@ -12,7 +13,9 @@ def load_data(uploaded_file):
         mandatory_columns = ["Masraf Yeri Adı", "Kümüle Bütçe", "Kümüle Fiili"]
         missing_columns = [col for col in mandatory_columns if col not in df.columns]
         if missing_columns:
-            st.error(f"Eksik sütunlar: {', '.join(missing_columns)}. Lütfen geçerli bir ZFMR0003 raporu yükleyin.")
+            st.error(
+                f"Eksik sütunlar: {', '.join(missing_columns)}. Lütfen geçerli bir ZFMR0003 raporu yükleyin."
+            )
             return None
 
         return df

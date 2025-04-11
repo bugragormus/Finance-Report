@@ -14,9 +14,8 @@ pio.kaleido.scope.default_colorway = px.colors.qualitative.Plotly
 pio.kaleido.scope.default_paper_bgcolor = "white"
 pio.kaleido.scope.default_plot_bgcolor = "white"
 
-from config.constants import (
-    MONTHS
-)
+from config.constants import MONTHS
+
 
 def show_comparative_analysis(df, group_by_col="İlgili 1"):
     st.subheader(f"📊 {group_by_col} Bazında Harcama Karşılaştırması")
@@ -94,7 +93,9 @@ def show_comparative_analysis(df, group_by_col="İlgili 1"):
     st.markdown("---")
 
     # Tablo gösterimi
-    styled_grouped = style_overused_rows(grouped.sort_values(group_cols[1], ascending=False))
+    styled_grouped = style_overused_rows(
+        grouped.sort_values(group_cols[1], ascending=False)
+    )
     st.dataframe(styled_grouped, use_container_width=True)
 
     excel_buffer = BytesIO()

@@ -4,6 +4,7 @@ from io import BytesIO
 
 from utils.warning_system import style_warning_rows
 
+
 def show_filtered_data(df, filename="filtrelenmis_rapor.xlsx"):
     st.subheader("📋 Filtrelenmiş Veriler")
 
@@ -20,7 +21,7 @@ def show_filtered_data(df, filename="filtrelenmis_rapor.xlsx"):
         "⬇ İndir (Excel)",
         data=excel_buffer.getvalue(),
         file_name=filename,
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     )
 
     return excel_buffer  # Diğer yerlerde kullanmak üzere çıktı

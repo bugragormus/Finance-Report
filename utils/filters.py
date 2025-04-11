@@ -1,5 +1,6 @@
 import streamlit as st
 
+
 def apply_filters(df, columns, key_prefix):
     selected_filters = {}
     for col in columns:
@@ -24,8 +25,7 @@ def apply_filters(df, columns, key_prefix):
         )
         selected_filters[col] = selected
 
-
-# Filtre uygulama
+    # Filtre uygulama
     filtered_df = df.copy()
     for col, selected in selected_filters.items():
         if selected:
