@@ -5,9 +5,14 @@ import plotly.io as pio
 from PIL import Image
 
 from utils.warning_system import style_overused_rows
-from config.plotly_config import apply_plotly_defaults
 
-apply_plotly_defaults()
+# Grafik export ayarları
+pio.kaleido.scope.default_format = "png"
+pio.kaleido.scope.default_width = 1000
+pio.kaleido.scope.default_height = 600
+pio.kaleido.scope.default_colorway = px.colors.qualitative.Plotly
+pio.kaleido.scope.default_paper_bgcolor = "white"
+pio.kaleido.scope.default_plot_bgcolor = "white"
 
 from config.constants import MONTHS
 
@@ -108,4 +113,4 @@ def show_comparative_analysis(df, group_by_col="İlgili 1"):
         key="download_excel",  # Added unique key here
     )
 
-    return excel_buffer, comperative_img_buffer  # ZIP için streamlit_app.py'ye döndür
+    return excel_buffer, comperative_img_buffer  # ZIP için main.py'ye döndür
