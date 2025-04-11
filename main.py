@@ -18,10 +18,10 @@ from config.constants import (
 from utils.kpi import show_kpi_panel
 from utils.category_analysis import show_category_charts
 from utils.comparative_analysis import show_comparative_analysis
-from utils.warning_system import style_warning_rows
+from utils.trend_analysis import show_trend_analysis
 from utils.pivot_table import show_pivot_table
 from utils.insight_generator import generate_insights
-
+from utils.data_preview import show_filtered_data
 
 def main():
 
@@ -112,7 +112,7 @@ def main():
         "📎 Pivot Tablo",
         "💡 Otomatik Özet",
     ]
-    tab_titles_raporlama = ["⬇️ ZIP İndir", "📄 PDF Raporu"]
+    tab_titles_raporlama = ["⬇ İndir (ZIP)", "📄 PDF Raporu"]
 
     # Create two groups of tabs
     tabs_analiz = st.tabs(tab_titles_analiz)
@@ -120,22 +120,10 @@ def main():
 
     # Analiz tabları
     with tabs_analiz[0]:
-        st.subheader("📋 Filtrelenmiş Veriler")
-        styled_df = style_warning_rows(final_df.copy())
-        st.dataframe(styled_df, use_container_width=True)
-
-        excel_buffer = BytesIO()
-        with pd.ExcelWriter(excel_buffer, engine="openpyxl") as writer:
-            final_df.to_excel(writer, index=False)
-        st.download_button(
-            "📥 Excel İndir",
-            data=excel_buffer.getvalue(),
-            file_name="filtrelenmis_rapor.xlsx",
-        )
+        excel_buffer = show_filtered_data(final_df)
 
     with tabs_analiz[1]:
         col1, col2, col3 = st.columns(3)
-
         with col1:
             budget_color = st.color_picker("Bütçe Rengi", "#636EFA")
         with col2:
@@ -143,56 +131,12 @@ def main():
         with col3:
             difference_color = st.color_picker("Fark Rengi", "#00CC96")
 
-        trend_data = []
-        for month in selected_months:
-            b_col, a_col = f"{month} Bütçe", f"{month} Fiili"
-            if b_col in final_df.columns and a_col in final_df.columns:
-                trend_data.append(
-                    {
-                        "Ay": month,
-                        "Bütçe": final_df[b_col].sum(),
-                        "Fiili": final_df[a_col].sum(),
-                        "Fark": final_df[a_col].sum() - final_df[b_col].sum(),
-                    }
-                )
-        if trend_data:
-            df_trend = pd.DataFrame(trend_data)
-            fig = go.Figure()
-            fig.add_bar(
-                x=df_trend["Ay"],
-                y=df_trend["Bütçe"],
-                name="Bütçe",
-                marker_color=budget_color,
-            )
-            fig.add_bar(
-                x=df_trend["Ay"],
-                y=df_trend["Fiili"],
-                name="Fiili",
-                marker_color=actual_color,
-            )
-            fig.add_trace(
-                go.Scatter(
-                    x=df_trend["Ay"],
-                    y=df_trend["Fark"],
-                    name="Fark",
-                    line=dict(color=difference_color),
-                )
-            )
-            st.plotly_chart(fig, use_container_width=True)
-
-            img_buffer = BytesIO()
-            fig.write_image(img_buffer, format="png")
-        else:
-            img_buffer = None
-
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        img_buffer = BytesIO()
-        fig.write_image(img_buffer, format="png", engine="kaleido")
-        st.download_button(
-            "📸 Trend Grafiğini İndir (PNG)",
-            data=img_buffer.getvalue(),
-            file_name=f"trend_analizi_{timestamp}.png",
-            mime="image/png",
+        img_buffer = show_trend_analysis(
+            final_df,
+            selected_months=selected_months,
+            budget_color=budget_color,
+            actual_color=actual_color,
+            difference_color=difference_color
         )
 
     with tabs_analiz[2]:
@@ -203,19 +147,7 @@ def main():
 
     with tabs_analiz[4]:
         group_by_option = st.selectbox(
-            "Gruplama Kriteri",
-            [
-                "İlgili 1",
-                "İlgili 2",
-                "İlgili 3",
-                "Masraf Yeri",
-                "Masraf Yeri Adı",
-                "Masraf Çeşidi",
-                "Masraf Çeşidi Adı",
-                "Masraf Çeşidi Grubu 1",
-                "Masraf Çeşidi Grubu 2",
-                "Masraf Çeşidi Grubu 3",
-            ],
+            "Gruplama Kriteri", GENERAL_COLUMNS
         )
         show_comparative_analysis(final_df, group_by_col=group_by_option)
 
@@ -238,7 +170,7 @@ def main():
             if img_buffer:
                 zip_file.writestr("trend.png", img_buffer.getvalue())
         st.download_button(
-            "⬇️ ZIP İndir", data=zip_buffer.getvalue(), file_name="rapor.zip"
+            "⬇ İndir (ZIP)", data=zip_buffer.getvalue(), file_name="rapor.zip"
         )
 
     with tabs_raporlama[1]:
@@ -247,7 +179,7 @@ def main():
                 total_budget, total_actual, variance, variance_pct, img_buffer
             )
             st.download_button(
-                "PDF İndir", data=pdf, file_name="rapor.pdf", mime="application/pdf"
+                "⬇ İndir (PDF)", data=pdf, file_name="rapor.pdf", mime="application/pdf"
             )
 
 

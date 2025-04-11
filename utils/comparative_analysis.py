@@ -74,15 +74,6 @@ def show_comparative_analysis(df, group_by_col="İlgili 1"):
 
     st.plotly_chart(fig, use_container_width=True)
 
-    # Tablo gösterimi
-    st.dataframe(
-        grouped.sort_values(group_cols[1], ascending=False), use_container_width=True
-    )
-
-    st.markdown("---")
-
-    col1, col2, col3 = st.columns(3)
-
     # Save the bar chart to an image in memory using plotly.io
     bar_img_buffer = BytesIO()
     pio.write_image(fig, bar_img_buffer, format="png", width=800, height=600)
@@ -90,14 +81,20 @@ def show_comparative_analysis(df, group_by_col="İlgili 1"):
     bar_img = Image.open(bar_img_buffer)
 
     # Add a download button for the combined image
-    with col1:
-        st.download_button(
-            label="📥 İndir (PNG)",
-            data=bar_img_buffer,
-            file_name="comparative_analysis.png",
-            mime="image/png",
-            key="download_image",  # Added unique key here
-        )
+    st.download_button(
+        label="⬇ İndir (PNG)",
+        data=bar_img_buffer,
+        file_name="comparative_analysis.png",
+        mime="image/png",
+        key="download_image",  # Added unique key here
+    )
+
+    st.markdown("---")
+
+    # Tablo gösterimi
+    st.dataframe(
+        grouped.sort_values(group_cols[1], ascending=False), use_container_width=True
+    )
 
     excel_buffer = BytesIO()
     grouped.sort_values(group_cols[1], ascending=False).to_excel(
@@ -106,11 +103,10 @@ def show_comparative_analysis(df, group_by_col="İlgili 1"):
     excel_buffer.seek(0)
 
     # Excel indirme butonu
-    with col2:
-        st.download_button(
-            label="⬇️ Excel Dosyasını İndir",
-            data=excel_buffer,
-            file_name=f"{group_by_col}_bazinda_veriler.xlsx",
-            mime="application/vnd.ms-excel",
-            key="download_excel",  # Added unique key here
-        )
+    st.download_button(
+        label="⬇ İndir (Excel)",
+        data=excel_buffer,
+        file_name=f"{group_by_col}_bazinda_veriler.xlsx",
+        mime="application/vnd.ms-excel",
+        key="download_excel",  # Added unique key here
+    )

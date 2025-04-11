@@ -1,24 +1,43 @@
 import pandas as pd
+from config.constants import MONTHS
 
 def style_warning_rows(df: pd.DataFrame):
     def apply_style(row):
         style = [''] * len(row)
+
+        # Kümüle kontrolü
         if "Kümüle Bütçe" in row and "Kümüle Fiili" in row:
             try:
                 budget = row["Kümüle Bütçe"]
                 actual = row["Kümüle Fiili"]
-                if budget == 0:
-                    usage_pct = 0
-                else:
-                    usage_pct = actual / budget
 
-                # Kümüle Bütçe ve Kümüle Fiili hücrelerine stil uygula
                 if actual > budget:
-                    style[row.index.get_loc("Kümüle Bütçe")] = 'background-color: #ffcccc'  # Red for Kümüle Bütçe
-                    style[row.index.get_loc("Kümüle Fiili")] = 'background-color: #ffcccc'  # Red for Kümüle Fiili
-                    style[row.index.get_loc("Masraf Yeri")] = 'background-color: #ffcccc'  # Red for Kümüle Bütçe
+                    # Kümüle alanları boyama (kırmızı)
+                    for col in ["Kümüle Bütçe", "Kümüle Fiili"]:
+                        if col in row.index:
+                            style[row.index.get_loc(col)] = 'background-color: #ffcccc'
+
+                    # Masraf bilgilerini boyama (kırmızı)
+                    if "Masraf Yeri" in row.index:
+                        style[row.index.get_loc("Masraf Yeri")] = 'background-color: #ffcccc'
+                    if "Masraf Çeşidi" in row.index:
+                        style[row.index.get_loc("Masraf Çeşidi")] = 'background-color: #ffcccc'
+
+                    # Aylık bazda fiili > bütçe ise mavi renkle boyama
+                    for month in MONTHS:
+                        b_col = f"{month} Bütçe"
+                        a_col = f"{month} Fiili"
+                        if b_col in row.index and a_col in row.index:
+                            try:
+                                if row[a_col] > row[b_col]:
+                                    style[row.index.get_loc(b_col)] = 'background-color: #ffcccc'
+                                    style[row.index.get_loc(a_col)] = 'background-color: #ffcccc'
+                            except:
+                                continue
+
             except:
                 pass
+
         return style
 
     return df.style.apply(apply_style, axis=1)

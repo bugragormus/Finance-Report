@@ -186,7 +186,7 @@ def show_category_charts(df):
 
     # Add a download button for the combined image
     st.download_button(
-        label="📥 İndir (PNG)",
+        label="⬇ İndir (PNG)",
         data=combined_img_buffer,
         file_name="combined_charts.png",
         mime="image/png",
