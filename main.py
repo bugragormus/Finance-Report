@@ -25,17 +25,17 @@ from utils.insight_generator import generate_insights
 
 def main():
 
-    # Hide Streamlit footer and menu
-    hide_streamlit_style = """
-    <style>
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    </style>
-    """
-    st.markdown(hide_streamlit_style, unsafe_allow_html=True)
-
     st.set_page_config(layout="wide", page_title="Finansal Performans Analiz Paneli")
     st.title("🏦 Finansal Performans Analiz Paneli")
+
+    # Hide Streamlit footer and menu
+    hide_streamlit_style = """
+        <style>
+        #MainMenu {visibility: hidden;}
+        footer {visibility: hidden;}
+        </style>
+        """
+    st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
     uploaded_file = st.file_uploader("Excel dosyasını yükleyin", type=["xlsx", "xls"])
     if uploaded_file:
