@@ -4,6 +4,8 @@ from io import BytesIO
 import plotly.io as pio
 from PIL import Image
 
+from utils.warning_system import style_overused_rows
+
 # Grafik export ayarları
 pio.kaleido.scope.default_format = "png"
 pio.kaleido.scope.default_width = 1000
@@ -92,9 +94,8 @@ def show_comparative_analysis(df, group_by_col="İlgili 1"):
     st.markdown("---")
 
     # Tablo gösterimi
-    st.dataframe(
-        grouped.sort_values(group_cols[1], ascending=False), use_container_width=True
-    )
+    styled_grouped = style_overused_rows(grouped.sort_values(group_cols[1], ascending=False))
+    st.dataframe(styled_grouped, use_container_width=True)
 
     excel_buffer = BytesIO()
     grouped.sort_values(group_cols[1], ascending=False).to_excel(
@@ -110,3 +111,5 @@ def show_comparative_analysis(df, group_by_col="İlgili 1"):
         mime="application/vnd.ms-excel",
         key="download_excel",  # Added unique key here
     )
+
+    return excel_buffer  # ZIP için main.py'ye döndür

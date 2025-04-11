@@ -41,3 +41,15 @@ def style_warning_rows(df: pd.DataFrame):
         return style
 
     return df.style.apply(apply_style, axis=1)
+
+def style_overused_rows(df: pd.DataFrame):
+    def apply_style(row):
+        if "Kullanım (%)" in row and pd.notnull(row["Kullanım (%)"]):
+            try:
+                if row["Kullanım (%)"] >= 100:
+                    return ['background-color: #ffcccc'] * len(row)
+            except:
+                pass
+        return [''] * len(row)
+
+    return df.style.apply(apply_style, axis=1)

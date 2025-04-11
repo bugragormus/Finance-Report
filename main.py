@@ -149,10 +149,10 @@ def main():
         group_by_option = st.selectbox(
             "Gruplama Kriteri", GENERAL_COLUMNS
         )
-        show_comparative_analysis(final_df, group_by_col=group_by_option)
+        comparative_excel_buffer = show_comparative_analysis(final_df, group_by_col=group_by_option)
 
     with tabs_analiz[5]:
-        show_pivot_table(final_df)
+        pivot_excel_buffer = show_pivot_table(final_df)
 
     with tabs_analiz[6]:
         insights = generate_insights(final_df)
@@ -169,6 +169,10 @@ def main():
             zip_file.writestr("veri.xlsx", excel_buffer.getvalue())
             if img_buffer:
                 zip_file.writestr("trend.png", img_buffer.getvalue())
+            if 'comparative_excel_buffer' in locals() and comparative_excel_buffer:
+                zip_file.writestr("karsilastirma_analizi.xlsx", comparative_excel_buffer.getvalue())
+            if 'pivot_excel_buffer' in locals() and pivot_excel_buffer:
+                zip_file.writestr("pivot_tablo.xlsx", pivot_excel_buffer.getvalue())
         st.download_button(
             "⬇ İndir (ZIP)", data=zip_buffer.getvalue(), file_name="rapor.zip"
         )

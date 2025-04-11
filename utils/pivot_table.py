@@ -37,7 +37,7 @@ def show_pivot_table(df):
 
             st.dataframe(pivot, use_container_width=True)
 
-            # 🔽 Excel indirme
+            # 🔽 Excel export
             excel_buffer = BytesIO()
             with pd.ExcelWriter(excel_buffer, engine="openpyxl") as writer:
                 pivot.to_excel(writer)
@@ -48,7 +48,7 @@ def show_pivot_table(df):
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             )
 
-            # 📊 PNG indirme
+            # 📊 PNG export
             if len(pivot.columns) <= 15:
                 fig = px.imshow(pivot, text_auto=True, aspect="auto", color_continuous_scale='Blues')
                 st.plotly_chart(fig, use_container_width=True)
@@ -61,7 +61,10 @@ def show_pivot_table(df):
                     mime="image/png"
                 )
 
+            return excel_buffer  # ZIP için geri dön
+
         except Exception as e:
             st.error(f"Hata oluştu: {e}")
     else:
         st.info("Lütfen satır, sütun ve değer alanlarını seçin.")
+        return None
