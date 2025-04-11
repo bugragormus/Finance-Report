@@ -191,3 +191,5 @@ def show_category_charts(df):
         file_name="combined_charts.png",
         mime="image/png",
     )
+
+    return combined_img_buffer

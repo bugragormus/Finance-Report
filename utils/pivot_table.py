@@ -1,16 +1,11 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import plotly.io as pio
 from io import BytesIO
 
-# Grafik export ayarları
-pio.kaleido.scope.default_format = "png"
-pio.kaleido.scope.default_width = 1000
-pio.kaleido.scope.default_height = 600
-pio.kaleido.scope.default_colorway = px.colors.qualitative.Plotly
-pio.kaleido.scope.default_paper_bgcolor = "white"
-pio.kaleido.scope.default_plot_bgcolor = "white"
+from config.plotly_config import apply_plotly_defaults
+
+apply_plotly_defaults()
 
 
 def show_pivot_table(df):
@@ -59,14 +54,17 @@ def show_pivot_table(df):
                 st.plotly_chart(fig, use_container_width=True)
 
                 png_bytes = fig.to_image(format="png")
+                pivot_buffer = BytesIO(png_bytes)
+                pivot_buffer.seek(0)
+
                 st.download_button(
                     label="⬇ İndir (PNG)",
-                    data=png_bytes,
+                    data=pivot_buffer,
                     file_name="pivot_grafik.png",
                     mime="image/png",
                 )
 
-            return excel_buffer  # ZIP için geri dön
+            return excel_buffer, pivot_buffer  # ZIP için geri dön
 
         except Exception as e:
             st.error(f"Hata oluştu: {e}")

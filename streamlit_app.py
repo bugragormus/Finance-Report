@@ -129,7 +129,7 @@ def main():
         with col3:
             difference_color = st.color_picker("Fark Rengi", "#00CC96")
 
-        img_buffer = show_trend_analysis(
+        trend_img_buffer = show_trend_analysis(
             final_df,
             selected_months=selected_months,
             budget_color=budget_color,
@@ -141,16 +141,16 @@ def main():
         show_kpi_panel(final_df)
 
     with tabs_analiz[3]:
-        show_category_charts(final_df)
+        combined_img_buffer = show_category_charts(final_df)
 
     with tabs_analiz[4]:
         group_by_option = st.selectbox("Gruplama Kriteri", GENERAL_COLUMNS)
-        comparative_excel_buffer = show_comparative_analysis(
+        comparative_excel_buffer, comperative_img_buffer = show_comparative_analysis(
             final_df, group_by_col=group_by_option
         )
 
     with tabs_analiz[5]:
-        pivot_excel_buffer = show_pivot_table(final_df)
+        pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
 
     with tabs_analiz[6]:
         insights = generate_insights(final_df)
@@ -165,8 +165,14 @@ def main():
         zip_buffer = BytesIO()
         with zipfile.ZipFile(zip_buffer, "w") as zip_file:
             zip_file.writestr("veri.xlsx", excel_buffer.getvalue())
-            if img_buffer:
-                zip_file.writestr("trend.png", img_buffer.getvalue())
+            if trend_img_buffer:
+                zip_file.writestr("trend.png", trend_img_buffer.getvalue())
+            if combined_img_buffer:
+                zip_file.writestr("kategori_analizi.png", combined_img_buffer.getvalue())
+            if comperative_img_buffer:
+                zip_file.writestr("karsilastirma_analizi.png", comperative_img_buffer.getvalue())
+            if pivot_buffer:
+                zip_file.writestr("pivot_analizi.png", pivot_buffer.getvalue())
             if "comparative_excel_buffer" in locals() and comparative_excel_buffer:
                 zip_file.writestr(
                     "karsilastirma_analizi.xlsx", comparative_excel_buffer.getvalue()
@@ -180,7 +186,7 @@ def main():
     with tabs_raporlama[1]:
         if st.button("📄 PDF Raporu Oluştur"):
             pdf = generate_pdf_report(
-                total_budget, total_actual, variance, variance_pct, img_buffer
+                total_budget, total_actual, variance, variance_pct, trend_img_buffer
             )
             st.download_button(
                 "⬇ İndir (PDF)", data=pdf, file_name="rapor.pdf", mime="application/pdf"

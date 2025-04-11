@@ -5,14 +5,9 @@ import plotly.io as pio
 from PIL import Image
 
 from utils.warning_system import style_overused_rows
+from config.plotly_config import apply_plotly_defaults
 
-# Grafik export ayarları
-pio.kaleido.scope.default_format = "png"
-pio.kaleido.scope.default_width = 1000
-pio.kaleido.scope.default_height = 600
-pio.kaleido.scope.default_colorway = px.colors.qualitative.Plotly
-pio.kaleido.scope.default_paper_bgcolor = "white"
-pio.kaleido.scope.default_plot_bgcolor = "white"
+apply_plotly_defaults()
 
 from config.constants import MONTHS
 
@@ -76,15 +71,15 @@ def show_comparative_analysis(df, group_by_col="İlgili 1"):
     st.plotly_chart(fig, use_container_width=True)
 
     # Save the bar chart to an image in memory using plotly.io
-    bar_img_buffer = BytesIO()
-    pio.write_image(fig, bar_img_buffer, format="png", width=800, height=600)
-    bar_img_buffer.seek(0)  # Go to the beginning of the buffer
-    bar_img = Image.open(bar_img_buffer)
+    comperative_img_buffer = BytesIO()
+    pio.write_image(fig, comperative_img_buffer, format="png", width=800, height=600)
+    comperative_img_buffer.seek(0)  # Go to the beginning of the buffer
+    bar_img = Image.open(comperative_img_buffer)
 
     # Add a download button for the combined image
     st.download_button(
         label="⬇ İndir (PNG)",
-        data=bar_img_buffer,
+        data=comperative_img_buffer,
         file_name="comparative_analysis.png",
         mime="image/png",
         key="download_image",  # Added unique key here
@@ -113,4 +108,4 @@ def show_comparative_analysis(df, group_by_col="İlgili 1"):
         key="download_excel",  # Added unique key here
     )
 
-    return excel_buffer  # ZIP için main.py'ye döndür
+    return excel_buffer, comperative_img_buffer  # ZIP için streamlit_app.py'ye döndür
