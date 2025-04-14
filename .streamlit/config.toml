@@ -1,7 +1,7 @@
-#[server]
-#headless = true
-#port = 8000
-#enableCORS = false
+[server]
+headless = true
+port = 8000
+enableCORS = false
 
 [theme]
 base="light"
