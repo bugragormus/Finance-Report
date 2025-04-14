@@ -21,9 +21,16 @@ from utils.insight_generator import generate_insights
 from utils.data_preview import show_filtered_data
 
 
+def load_custom_style():
+    with open("assets/style.css") as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+
+
 def main():
 
     st.set_page_config(layout="wide", page_title="Finansal Performans Analiz Paneli")
+    load_custom_style()  # CSS stilini uygula
     st.title("🏦 Finansal Performans Analiz Paneli")
 
     # Hide Streamlit footer and menu
@@ -118,7 +125,24 @@ def main():
 
     # Analiz tabları
     with tabs_analiz[0]:
-        excel_buffer = show_filtered_data(final_df)
+        first_10_columns = GENERAL_COLUMNS[:10]
+        column_options = ["Hepsi"] + first_10_columns
+        selected_table_columns = st.multiselect(
+            "🧩 Görüntülenecek Ana Sütunlar",
+            options=column_options,
+            default=["Hepsi"],
+            key="visible_columns"
+        )
+
+        if "Hepsi" in selected_table_columns:
+            visible_general_columns = first_10_columns
+        else:
+            visible_general_columns = selected_table_columns
+
+        remaining_columns = [col for col in final_df.columns if col not in first_10_columns]
+        visible_df = final_df[visible_general_columns + remaining_columns]
+
+        excel_buffer = show_filtered_data(visible_df)
 
     with tabs_analiz[1]:
         col1, col2, col3 = st.columns(3)
@@ -186,7 +210,7 @@ def main():
     with tabs_raporlama[1]:
         if st.button("📄 PDF Raporu Oluştur"):
             pdf = generate_pdf_report(
-                total_budget, total_actual, variance, variance_pct, trend_img_buffer
+                total_budget, total_actual, variance, variance_pct, trend_img_buffer, comperative_img_buffer
             )
             st.download_button(
                 "⬇ İndir (PDF)", data=pdf, file_name="rapor.pdf", mime="application/pdf"

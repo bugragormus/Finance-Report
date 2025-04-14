@@ -13,6 +13,7 @@ pio.kaleido.scope.default_paper_bgcolor = "white"
 pio.kaleido.scope.default_plot_bgcolor = "white"
 
 
+# pivot_table.py
 def show_pivot_table(df):
     st.subheader("📊 Dinamik Pivot Tablo Oluşturucu")
 
@@ -68,11 +69,14 @@ def show_pivot_table(df):
                     file_name="pivot_grafik.png",
                     mime="image/png",
                 )
+            else:
+                pivot_buffer = None  # Sütun sayısı fazla ise None döndür
 
             return excel_buffer, pivot_buffer  # ZIP için geri dön
 
         except Exception as e:
             st.error(f"Hata oluştu: {e}")
+            return None, None  # Hata durumunda tuple döndür
     else:
         st.info("Lütfen satır, sütun ve değer alanlarını seçin.")
-        return None
+        return None, None  # Eksik seçimde tuple döndür

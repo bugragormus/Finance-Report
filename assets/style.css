@@ -1,0 +1,124 @@
+/* style.css */
+
+/* Arka plan rengi */
+body {
+    background-color: #f8f9fa;
+}
+
+/* Başlık ve başlık hizalama */
+h1, h2, h3, h4 {
+    color: #1f2937;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Sidebar */
+.css-1d391kg {  /* Sidebar container */
+    background-color: #ffffff;
+    border-right: 1px solid #dee2e6;
+}
+
+/* Genel yazı tipi ve metin rengi */
+html, body, [class*="css"] {
+    font-family: 'Segoe UI', sans-serif;
+    color: #212529;
+}
+
+/* Butonlar */
+.stButton > button {
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    padding: 0.5em 1em;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: 0.3s ease;
+}
+
+.stButton > button:hover {
+    background-color: #3a78c2;
+    color: #fff;
+}
+
+/* Multiselect ve Selectbox görselleri */
+.stMultiSelect, .stSelectbox {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 5px;
+    border: 1px solid #ced4da;
+}
+
+/* Info, Warning ve diğer kutular */
+.stAlert {
+    border-radius: 8px;
+    padding: 1em;
+}
+
+/* Tab görselleri */
+.stTabs [role="tablist"] {
+    border-bottom: 2px solid #dee2e6;
+}
+
+.stTabs [role="tab"] {
+    font-weight: bold;
+    padding: 10px 15px;
+    margin-right: 3px;
+    border-radius: 6px 6px 0 0;
+    background-color: #e9ecef;
+    color: #495057;
+}
+
+.stTabs [role="tab"][aria-selected="true"] {
+    background-color: #ffffff;
+    color: #212529;
+    border-bottom: 2px solid transparent;
+}
+
+/* Renk seçici alanları uyumlu hale getirme */
+.css-1cpxqw2 {
+    background-color: #f1f3f5;
+    border-radius: 6px;
+    padding: 0.5em;
+}
+
+/* Footer ve Menü Gizleme */
+footer, #MainMenu {
+    visibility: hidden;
+}
+
+/* Tablar için kaydırma çubuğu ekleme */
+div[role="tablist"] {
+    display: flex;  /* Tabları yatayda yerleştirir */
+    overflow-x: auto;  /* Yatay kaydırma çubuğu ekler */
+    padding-bottom: 10px;  /* Tabların altına biraz boşluk ekler */
+    -webkit-overflow-scrolling: touch; /* Mobil cihazlarda kaydırmayı düzgün hale getirir */
+    scrollbar-width: thin; /* Firefox için kaydırma çubuğunu ince yapar */
+}
+
+div[role="tablist"]::-webkit-scrollbar {
+    height: 8px; /* Chrome ve Safari'de kaydırma çubuğunun yüksekliği */
+}
+
+div[role="tablist"]::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 10px;
+}
+
+div[role="tablist"]::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+}
+
+div[role="tab"] {
+    white-space: nowrap;  /* Metinlerin taşmasını engeller */
+    flex-shrink: 0;  /* Tabların boyutunu küçültmez */
+    padding: 10px 15px;
+    border-radius: 6px;
+    background-color: #e9ecef;
+    margin-right: 5px;
+    text-align: center;
+}
+
+div[role="tab"][aria-selected="true"] {
+    background-color: #ffffff;
+    color: #495057;
+    border-bottom: 2px solid transparent;
+}

@@ -22,7 +22,7 @@ def show_comparative_analysis(df, group_by_col="İlgili 1"):
 
     if group_by_col not in df.columns:
         st.warning(f"{group_by_col} sütunu bulunamadı!")
-        return
+        return None, None
 
     # Kullanıcıya ay seçme seçeneği ekle
     selected_month = st.selectbox(
@@ -40,14 +40,14 @@ def show_comparative_analysis(df, group_by_col="İlgili 1"):
         # Kolonların mevcut olup olmadığını kontrol et
         if month_budget_col not in df.columns or month_actual_col not in df.columns:
             st.warning(f"{selected_month} için Bütçe veya Fiili verisi eksik.")
-            return
+            return None, None
 
         group_cols = [month_budget_col, month_actual_col]
 
     for col in group_cols:
         if col not in df.columns:
             st.warning(f"{col} sütunu eksik.")
-            return
+            return None, None
 
     grouped = df.groupby(group_by_col)[group_cols].sum().reset_index()
 
