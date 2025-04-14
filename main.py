@@ -21,19 +21,12 @@ from utils.pivot_table import show_pivot_table
 from utils.insight_generator import generate_insights
 from utils.data_preview import show_filtered_data
 
-
-#def load_custom_style():
-#    with open("assets/style.css") as f:
-#        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-
-
 def main():
 
     im = Image.open("assets/favicon.png")
     st.set_page_config(
         layout="wide", page_title="Finansal Performans Analiz Paneli", page_icon=im
     )
-    #load_custom_style()  # CSS stilini uygula
     st.title("🏦 Finansal Performans Analiz Paneli")
 
     uploaded_file = st.file_uploader("Excel dosyasını yükleyin", type=["xlsx", "xls"])
