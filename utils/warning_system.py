@@ -52,6 +52,13 @@ def style_warning_rows(df: pd.DataFrame):
     return df.style.apply(apply_style, axis=1)
 
 
+def style_negatives_red(df: pd.DataFrame):
+    return df.style.applymap(
+        lambda x: "color: red" if isinstance(x, (int, float)) and x < 0 else "",
+        subset=[col for col in df.columns if "Fark Bakiye" in col],
+    )
+
+
 def style_overused_rows(df: pd.DataFrame):
     def apply_style(row):
         if "Kullanım (%)" in row and pd.notnull(row["Kullanım (%)"]):

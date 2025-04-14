@@ -38,13 +38,13 @@ def show_kpi_panel(df):
             st.metric("📘 BE / Fiili", f"{be_ratio:.1f} %")
 
         # Özet Uyarı
-        st.markdown("---")
         if usage_pct > 110:
             st.error("🚨 Bütçe %110'dan fazla aşıldı! Acil müdahale gerekebilir.")
         elif usage_pct > 90:
             st.warning("⚠️ Bütçeye çok yaklaşıldı (%90 üzeri).")
         else:
             st.success("✅ Bütçe kullanımı güvenli seviyede.")
+        st.markdown("---")
 
     except Exception as e:
         st.warning("Tabloda Kümüle Değerler Bulunamadı!")

@@ -2,6 +2,7 @@ import streamlit as st
 from io import BytesIO
 import zipfile
 from PIL import Image
+import pandas as pd
 
 from utils.loader import load_data
 from utils.filters import apply_filters
@@ -19,14 +20,17 @@ from utils.comparative_analysis import show_comparative_analysis
 from utils.trend_analysis import show_trend_analysis
 from utils.pivot_table import show_pivot_table
 from utils.insight_generator import generate_insights
-from utils.data_preview import show_filtered_data
+from utils.data_preview import show_filtered_data, show_grouped_summary, calculate_group_totals
+from utils.warning_system import style_negatives_red, style_warning_rows
+
 
 def main():
 
     im = Image.open("assets/favicon.png")
     st.set_page_config(
-        layout="wide", page_title="Finansal Performans Analiz Paneli", page_icon=im
+        layout="wide", page_title="Finansal Performans Analiz Paneli", page_icon=im, initial_sidebar_state="expanded"
     )
+    pd.set_option("styler.render.max_elements", 500000)
     st.title("🏦 Finansal Performans Analiz Paneli")
 
     uploaded_file = st.file_uploader("Excel dosyasını yükleyin", type=["xlsx", "xls"])
@@ -94,11 +98,12 @@ def main():
     final_df = filtered_df[selected_columns]
     total_budget, total_actual, variance, variance_pct = calculate_metrics(final_df)
 
+    show_kpi_panel(final_df)
+
     # Define all the tabs, including the modules
     tab_titles_analiz = [
         "📊 Veri",
         "📈 Trend",
-        "📌 KPI Panosu",
         "📊 Kategori Analizi",
         "📈 Karşılaştırmalı Analiz",
         "📎 Pivot Tablo",
@@ -112,8 +117,91 @@ def main():
 
     # Analiz tabları
     with tabs_analiz[0]:
+        # HEDEF SÜTUNLARIN OLUŞTURULMASI
+        target_columns = []
+        for month in selected_months:
+            target_columns.extend([
+                f"{month} Bütçe",
+                f"{month} Fiili",
+                f"{month} BE",
+                f"{month} Bütçe-Fiili Fark Bakiye",
+                f"{month} BE-Fiili Fark Bakiye",
+            ])
+
+        # KÜMÜLATİF SÜTUN FİLTRESİ
+        allowed_cumulative = [
+            "Kümüle Bütçe",
+            "Kümüle Fiili",
+            "Kümüle BE Bakiye",
+            "Kümüle Bütçe-Fiili Fark Bakiye",
+            "Kümüle BE-Fiili Fark Bakiye"
+        ]
+
+        cumulative_to_include = [
+            col for col in selected_cumulative
+            if col in allowed_cumulative and col in df.columns
+        ]
+        target_columns += cumulative_to_include
+
+        # GRUP BAZINDA ÖZET VE TOPLAMLAR
+        st.markdown("### 🧾 Masraf Çeşidi Grubu 1 Analizi")
+
+        # 1. Orijinal Grup Özeti
+        show_grouped_summary(
+            final_df,
+            group_column="Masraf Çeşidi Grubu 1",
+            target_columns=target_columns,
+            filename="masraf_grubu_ozet.xlsx",
+            title="**Grup Bazında Detaylar**",
+            style_func=style_negatives_red,
+        )
+
+        # 2. Aynı Bölümde Toplamlar
+        masraf_totals = calculate_group_totals(
+            final_df,
+            group_column="Masraf Çeşidi Grubu 1",
+            selected_months=selected_months,
+            metrics=["Bütçe", "Fiili", "BE", "Bütçe-Fiili Fark Bakiye", "BE-Fiili Fark Bakiye"]
+        )
+        show_filtered_data(
+            masraf_totals,
+            filename="masraf_grubu_toplamlar.xlsx",
+            title="**Seçilen Ayların Toplamları**",
+            style_func=style_negatives_red
+        )
+
+        st.markdown("---")
+
+        # İlgili 1 için AYNI MANTIK TEKRARLANIR
+        st.markdown("### 👥 İlgili 1 Analizi")
+        show_grouped_summary(
+            final_df,
+            group_column="İlgili 1",
+            target_columns=target_columns,
+            filename="ilgili1_ozet.xlsx",
+            title="**Grup Bazında Detaylar**",
+            style_func=style_negatives_red,
+        )
+        ilgili1_totals = calculate_group_totals(
+            final_df,
+            group_column="İlgili 1",
+            selected_months=selected_months,
+            metrics=["Bütçe", "Fiili", "BE", "Bütçe-Fiili Fark Bakiye", "BE-Fiili Fark Bakiye"]
+        )
+        show_filtered_data(
+            ilgili1_totals,
+            filename="ilgili1_toplamlar.xlsx",
+            title="**Seçilen Ayların Toplamları**",
+            style_func=style_negatives_red
+        )
+
+        st.markdown("---")
+
+        # HAM VERİ GÖSTERİMİ (Tam Genişlik)
+        st.markdown("### 📋 Ham Veri")
         first_10_columns = GENERAL_COLUMNS[:10]
         column_options = ["Hepsi"] + first_10_columns
+
         selected_table_columns = st.multiselect(
             "🧩 Görüntülenecek Ana Sütunlar",
             options=column_options,
@@ -121,17 +209,20 @@ def main():
             key="visible_columns",
         )
 
-        if "Hepsi" in selected_table_columns:
-            visible_general_columns = first_10_columns
-        else:
-            visible_general_columns = selected_table_columns
+        visible_general_columns = (
+            first_10_columns
+            if "Hepsi" in selected_table_columns
+            else selected_table_columns
+        )
 
-        remaining_columns = [
-            col for col in final_df.columns if col not in first_10_columns
-        ]
+        remaining_columns = [col for col in final_df.columns if col not in first_10_columns]
         visible_df = final_df[visible_general_columns + remaining_columns]
 
-        excel_buffer = show_filtered_data(visible_df)
+        excel_buffer = show_filtered_data(
+            visible_df,
+            style_func=style_warning_rows,
+            filename="ham_veri.xlsx"
+        )
 
     with tabs_analiz[1]:
         col1, col2, col3 = st.columns(3)
@@ -151,21 +242,18 @@ def main():
         )
 
     with tabs_analiz[2]:
-        show_kpi_panel(final_df)
-
-    with tabs_analiz[3]:
         combined_img_buffer = show_category_charts(final_df)
 
-    with tabs_analiz[4]:
+    with tabs_analiz[3]:
         group_by_option = st.selectbox("Gruplama Kriteri", GENERAL_COLUMNS)
         comparative_excel_buffer, comperative_img_buffer = show_comparative_analysis(
             final_df, group_by_col=group_by_option
         )
 
-    with tabs_analiz[5]:
+    with tabs_analiz[4]:
         pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
 
-    with tabs_analiz[6]:
+    with tabs_analiz[5]:
         insights = generate_insights(final_df)
         if insights:
             for i, insight in enumerate(insights, 1):

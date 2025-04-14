@@ -3,193 +3,190 @@ import pandas as pd
 import plotly.express as px
 import plotly.io as pio
 from io import BytesIO
+import zipfile
 from PIL import Image
 
-# Configure Plotly to use a static image export engine
+# Plotly ayarları
 pio.kaleido.scope.default_format = "png"
-pio.kaleido.scope.default_width = 800
-pio.kaleido.scope.default_height = 600
-pio.kaleido.scope.default_colorway = px.colors.qualitative.Plotly
-pio.kaleido.scope.default_paper_bgcolor = "white"
-pio.kaleido.scope.default_plot_bgcolor = "white"
+pio.kaleido.scope.default_width = 1200
+pio.kaleido.scope.default_height = 800
+pio.kaleido.scope.default_colorway = px.colors.qualitative.Pastel
+pio.kaleido.scope.default_paper_bgcolor = "#FFFFFF"
+pio.kaleido.scope.default_plot_bgcolor = "#FFFFFF"
+
+from config.constants import (
+    MONTHS,
+)
+
+
+def create_charts(df, group_col, time_period, metric):
+    """Grafik oluşturma fonksiyonu"""
+    # Sütun adını oluştur
+    col_name = (
+        f"{time_period} {metric}" if time_period != "Kümüle" else f"Kümüle {metric}"
+    )
+
+    if col_name not in df.columns:
+        return None, None
+
+    # Veri hazırlama
+    df_filtered = df[[group_col, col_name]].copy()
+    df_grouped = df_filtered.groupby(group_col)[col_name].sum().reset_index()
+    df_sorted = df_grouped.sort_values(col_name, ascending=False)
+
+    # Pasta Grafik
+    fig_pie = px.pie(
+        df_sorted,
+        values=col_name,
+        title=f"{metric} Dağılımı - {time_period}",
+        hole=0.4,
+        color_discrete_sequence=px.colors.qualitative.Pastel,
+    )
+    fig_pie.update_layout(
+        font=dict(size=14, family="Arial"),
+        margin=dict(t=60, b=20, l=20, r=20),
+        showlegend=True,
+        legend=dict(orientation="h", yanchor="bottom", y=-0.2),
+    )
+
+    # Sütun Grafik
+    fig_bar = px.bar(
+        df_sorted,
+        x=group_col,
+        y=col_name,
+        text=col_name,
+        title=f"{metric} Karşılaştırması - {time_period}",
+        color=group_col,
+        color_discrete_sequence=px.colors.qualitative.Pastel,
+    )
+
+    fig_bar.update_layout(
+        xaxis=dict(
+            title=None,
+            tickangle=-60,  # Açıyı artır
+            tickfont=dict(size=9, family="Arial"),
+            automargin=True,  # Otomatik marj ayarı
+            side="bottom",  # X eksenini alta sabitle
+        ),
+        yaxis=dict(title=None, tickformat=",.0f", automargin=True),
+        margin=dict(
+            t=80,  # Üst
+            b=350,  # Alt (uzun etiketler için)
+            l=150,  # Sol (artırıldı)
+            r=50,  # Sağ
+        ),
+    )
+
+    fig_bar.update_traces(
+        textposition="auto",
+        textangle=0,  # Metin dönüş açısı
+        cliponaxis=False,  # Ekseni aşan verilere izin ver
+    )
+
+    # Kenar boşluklarını zorla ayarla
+    fig_bar.update_layout(autosize=False, width=1400, height=900)  # Genişliği artır
+
+    return fig_pie, fig_bar
+
+
+def save_figure(fig):
+    """Grafiği buffer'a kaydet"""
+    img_buffer = BytesIO()
+    pio.write_image(
+        fig,
+        img_buffer,
+        format="png",
+        width=1400,  # Render genişliğini artır
+        height=900,
+        scale=2,  # Çözünürlüğü 2x yap
+    )
+    img_buffer.seek(0)
+    return img_buffer
 
 
 def show_category_charts(df):
-    st.subheader("📊 Kategori Bazlı Harcama Dağılımı")
 
-    # Kategorik grup alanları (objeler ve düşük unique sayılılar)
-    group_candidates = [
-        col
-        for col in df.columns
-        if df[col].dtype == "object" and df[col].nunique() <= 50
-    ]
-    selected_group = st.selectbox(
-        "🧩 Gruplama Alanı Seçin",
-        group_candidates,
-        index=group_candidates.index("Masraf Çeşidi Grubu 1")
-        if "Masraf Çeşidi Grubu 1" in group_candidates
-        else 0,
-    )
+    with st.expander("⚙️ Analiz Ayarları", expanded=True):
+        col1, col2, col3 = st.columns(3)
 
-    # Ay seçimi
-    month_cols = [
-        col
-        for col in df.columns
-        if any(
-            ay in col
-            for ay in [
-                "Ocak",
-                "Şubat",
-                "Mart",
-                "Nisan",
-                "Mayıs",
-                "Haziran",
-                "Temmuz",
-                "Ağustos",
-                "Eylül",
-                "Ekim",
-                "Kasım",
-                "Aralık",
+        with col1:
+            group_options = [
+                col
+                for col in df.columns
+                if df[col].dtype == "object" and df[col].nunique() <= 30
             ]
-        )
-        and "Fiili" in col
-    ]
+            selected_group = st.selectbox(
+                "**Gruplama Kriteri**",
+                group_options,
+                index=group_options.index("Masraf Çeşidi Grubu 1")
+                if "Masraf Çeşidi Grubu 1" in group_options
+                else 0,
+            )
 
-    if month_cols:
-        selected_month = st.selectbox(
-            "📅 Ay Seçimi (İsteğe Bağlı)", ["Kümüle Fiili"] + month_cols
-        )
-    else:
-        selected_month = "Kümüle Fiili"
+        with col2:
+            time_options = ["Kümüle"] + MONTHS
+            selected_time = st.selectbox("**Zaman Periyodu**", time_options, index=0)
 
-    # İlk N gösterimi
-    top_n = st.slider(
-        "🔢 Gösterilecek Grup Sayısı", min_value=1, max_value=50, value=10, step=1
-    )
+        with col3:
+            top_n = st.slider(
+                "**Gösterilecek Grup Sayısı**",
+                min_value=1,
+                max_value=100,
+                value=12,
+                step=1,
+            )
 
-    if selected_group not in df.columns or selected_month not in df.columns:
-        st.warning("Gerekli sütunlar eksik!")
-        return
+    # Grafiklerin oluşturulması
+    metric_data = {
+        "Bütçe": {"color": "#636EFA"},
+        "Fiili": {"color": "#EF553B"},
+        "BE": {"color": "#00CC96"},
+    }
 
-    grouped = df.groupby(selected_group)[selected_month].sum().reset_index()
-    grouped = grouped.sort_values(by=selected_month, ascending=False).head(top_n)
+    all_images = {}
 
-    # Create a pie chart
-    fig_pie = px.pie(
-        grouped,
-        names=selected_group,
-        values=selected_month,
-        title=f"{selected_group} Bazında Harcamalar ({selected_month})",
-    )
-    st.plotly_chart(fig_pie, use_container_width=True)
+    for metric in metric_data.keys():
+        fig_pie, fig_bar = create_charts(df, selected_group, selected_time, metric)
 
-    # Pie chart styling
-    fig_pie = px.pie(
-        grouped,
-        names=selected_group,
-        values=selected_month,
-        title=f"{selected_group} Bazında Harcamalar ({selected_month})",
-        color_discrete_sequence=px.colors.qualitative.Plotly,  # Renk paleti eklendi
-    )
+        if fig_pie and fig_bar:
+            with st.container():
+                st.markdown(f"### {metric} Analizi")
 
-    fig_pie.update_layout(
-        template="plotly_white",
-        font=dict(color="black", size=12),
-        paper_bgcolor="white",
-        plot_bgcolor="white",
-        legend=dict(font=dict(color="black"), bgcolor="rgba(255,255,255,0.8)"),
-        margin=dict(t=50, b=20, l=20, r=20),
-        height=600,  # Sabit yükseklik
-    )
+                # Pasta Grafik
+                st.plotly_chart(fig_pie, use_container_width=True)
 
-    # Create a bar chart
-    fig_bar = px.bar(
-        grouped,
-        x=selected_group,
-        y=selected_month,
-        title=f"{selected_group} Bazında {selected_month}",
-    )
-    fig_bar.update_layout(xaxis_tickangle=-45)
+                # Boşluk
+                st.write("")
 
-    # Bar chart styling
-    fig_bar = px.bar(
-        grouped,
-        x=selected_group,
-        y=selected_month,
-        title=f"{selected_group} Bazında {selected_month}",
-        color=selected_group,
-        color_discrete_sequence=px.colors.qualitative.Plotly,  # Renk paleti eklendi
-    )
+                # Sütun Grafik
+                st.plotly_chart(fig_bar, use_container_width=True)
 
-    fig_bar.update_layout(
-        template="plotly_white",
-        font=dict(color="black", size=12),
-        paper_bgcolor="white",
-        plot_bgcolor="white",
-        xaxis=dict(
-            tickangle=-45,
-            showgrid=False,
-            linecolor="black",
-            title_font=dict(color="black"),
-            tickfont=dict(color="black"),
-        ),
-        yaxis=dict(
-            showgrid=True,
-            gridcolor="lightgray",
-            linecolor="black",
-            title_font=dict(color="black"),
-            tickfont=dict(color="black"),
-        ),
-        margin=dict(l=50, r=50, t=50, b=150),
-        height=600,  # Sabit yükseklik
-        width=800,  # Sabit genişlik
-    )
+                # Grafikleri kaydet
+                pie_img = save_figure(fig_pie)
+                bar_img = save_figure(fig_bar)
+                all_images[f"{metric}_Pasta.png"] = pie_img.getvalue()
+                all_images[f"{metric}_Sütun.png"] = bar_img.getvalue()
 
-    fig_bar.update_traces(marker_line_color="black", marker_line_width=0.5, opacity=0.9)
+                # Bölüm ayracı
+                st.markdown("---")
+        else:
+            st.warning(f"{metric} verisi bulunamadı!", icon="⚠️")
 
-    # Adjust the layout to avoid overflow
-    fig_bar.update_layout(
-        margin=dict(l=50, r=50, t=50, b=100),  # Adjust margins
-        autosize=True,  # Allow auto-sizing for the plot
-        xaxis_title=selected_group,  # Ensure proper title for X-axis
-        yaxis_title=selected_month,  # Ensure proper title for Y-axis
-    )
+    # İndirme butonu
+    if all_images:
+        zip_buffer = BytesIO()
+        with zipfile.ZipFile(zip_buffer, "w") as zip_file:
+            for name, data in all_images.items():
+                zip_file.writestr(name, data)
 
-    st.plotly_chart(fig_bar, use_container_width=True)
-
-    # Save the pie chart to an image in memory using plotly.io
-    pie_img_buffer = BytesIO()
-    pio.write_image(fig_pie, pie_img_buffer, format="png", width=800, height=600)
-    pie_img_buffer.seek(0)  # Go to the beginning of the buffer
-    pie_img = Image.open(pie_img_buffer)
-
-    # Save the bar chart to an image in memory using plotly.io
-    bar_img_buffer = BytesIO()
-    pio.write_image(fig_bar, bar_img_buffer, format="png", width=800, height=600)
-    bar_img_buffer.seek(0)  # Go to the beginning of the buffer
-    bar_img = Image.open(bar_img_buffer)
-
-    # Combine the two images (pie on top of the bar)
-    combined_width = max(pie_img.width, bar_img.width)
-    combined_height = pie_img.height + bar_img.height
-
-    combined_img = Image.new("RGB", (combined_width, combined_height))
-
-    # Paste the pie and bar charts into the combined image
-    combined_img.paste(pie_img, (0, 0))
-    combined_img.paste(bar_img, (0, pie_img.height))
-
-    # Save the combined image to a buffer
-    combined_img_buffer = BytesIO()
-    combined_img.save(combined_img_buffer, format="PNG")
-    combined_img_buffer.seek(0)
-
-    # Add a download button for the combined image
-    st.download_button(
-        label="⬇ İndir (PNG)",
-        data=combined_img_buffer,
-        file_name="combined_charts.png",
-        mime="image/png",
-    )
-
-    return combined_img_buffer
+        st.divider()
+        col_dl, _ = st.columns([0.3, 0.7])
+        with col_dl:
+            st.download_button(
+                label="📥 Tüm Raporları İndir",
+                data=zip_buffer.getvalue(),
+                file_name="Finansal_Analiz_Raporu.zip",
+                mime="application/zip",
+                use_container_width=True,
+                type="primary",
+            )
