@@ -2,7 +2,12 @@ from fpdf import FPDF
 
 
 def generate_pdf_report(
-    total_budget, total_actual, variance, variance_pct, img_buffer=None, comparative_img_buffer=None
+    total_budget,
+    total_actual,
+    variance,
+    variance_pct,
+    img_buffer=None,
+    comparative_img_buffer=None,
 ):
     pdf = FPDF()
     pdf.add_page()

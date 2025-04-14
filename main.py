@@ -1,6 +1,7 @@
 import streamlit as st
 from io import BytesIO
 import zipfile
+from PIL import Image
 
 from utils.loader import load_data
 from utils.filters import apply_filters
@@ -26,21 +27,14 @@ def load_custom_style():
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 
-
 def main():
 
-    st.set_page_config(layout="wide", page_title="Finansal Performans Analiz Paneli")
+    im = Image.open("assets/favicon.png")
+    st.set_page_config(
+        layout="wide", page_title="Finansal Performans Analiz Paneli", page_icon=im
+    )
     load_custom_style()  # CSS stilini uygula
     st.title("🏦 Finansal Performans Analiz Paneli")
-
-    # Hide Streamlit footer and menu
-    hide_streamlit_style = """
-        <style>
-        #MainMenu {visibility: hidden;}
-        footer {visibility: hidden;}
-        </style>
-        """
-    st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
     uploaded_file = st.file_uploader("Excel dosyasını yükleyin", type=["xlsx", "xls"])
     if uploaded_file:
@@ -131,7 +125,7 @@ def main():
             "🧩 Görüntülenecek Ana Sütunlar",
             options=column_options,
             default=["Hepsi"],
-            key="visible_columns"
+            key="visible_columns",
         )
 
         if "Hepsi" in selected_table_columns:
@@ -139,7 +133,9 @@ def main():
         else:
             visible_general_columns = selected_table_columns
 
-        remaining_columns = [col for col in final_df.columns if col not in first_10_columns]
+        remaining_columns = [
+            col for col in final_df.columns if col not in first_10_columns
+        ]
         visible_df = final_df[visible_general_columns + remaining_columns]
 
         excel_buffer = show_filtered_data(visible_df)
@@ -192,9 +188,13 @@ def main():
             if trend_img_buffer:
                 zip_file.writestr("trend.png", trend_img_buffer.getvalue())
             if combined_img_buffer:
-                zip_file.writestr("kategori_analizi.png", combined_img_buffer.getvalue())
+                zip_file.writestr(
+                    "kategori_analizi.png", combined_img_buffer.getvalue()
+                )
             if comperative_img_buffer:
-                zip_file.writestr("karsilastirma_analizi.png", comperative_img_buffer.getvalue())
+                zip_file.writestr(
+                    "karsilastirma_analizi.png", comperative_img_buffer.getvalue()
+                )
             if pivot_buffer:
                 zip_file.writestr("pivot_analizi.png", pivot_buffer.getvalue())
             if "comparative_excel_buffer" in locals() and comparative_excel_buffer:
@@ -210,7 +210,12 @@ def main():
     with tabs_raporlama[1]:
         if st.button("📄 PDF Raporu Oluştur"):
             pdf = generate_pdf_report(
-                total_budget, total_actual, variance, variance_pct, trend_img_buffer, comperative_img_buffer
+                total_budget,
+                total_actual,
+                variance,
+                variance_pct,
+                trend_img_buffer,
+                comperative_img_buffer,
             )
             st.download_button(
                 "⬇ İndir (PDF)", data=pdf, file_name="rapor.pdf", mime="application/pdf"
