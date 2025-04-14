@@ -80,10 +80,11 @@ html, body, [class*="css"] {
     padding: 0.5em;
 }
 
-/* Footer ve Menü Gizleme */
+/* Footer ve Menü Gizleme
 footer, #MainMenu {
     visibility: hidden;
 }
+*/
 
 /* Tablar için kaydırma çubuğu ekleme */
 div[role="tablist"] {
