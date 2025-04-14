@@ -1,7 +1,15 @@
-[server]
-headless = true
-port = 8000
-enableCORS = false
+#[server]
+#headless = true
+#port = 8000
+#enableCORS = false
 
 [theme]
-base="light"
+base = "light"
+primaryColor = "#6eb52f"
+backgroundColor = "#f0f0f5"
+secondaryBackgroundColor = "#e0e0ef"
+textColor = "#262730"
+font = "sans serif"
+
+# To run the app with the specified theme while deploying with Azure, use the following command:
+#streamlit run main.py --theme.base="light" --theme.primaryColor="#6eb52f" --theme.backgroundColor="#f0f0f5" --theme.secondaryBackgroundColor="#e0e0ef" --theme.textColor="#262730" --theme.font="sans serif"

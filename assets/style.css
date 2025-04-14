@@ -1,29 +1,23 @@
-/* style.css */
-
-/* Arka plan rengi */
+/*
 body {
     background-color: #f8f9fa;
 }
 
-/* Başlık ve başlık hizalama */
 h1, h2, h3, h4 {
     color: #1f2937;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Sidebar */
-.css-1d391kg {  /* Sidebar container */
+.css-1d391kg {
     background-color: #ffffff;
     border-right: 1px solid #dee2e6;
 }
 
-/* Genel yazı tipi ve metin rengi */
 html, body, [class*="css"] {
     font-family: 'Segoe UI', sans-serif;
     color: #212529;
 }
 
-/* Butonlar */
 .stButton > button {
     background-color: #4a90e2;
     color: white;
@@ -39,7 +33,6 @@ html, body, [class*="css"] {
     color: #fff;
 }
 
-/* Multiselect ve Selectbox görselleri */
 .stMultiSelect, .stSelectbox {
     background-color: #ffffff;
     border-radius: 8px;
@@ -47,13 +40,11 @@ html, body, [class*="css"] {
     border: 1px solid #ced4da;
 }
 
-/* Info, Warning ve diğer kutular */
 .stAlert {
     border-radius: 8px;
     padding: 1em;
 }
 
-/* Tab görselleri */
 .stTabs [role="tablist"] {
     border-bottom: 2px solid #dee2e6;
 }
@@ -73,30 +64,22 @@ html, body, [class*="css"] {
     border-bottom: 2px solid transparent;
 }
 
-/* Renk seçici alanları uyumlu hale getirme */
 .css-1cpxqw2 {
     background-color: #f1f3f5;
     border-radius: 6px;
     padding: 0.5em;
 }
 
-/* Footer ve Menü Gizleme
-footer, #MainMenu {
-    visibility: hidden;
-}
-*/
-
-/* Tablar için kaydırma çubuğu ekleme */
 div[role="tablist"] {
-    display: flex;  /* Tabları yatayda yerleştirir */
-    overflow-x: auto;  /* Yatay kaydırma çubuğu ekler */
-    padding-bottom: 10px;  /* Tabların altına biraz boşluk ekler */
-    -webkit-overflow-scrolling: touch; /* Mobil cihazlarda kaydırmayı düzgün hale getirir */
-    scrollbar-width: thin; /* Firefox için kaydırma çubuğunu ince yapar */
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
 }
 
 div[role="tablist"]::-webkit-scrollbar {
-    height: 8px; /* Chrome ve Safari'de kaydırma çubuğunun yüksekliği */
+    height: 8px;
 }
 
 div[role="tablist"]::-webkit-scrollbar-thumb {
@@ -109,8 +92,8 @@ div[role="tablist"]::-webkit-scrollbar-thumb:hover {
 }
 
 div[role="tab"] {
-    white-space: nowrap;  /* Metinlerin taşmasını engeller */
-    flex-shrink: 0;  /* Tabların boyutunu küçültmez */
+    white-space: nowrap;
+    flex-shrink: 0;
     padding: 10px 15px;
     border-radius: 6px;
     background-color: #e9ecef;
@@ -123,3 +106,8 @@ div[role="tab"][aria-selected="true"] {
     color: #495057;
     border-bottom: 2px solid transparent;
 }
+
+footer, #MainMenu {
+    visibility: hidden;
+}
+*/
