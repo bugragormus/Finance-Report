@@ -20,7 +20,7 @@ from utils.comparative_analysis import show_comparative_analysis
 from utils.trend_analysis import show_trend_analysis
 from utils.pivot_table import show_pivot_table
 from utils.insight_generator import generate_insights
-from utils.data_preview import show_filtered_data, show_grouped_summary, calculate_group_totals
+from utils.data_preview import show_filtered_data, show_grouped_summary, calculate_group_totals, show_column_totals
 from utils.warning_system import style_negatives_red, style_warning_rows
 
 
@@ -145,18 +145,67 @@ def main():
         ]
         target_columns += cumulative_to_include
 
-        # GRUP BAZINDA ÖZET VE TOPLAMLAR
-        st.markdown("### 🧾 Masraf Çeşidi Grubu 1 Analizi")
+        # 1. Orijinal Grup Özeti (Sadece Belirli Metrikler)
+        with st.container():
+            st.markdown("### 🧾 Masraf Çeşidi Grubu 1 Analizi")
 
-        # 1. Orijinal Grup Özeti
-        show_grouped_summary(
-            final_df,
-            group_column="Masraf Çeşidi Grubu 1",
-            target_columns=target_columns,
-            filename="masraf_grubu_ozet.xlsx",
-            title="**Grup Bazında Detaylar**",
-            style_func=style_negatives_red,
-        )
+            # 🔄 Tablo için bağımsız ay seçimi
+            table_month_options = ["Hepsi"] + MONTHS
+            selected_table_months = st.multiselect(
+                "🗓️ Tablo İçin Ay Seçimi",
+                table_month_options,
+                default=["Hepsi"],
+                key="table_month_filter"
+            )
+            if "Hepsi" in selected_table_months:
+                selected_table_months = MONTHS
+
+            # 🎯 Sabit Metrikler (sidebar filtrelerinden BAĞIMSIZ)
+            FIXED_METRICS = [
+                "Bütçe",
+                "Fiili",
+                "BE",
+                "BE Bakiye",
+                "Bütçe-Fiili Fark Bakiye",
+                "BE-Fiili Fark Bakiye"
+            ]
+
+            # 🛠️ Sütunları Dinamik Oluştur
+            table_target_columns = []
+
+            # 1. Ay Bazlı Sabit Metrikler
+            for month in selected_table_months:
+                for metric in FIXED_METRICS:
+                    col_name = f"{month} {metric}"
+                    if col_name in df.columns:
+                        table_target_columns.append(col_name)
+
+            # 2. Kümülatif Sabit Metrikler
+            table_target_columns += [
+                "Kümüle " + metric
+                for metric in FIXED_METRICS
+                if "Kümüle " + metric in df.columns
+            ]
+
+            # 🚀 Filtrelenmiş DataFrame (sidebar'dan BAĞIMSIZ)
+            table_filtered_df = df[GENERAL_COLUMNS + table_target_columns]
+
+            # 📊 Grup Özetini Göster
+            show_grouped_summary(
+                table_filtered_df,
+                group_column="Masraf Çeşidi Grubu 1",
+                target_columns=table_target_columns,
+                filename="masraf_grubu_ozet.xlsx",
+                title="**Grup Bazında Detaylar**",
+                style_func=style_negatives_red,
+            )
+
+            # ➕ Toplamlar
+            show_column_totals(
+                table_filtered_df,
+                filename="masraf_grubu_toplam_sayisal.xlsx",
+                title="**Grup Bazında Sayısal Sütun Toplamları**"
+            )
 
         # 2. Aynı Bölümde Toplamlar
         masraf_totals = calculate_group_totals(
@@ -172,29 +221,86 @@ def main():
             style_func=style_negatives_red
         )
 
+        # ➕ Toplam Satırını Göster
+        show_column_totals(
+            masraf_totals,
+            filename="masraf_grubu_toplamlar_sayisal.xlsx",
+            title="**Grup Toplamları Tablosunun Genel Toplamı**"
+        )
+
         st.markdown("---")
 
-        # İlgili 1 için AYNI MANTIK TEKRARLANIR
-        st.markdown("### 👥 İlgili 1 Analizi")
-        show_grouped_summary(
-            final_df,
-            group_column="İlgili 1",
-            target_columns=target_columns,
-            filename="ilgili1_ozet.xlsx",
-            title="**Grup Bazında Detaylar**",
-            style_func=style_negatives_red,
-        )
+        # 👥 İlgili 1 Analizi (Aynı Mantık)
+        with st.container():
+            st.markdown("### 👥 İlgili 1 Analizi")
+
+            # 🔄 Tablo için bağımsız ay seçimi
+            ilgili1_month_options = ["Hepsi"] + MONTHS
+            selected_ilgili1_months = st.multiselect(
+                "🗓️ İlgili 1 İçin Ay Seçimi",
+                ilgili1_month_options,
+                default=["Hepsi"],
+                key="ilgili1_month_filter"
+            )
+            if "Hepsi" in selected_ilgili1_months:
+                selected_ilgili1_months = MONTHS
+
+            # 🛠️ Sütunları Dinamik Oluştur
+            ilgili1_target_columns = []
+
+            # Ay Bazlı Sabit Metrikler
+            for month in selected_ilgili1_months:
+                for metric in FIXED_METRICS:
+                    col_name = f"{month} {metric}"
+                    if col_name in df.columns:
+                        ilgili1_target_columns.append(col_name)
+
+            # Kümülatif Sabit Metrikler
+            ilgili1_target_columns += [
+                "Kümüle " + metric
+                for metric in FIXED_METRICS
+                if "Kümüle " + metric in df.columns
+            ]
+
+            # 🚀 Filtrelenmiş DataFrame
+            ilgili1_filtered_df = df[GENERAL_COLUMNS + ilgili1_target_columns]
+
+            # 📊 Grup Özetini Göster
+            show_grouped_summary(
+                ilgili1_filtered_df,
+                group_column="İlgili 1",
+                target_columns=ilgili1_target_columns,
+                filename="ilgili1_ozet.xlsx",
+                title="**İlgili 1 Bazında Detaylar**",
+                style_func=style_negatives_red,
+            )
+
+            # ➕ Toplamlar
+            show_column_totals(
+                ilgili1_filtered_df,
+                filename="ilgili1_toplam_sayisal.xlsx",
+                title="**İlgili 1 Bazında Sayısal Sütun Toplamları**"
+            )
+
+
         ilgili1_totals = calculate_group_totals(
             final_df,
             group_column="İlgili 1",
             selected_months=selected_months,
-            metrics=["Bütçe", "Fiili", "BE", "Bütçe-Fiili Fark Bakiye", "BE-Fiili Fark Bakiye"]
+            metrics=["Bütçe", "Fiili", "BE", "BE Bakiye", "Bütçe-Fiili Fark Bakiye", "BE-Fiili Fark Bakiye"]
         )
         show_filtered_data(
             ilgili1_totals,
             filename="ilgili1_toplamlar.xlsx",
             title="**Seçilen Ayların Toplamları**",
             style_func=style_negatives_red
+        )
+
+        # ➕ Toplam Satırını Göster
+        show_column_totals(
+            ilgili1_totals,
+            filename="ilgili1_toplamlar_sayisal.xlsx",
+            title="**Grup Toplamları Tablosunun Genel Toplamı**"
         )
 
         st.markdown("---")
@@ -224,6 +330,13 @@ def main():
             visible_df,
             style_func=style_warning_rows,
             filename="ham_veri.xlsx"
+        )
+
+        # ➕ Toplamlar
+        show_column_totals(
+            visible_df,
+            filename="ham_veri_toplam_sayisal.xlsx",
+            title="**Ham Verideki Sayısal Sütun Toplamları**"
         )
 
     with tabs_analiz[1]:

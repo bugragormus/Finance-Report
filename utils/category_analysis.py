@@ -147,7 +147,7 @@ def show_category_charts(df):
     metric_data = {
         "Bütçe": {"color": "#636EFA"},
         "Fiili": {"color": "#EF553B"},
-        "BE": {"color": "#00CC96"},
+        "BE Bakiye" if selected_time == "Kümüle" else "BE": {"color": "#00CC96"},
     }
 
     all_images = {}

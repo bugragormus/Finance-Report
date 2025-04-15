@@ -66,7 +66,31 @@ def calculate_group_totals(df, group_column, selected_months, metrics):
 
     # Her metrik için toplam sütun oluştur
     for metric in metrics:
-        metric_cols = [col for col in columns_to_sum if metric in col]
+        # Sütun adını "Ay [Metrik]" formatında böl ve tam eşleşme kontrol et
+        metric_cols = [
+            col for col in columns_to_sum
+            if col.split(" ", 1)[-1] == metric
+        ]
+
         grouped_totals[f"Toplam {metric}"] = grouped_totals[metric_cols].sum(axis=1)
 
     return grouped_totals[[f"Toplam {metric}" for metric in metrics]]
+
+def show_column_totals(df, filename="sutun_toplamlari.xlsx", title=None):
+    """
+    GENERAL_COLUMNS dışında kalan sayısal sütunların toplamlarını göster.
+    """
+    from config.constants import GENERAL_COLUMNS  # oraya zaten ekli
+    numeric_columns = [
+        col for col in df.columns
+        if col not in GENERAL_COLUMNS and pd.api.types.is_numeric_dtype(df[col])
+    ]
+    totals_df = pd.DataFrame(df[numeric_columns].sum()).T
+    totals_df.index = ["Toplam"]
+
+    return show_filtered_data(
+        totals_df,
+        filename=filename,
+        title=title or "**Sayısal Sütunların Toplamları**"
+    )
+
