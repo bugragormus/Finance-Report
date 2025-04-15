@@ -98,6 +98,8 @@ def main():
     final_df = filtered_df[selected_columns]
     total_budget, total_actual, variance, variance_pct = calculate_metrics(final_df)
 
+    st.markdown("---")
+
     show_kpi_panel(final_df)
 
     # Define all the tabs, including the modules

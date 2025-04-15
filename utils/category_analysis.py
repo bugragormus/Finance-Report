@@ -39,14 +39,21 @@ def create_charts(df, group_col, time_period, metric):
         df_sorted,
         values=col_name,
         title=f"{metric} Dağılımı - {time_period}",
+        names="Masraf Çeşidi Grubu 1",
         hole=0.4,
         color_discrete_sequence=px.colors.qualitative.Pastel,
     )
     fig_pie.update_layout(
         font=dict(size=14, family="Arial"),
-        margin=dict(t=60, b=20, l=20, r=20),
+        margin=dict(t=60, b=60, l=20, r=150),  # sağ boşluk artırıldı
         showlegend=True,
-        legend=dict(orientation="h", yanchor="bottom", y=-0.2),
+        legend=dict(
+            orientation="v",  # dikey hizalama
+            yanchor="top",
+            y=1,
+            xanchor="left",
+            x=1.05  # sağa kaydır
+        ),
     )
 
     # Sütun Grafik
@@ -179,7 +186,6 @@ def show_category_charts(df):
             for name, data in all_images.items():
                 zip_file.writestr(name, data)
 
-        st.divider()
         col_dl, _ = st.columns([0.3, 0.7])
         with col_dl:
             st.download_button(
