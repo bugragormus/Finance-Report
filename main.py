@@ -239,6 +239,7 @@ def main():
                 f"{month} BE",
                 f"{month} Bütçe-Fiili Fark Bakiye",
                 f"{month} BE-Fiili Fark Bakiye",
+                f"{month} BE Bakiye"
             ])
 
         # KÜMÜLATİF SÜTUNLAR
@@ -247,7 +248,8 @@ def main():
             "Kümüle Fiili",
             "Kümüle BE Bakiye",
             "Kümüle Bütçe-Fiili Fark Bakiye",
-            "Kümüle BE-Fiili Fark Bakiye"
+            "Kümüle BE-Fiili Fark Bakiye",
+            "Kümüle BE"
         ]
         cumulative_to_include = [
             col for col in selected_cumulative
@@ -319,7 +321,7 @@ def main():
                 final_df,
                 group_column="Masraf Çeşidi Grubu 1",
                 selected_months=selected_months,
-                metrics=FIXED_METRICS[:-1]  # "BE Bakiye" hariç
+                metrics=FIXED_METRICS[:-1]
             )
 
             show_filtered_data(
@@ -390,7 +392,7 @@ def main():
                 final_df,
                 group_column="İlgili 1",
                 selected_months=selected_months,
-                metrics=FIXED_METRICS
+                metrics=FIXED_METRICS[:-1]
             )
 
             show_filtered_data(

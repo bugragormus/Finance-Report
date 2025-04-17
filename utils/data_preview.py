@@ -93,7 +93,10 @@ def show_grouped_summary(
         if title:
             st.markdown(title)
 
-        grouped_df = df.groupby(group_column)[existing_columns].sum().reset_index()
+        # Tüm sayısal sütunları topla
+        numeric_columns = [col for col in existing_columns if pd.api.types.is_numeric_dtype(df[col])]
+        grouped_df = df.groupby(group_column)[numeric_columns].sum().reset_index()
+        
         return show_filtered_data(grouped_df, filename=filename, style_func=style_func)
     else:
         display_friendly_error(
@@ -148,11 +151,23 @@ def calculate_group_totals(
                 col for col in columns_to_sum
                 if col.split(" ", 1)[-1] == metric
             ]
-            
+
             # "BE Bakiye" metriği için "Kümüle BE Bakiye" sütununu da kontrol et
             if metric == "BE Bakiye" and not metric_cols:
                 # Kümüle BE Bakiye sütunu varsa ekle
                 kumule_col = "Kümüle BE Bakiye"
+                if kumule_col in df.columns:
+                    # Tüm sütunları içeren yeni bir DataFrame oluştur
+                    if kumule_col not in grouped_totals.columns:
+                        kumule_data = df.groupby(group_column)[kumule_col].sum()
+                        # Ayrı bir seri olarak ekle
+                        grouped_totals[f"Toplam {metric}"] = kumule_data
+                        continue
+
+            # "BE-Fiili Fark Bakiye" metriği için "Kümüle BE-Fiili Fark Bakiye" sütununu da kontrol et
+            if metric == "BE-Fiili Fark Bakiye" and not metric_cols:
+                # Kümüle BE-Fiili Fark Bakiye sütunu varsa ekle
+                kumule_col = "Kümüle BE-Fiili Fark Bakiye"
                 if kumule_col in df.columns:
                     # Tüm sütunları içeren yeni bir DataFrame oluştur
                     if kumule_col not in grouped_totals.columns:

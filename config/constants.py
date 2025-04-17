@@ -58,7 +58,7 @@ FIXED_METRICS = [
     "Bütçe",
     "Fiili",
     "BE",
-    "BE Bakiye",
     "Bütçe-Fiili Fark Bakiye",
-    "BE-Fiili Fark Bakiye"
+    "BE-Fiili Fark Bakiye",
+    "BE Bakiye"
 ]
