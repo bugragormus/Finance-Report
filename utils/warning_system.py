@@ -1,8 +1,27 @@
+"""
+warning_system.py - Veri stillemesi ve uyarı işlemlerini yönetir.
+
+Bu modül, veri çerçevelerinin biçimlendirilmesi ve görsel uyarıların
+eklenmesi için fonksiyonlar içerir.
+"""
+
 import pandas as pd
+from typing import List
 from config.constants import MONTHS
+from utils.error_handler import handle_error
 
 
-def style_warning_rows(df: pd.DataFrame):
+@handle_error
+def style_warning_rows(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Uyarı gerektiren satırları stillendirir.
+    
+    Parameters:
+        df (DataFrame): Stillendirilecek veri çerçevesi
+        
+    Returns:
+        DataFrame: Stillendirilmiş veri çerçevesi
+    """
     def apply_style(row):
         style = [""] * len(row)
 
@@ -52,14 +71,34 @@ def style_warning_rows(df: pd.DataFrame):
     return df.style.apply(apply_style, axis=1)
 
 
-def style_negatives_red(df: pd.DataFrame):
-    return df.style.applymap(
+@handle_error
+def style_negatives_red(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Negatif değerleri kırmızı renkle stillendirir.
+    
+    Parameters:
+        df (DataFrame): Stillendirilecek veri çerçevesi
+        
+    Returns:
+        DataFrame: Stillendirilmiş veri çerçevesi
+    """
+    return df.style.map(
         lambda x: "color: red" if isinstance(x, (int, float)) and x < 0 else "",
         subset=[col for col in df.columns if "Fark Bakiye" in col],
     )
 
 
-def style_overused_rows(df: pd.DataFrame):
+@handle_error
+def style_overused_rows(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Bütçesi aşılan satırları stillendirir.
+    
+    Parameters:
+        df (DataFrame): Stillendirilecek veri çerçevesi
+        
+    Returns:
+        DataFrame: Stillendirilmiş veri çerçevesi
+    """
     def apply_style(row):
         if "Kullanım (%)" in row and pd.notnull(row["Kullanım (%)"]):
             try:

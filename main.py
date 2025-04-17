@@ -1,3 +1,10 @@
+"""
+main.py - Finansal Performans Analiz Paneli ana uygulaması
+
+Bu uygulama, finansal performans metriklerinin analizi, görselleştirilmesi 
+ve raporlanması için kullanılır.
+"""
+
 import streamlit as st
 from io import BytesIO
 import zipfile
@@ -22,117 +29,191 @@ from utils.pivot_table import show_pivot_table
 from utils.insight_generator import generate_insights
 from utils.data_preview import show_filtered_data, show_grouped_summary, calculate_group_totals, show_column_totals
 from utils.warning_system import style_negatives_red, style_warning_rows
+from utils.error_handler import handle_critical_error, display_friendly_error
 
 
-def main():
+def setup_page_config():
+    """
+    Sayfa yapılandırmasını ayarlar.
+    """
     try:
         im = Image.open("assets/favicon.png")
         st.set_page_config(
-            layout="wide", page_title="Finansal Performans Analiz Paneli", page_icon=im, initial_sidebar_state="expanded"
+            layout="wide", 
+            page_title="Finansal Performans Analiz Paneli", 
+            page_icon=im, 
+            initial_sidebar_state="expanded"
         )
     except Exception as e:
         st.warning(f"Favicon yüklenemedi: {str(e)}")
         st.set_page_config(
-            layout="wide", page_title="Finansal Performans Analiz Paneli", initial_sidebar_state="expanded"
+            layout="wide", 
+            page_title="Finansal Performans Analiz Paneli", 
+            initial_sidebar_state="expanded"
         )
 
+
+def load_and_validate_data():
+    """
+    Veri dosyasını yükler ve doğrular.
+    
+    Returns:
+        DataFrame or None: Yüklenen veri çerçevesi veya hata durumunda None
+    """
+    uploaded_file = st.file_uploader("Excel dosyasını yükleyin", type=["xlsx", "xls"])
+    if uploaded_file:
+        return load_data(uploaded_file)
+    else:
+        st.info("Lütfen ZFMR0003 raporunun Excel dosyasını yükleyin")
+        return None
+
+
+def setup_sidebar_filters(df):
+    """
+    Kenar çubuğundaki filtreleri ayarlar.
+    
+    Parameters:
+        df (DataFrame): Filtrelenecek veri çerçevesi
+        
+    Returns:
+        tuple: (filtered_df, selected_months, selected_report_bases, selected_cumulative)
+    """
+    with st.sidebar:
+        st.header("🔧 Filtre & Grafik Ayarları")
+        
+        # Veri filtreleme
+        try:
+            filtered_df = apply_filters(df, GENERAL_COLUMNS, "filter")
+        except Exception as e:
+            display_friendly_error(
+                f"Filtreleme sırasında hata oluştu: {str(e)}",
+                "Varsayılan veri kullanılacak."
+            )
+            filtered_df = df
+
+        # Ay filtreleri
+        all_months_with_all = ["Hepsi"] + MONTHS
+        if "month_filter" not in st.session_state:
+            st.session_state["month_filter"] = ["Hepsi"]
+        selected_months = st.multiselect(
+            "📅 Aylar", all_months_with_all, key="month_filter"
+        )
+        if "Hepsi" in selected_months:
+            selected_months = MONTHS
+
+        # Veri türü filtreleri
+        report_base_columns_with_all = ["Hepsi"] + REPORT_BASE_COLUMNS
+        if "report_base_filter" not in st.session_state:
+            st.session_state["report_base_filter"] = ["Hepsi"]
+        selected_report_bases = st.multiselect(
+            "📉 Veri Türleri",
+            report_base_columns_with_all,
+            key="report_base_filter",
+        )
+        if "Hepsi" in selected_report_bases:
+            selected_report_bases = REPORT_BASE_COLUMNS
+
+        # Kümülatif veri filtreleri
+        cumulative_columns = ["Kümüle " + col for col in CUMULATIVE_COLUMNS]
+        if "cumulative_filter" not in st.session_state:
+            st.session_state["cumulative_filter"] = ["Hepsi"]
+        selected_cumulative = st.multiselect(
+            "📈 Kümülatif Veriler",
+            ["Hepsi"] + cumulative_columns,
+            key="cumulative_filter",
+        )
+        if "Hepsi" in selected_cumulative:
+            selected_cumulative = cumulative_columns
+            
+        # Filtre temizleme butonu
+        if st.button("🗑️ Tüm Filtreleri Temizle"):
+            clear_all_filters()
+            
+    return filtered_df, selected_months, selected_report_bases, selected_cumulative
+
+
+def clear_all_filters():
+    """
+    Tüm filtreleri temizler ve sayfayı yeniden yükler.
+    """
+    try:
+        for key in list(st.session_state.keys()):
+            if key.startswith("filter_") or key in [
+                "month_filter",
+                "report_base_filter",
+                "cumulative_filter",
+            ]:
+                del st.session_state[key]
+        st.session_state["month_filter"] = ["Hepsi"]
+        st.session_state["report_base_filter"] = ["Hepsi"]
+        st.session_state["cumulative_filter"] = ["Hepsi"]
+        st.cache_data.clear()
+        st.rerun()
+    except Exception as e:
+        display_friendly_error(
+            f"Filtre temizleme sırasında hata oluştu: {str(e)}",
+            "Lütfen sayfayı manuel olarak yenileyin."
+        )
+
+
+def prepare_final_dataframe(df, filtered_df, selected_months, selected_report_bases, selected_cumulative):
+    """
+    Filtreli ve seçilen sütunlarla son veri çerçevesini hazırlar.
+    
+    Returns:
+        DataFrame: İşlenmiş son veri çerçevesi
+    """
+    selected_columns = GENERAL_COLUMNS.copy() + [
+        f"{month} {base_col}"
+        for month in selected_months
+        for base_col in selected_report_bases
+        if f"{month} {base_col}" in df.columns
+    ]
+    for cum_col in selected_cumulative:
+        if cum_col in df.columns:
+            selected_columns.append(cum_col)
+
+    return filtered_df[selected_columns]
+
+
+@handle_critical_error
+def main():
+    """
+    Uygulamanın ana fonksiyonu.
+    """
+    # Sayfa yapılandırması
+    setup_page_config()
+    
     pd.set_option("styler.render.max_elements", 500000)
     st.title("🏦 Finansal Performans Analiz Paneli")
 
+    # Veri yükleme
+    df = load_and_validate_data()
+    if df is None:
+        return
+        
+    # Filtreler
+    filtered_df, selected_months, selected_report_bases, selected_cumulative = setup_sidebar_filters(df)
+    
+    # Final veri çerçevesini hazırlama
     try:
-        uploaded_file = st.file_uploader("Excel dosyasını yükleyin", type=["xlsx", "xls"])
-        if uploaded_file:
-            df = load_data(uploaded_file)
-            if df is None:
-                return
-        else:
-            st.info("Lütfen ZFMR0003 raporunun Excel dosyasını yükleyin")
-            return
-
-        with st.sidebar:
-            st.header("🔧 Filtre & Grafik Ayarları")
-            try:
-                filtered_df = apply_filters(df, GENERAL_COLUMNS, "filter")
-            except Exception as e:
-                st.error(f"Filtreleme sırasında hata oluştu: {str(e)}")
-                filtered_df = df
-
-            try:
-                all_months_with_all = ["Hepsi"] + MONTHS
-                selected_months = st.multiselect(
-                    "📅 Aylar", all_months_with_all, default=["Hepsi"], key="month_filter"
-                )
-                if "Hepsi" in selected_months:
-                    selected_months = MONTHS
-
-                report_base_columns_with_all = ["Hepsi"] + REPORT_BASE_COLUMNS
-                selected_report_bases = st.multiselect(
-                    "📉 Veri Türleri",
-                    report_base_columns_with_all,
-                    default=["Hepsi"],
-                    key="report_base_filter",
-                )
-                if "Hepsi" in selected_report_bases:
-                    selected_report_bases = REPORT_BASE_COLUMNS
-
-                cumulative_columns = ["Kümüle " + col for col in CUMULATIVE_COLUMNS]
-                selected_cumulative = st.multiselect(
-                    "📈 Kümülatif Veriler",
-                    ["Hepsi"] + cumulative_columns,
-                    default=["Hepsi"],
-                    key="cumulative_filter",
-                )
-                if "Hepsi" in selected_cumulative:
-                    selected_cumulative = cumulative_columns
-            except Exception as e:
-                st.error(f"Filtre seçimlerinde hata oluştu: {str(e)}")
-                selected_months = MONTHS
-                selected_report_bases = REPORT_BASE_COLUMNS
-                selected_cumulative = cumulative_columns
-
-            if st.button("🗑️ Tüm Filtreleri Temizle"):
-                try:
-                    for key in list(st.session_state.keys()):
-                        if key.startswith("filter_") or key in [
-                            "month_filter",
-                            "report_base_filter",
-                            "cumulative_filter",
-                        ]:
-                            del st.session_state[key]
-                    st.session_state["month_filter"] = ["Hepsi"]
-                    st.session_state["report_base_filter"] = ["Hepsi"]
-                    st.session_state["cumulative_filter"] = ["Hepsi"]
-                    st.cache_data.clear()
-                    st.rerun()
-                except Exception as e:
-                    st.error(f"Filtre temizleme sırasında hata oluştu: {str(e)}")
-
-        try:
-            selected_columns = GENERAL_COLUMNS.copy() + [
-                f"{month} {base_col}"
-                for month in selected_months
-                for base_col in selected_report_bases
-                if f"{month} {base_col}" in df.columns
-            ]
-            for cum_col in selected_cumulative:
-                if cum_col in df.columns:
-                    selected_columns.append(cum_col)
-
-            final_df = filtered_df[selected_columns]
-            total_budget, total_actual, variance, variance_pct = calculate_metrics(final_df)
-        except Exception as e:
-            st.error(f"Veri işleme sırasında hata oluştu: {str(e)}")
-            return
-
+        final_df = prepare_final_dataframe(
+            df, filtered_df, selected_months, selected_report_bases, selected_cumulative
+        )
+        total_budget, total_actual, variance, variance_pct = calculate_metrics(final_df)
     except Exception as e:
-        st.error(f"Beklenmeyen bir hata oluştu: {str(e)}")
+        display_friendly_error(
+            f"Veri işleme sırasında hata oluştu: {str(e)}",
+            "Lütfen filtre seçimlerinizi kontrol edin ve tekrar deneyin."
+        )
         return
 
     st.markdown("---")
 
+    # KPI paneli gösterimi
     show_kpi_panel(final_df)
 
-    # Define all the tabs, including the modules
+    # Analiz sekmeleri tanımlamaları
     tab_titles_analiz = [
         "📊 Veri",
         "📈 Trend",
@@ -143,7 +224,7 @@ def main():
     ]
     tab_titles_raporlama = ["⬇ İndir (ZIP)", "📄 PDF Raporu"]
 
-    # Create two groups of tabs
+    # Sekme gruplarını oluştur
     tabs_analiz = st.tabs(tab_titles_analiz)
     tabs_raporlama = st.tabs(tab_titles_raporlama)
 
