@@ -16,13 +16,32 @@ def apply_filters(df, columns, key_prefix):
                     temp_df = temp_df[temp_df[other_col].isin(selected)]
         options = sorted(temp_df[col].dropna().unique().tolist(), key=lambda x: str(x))
 
-        selected = st.multiselect(
-            f"🔍 {col}",
-            options,
-            key=f"{key_prefix}_{col}",
-            default=st.session_state.get(f"{key_prefix}_{col}", []),
-            help=f"{col} için filtre seçin",
-        )
+        # Get the current session state value
+        current_selection = st.session_state.get(f"{key_prefix}_{col}", [])
+        
+        # Filter out any default values that are not in the current options
+        valid_defaults = [val for val in current_selection if val in options]
+        
+        try:
+            selected = st.multiselect(
+                f"🔍 {col}",
+                options,
+                key=f"{key_prefix}_{col}",
+                default=valid_defaults,
+                help=f"{col} için filtre seçin",
+            )
+        except st.errors.StreamlitAPIException as e:
+            st.warning(f"Filtre değerleri güncellendi. Lütfen tekrar seçim yapın.")
+            # Reset the session state for this filter
+            st.session_state[f"{key_prefix}_{col}"] = []
+            selected = st.multiselect(
+                f"🔍 {col}",
+                options,
+                key=f"{key_prefix}_{col}",
+                default=[],
+                help=f"{col} için filtre seçin",
+            )
+        
         selected_filters[col] = selected
 
     # Filtre uygulama

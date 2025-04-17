@@ -25,78 +25,108 @@ from utils.warning_system import style_negatives_red, style_warning_rows
 
 
 def main():
+    try:
+        im = Image.open("assets/favicon.png")
+        st.set_page_config(
+            layout="wide", page_title="Finansal Performans Analiz Paneli", page_icon=im, initial_sidebar_state="expanded"
+        )
+    except Exception as e:
+        st.warning(f"Favicon yüklenemedi: {str(e)}")
+        st.set_page_config(
+            layout="wide", page_title="Finansal Performans Analiz Paneli", initial_sidebar_state="expanded"
+        )
 
-    im = Image.open("assets/favicon.png")
-    st.set_page_config(
-        layout="wide", page_title="Finansal Performans Analiz Paneli", page_icon=im, initial_sidebar_state="expanded"
-    )
     pd.set_option("styler.render.max_elements", 500000)
     st.title("🏦 Finansal Performans Analiz Paneli")
 
-    uploaded_file = st.file_uploader("Excel dosyasını yükleyin", type=["xlsx", "xls"])
-    if uploaded_file:
-        df = load_data(uploaded_file)
-    else:
-        st.info("Lütfen ZFMR0003 raporunun Excel dosyasını yükleyin")
+    try:
+        uploaded_file = st.file_uploader("Excel dosyasını yükleyin", type=["xlsx", "xls"])
+        if uploaded_file:
+            df = load_data(uploaded_file)
+            if df is None:
+                return
+        else:
+            st.info("Lütfen ZFMR0003 raporunun Excel dosyasını yükleyin")
+            return
+
+        with st.sidebar:
+            st.header("🔧 Filtre & Grafik Ayarları")
+            try:
+                filtered_df = apply_filters(df, GENERAL_COLUMNS, "filter")
+            except Exception as e:
+                st.error(f"Filtreleme sırasında hata oluştu: {str(e)}")
+                filtered_df = df
+
+            try:
+                all_months_with_all = ["Hepsi"] + MONTHS
+                selected_months = st.multiselect(
+                    "📅 Aylar", all_months_with_all, default=["Hepsi"], key="month_filter"
+                )
+                if "Hepsi" in selected_months:
+                    selected_months = MONTHS
+
+                report_base_columns_with_all = ["Hepsi"] + REPORT_BASE_COLUMNS
+                selected_report_bases = st.multiselect(
+                    "📉 Veri Türleri",
+                    report_base_columns_with_all,
+                    default=["Hepsi"],
+                    key="report_base_filter",
+                )
+                if "Hepsi" in selected_report_bases:
+                    selected_report_bases = REPORT_BASE_COLUMNS
+
+                cumulative_columns = ["Kümüle " + col for col in CUMULATIVE_COLUMNS]
+                selected_cumulative = st.multiselect(
+                    "📈 Kümülatif Veriler",
+                    ["Hepsi"] + cumulative_columns,
+                    default=["Hepsi"],
+                    key="cumulative_filter",
+                )
+                if "Hepsi" in selected_cumulative:
+                    selected_cumulative = cumulative_columns
+            except Exception as e:
+                st.error(f"Filtre seçimlerinde hata oluştu: {str(e)}")
+                selected_months = MONTHS
+                selected_report_bases = REPORT_BASE_COLUMNS
+                selected_cumulative = cumulative_columns
+
+            if st.button("🗑️ Tüm Filtreleri Temizle"):
+                try:
+                    for key in list(st.session_state.keys()):
+                        if key.startswith("filter_") or key in [
+                            "month_filter",
+                            "report_base_filter",
+                            "cumulative_filter",
+                        ]:
+                            del st.session_state[key]
+                    st.session_state["month_filter"] = ["Hepsi"]
+                    st.session_state["report_base_filter"] = ["Hepsi"]
+                    st.session_state["cumulative_filter"] = ["Hepsi"]
+                    st.cache_data.clear()
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"Filtre temizleme sırasında hata oluştu: {str(e)}")
+
+        try:
+            selected_columns = GENERAL_COLUMNS.copy() + [
+                f"{month} {base_col}"
+                for month in selected_months
+                for base_col in selected_report_bases
+                if f"{month} {base_col}" in df.columns
+            ]
+            for cum_col in selected_cumulative:
+                if cum_col in df.columns:
+                    selected_columns.append(cum_col)
+
+            final_df = filtered_df[selected_columns]
+            total_budget, total_actual, variance, variance_pct = calculate_metrics(final_df)
+        except Exception as e:
+            st.error(f"Veri işleme sırasında hata oluştu: {str(e)}")
+            return
+
+    except Exception as e:
+        st.error(f"Beklenmeyen bir hata oluştu: {str(e)}")
         return
-
-    with st.sidebar:
-        st.header("🔧 Filtre & Grafik Ayarları")
-        filtered_df = apply_filters(df, GENERAL_COLUMNS, "filter")
-
-        all_months_with_all = ["Hepsi"] + MONTHS
-        selected_months = st.multiselect(
-            "📅 Aylar", all_months_with_all, default=["Hepsi"], key="month_filter"
-        )
-        if "Hepsi" in selected_months:
-            selected_months = MONTHS
-
-        report_base_columns_with_all = ["Hepsi"] + REPORT_BASE_COLUMNS
-        selected_report_bases = st.multiselect(
-            "📉 Veri Türleri",
-            report_base_columns_with_all,
-            default=["Hepsi"],
-            key="report_base_filter",
-        )
-        if "Hepsi" in selected_report_bases:
-            selected_report_bases = REPORT_BASE_COLUMNS
-
-        cumulative_columns = ["Kümüle " + col for col in CUMULATIVE_COLUMNS]
-        selected_cumulative = st.multiselect(
-            "📈 Kümülatif Veriler",
-            ["Hepsi"] + cumulative_columns,
-            default=["Hepsi"],
-            key="cumulative_filter",
-        )
-        if "Hepsi" in selected_cumulative:
-            selected_cumulative = cumulative_columns
-
-        if st.button("🗑️ Tüm Filtreleri Temizle"):
-            for key in list(st.session_state.keys()):
-                if key.startswith("filter_") or key in [
-                    "month_filter",
-                    "report_base_filter",
-                    "cumulative_filter",
-                ]:
-                    del st.session_state[key]
-            st.session_state["month_filter"] = ["Hepsi"]
-            st.session_state["report_base_filter"] = ["Hepsi"]
-            st.session_state["cumulative_filter"] = ["Hepsi"]
-            st.cache_data.clear()
-            st.rerun()
-
-    selected_columns = GENERAL_COLUMNS.copy() + [
-        f"{month} {base_col}"
-        for month in selected_months
-        for base_col in selected_report_bases
-        if f"{month} {base_col}" in df.columns
-    ]
-    for cum_col in selected_cumulative:
-        if cum_col in df.columns:
-            selected_columns.append(cum_col)
-
-    final_df = filtered_df[selected_columns]
-    total_budget, total_actual, variance, variance_pct = calculate_metrics(final_df)
 
     st.markdown("---")
 
