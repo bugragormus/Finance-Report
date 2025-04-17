@@ -1,10 +1,8 @@
 import streamlit as st
-import pandas as pd
 import plotly.express as px
 import plotly.io as pio
 from io import BytesIO
 import zipfile
-from PIL import Image
 
 # Plotly ayarları
 pio.kaleido.scope.default_format = "png"

@@ -85,12 +85,12 @@ def main():
             st.cache_data.clear()
             st.rerun()
 
-    selected_columns = GENERAL_COLUMNS.copy()
-    for month in selected_months:
-        for base_col in selected_report_bases:
-            col_name = f"{month} {base_col}"
-            if col_name in df.columns:
-                selected_columns.append(col_name)
+    selected_columns = GENERAL_COLUMNS.copy() + [
+        f"{month} {base_col}"
+        for month in selected_months
+        for base_col in selected_report_bases
+        if f"{month} {base_col}" in df.columns
+    ]
     for cum_col in selected_cumulative:
         if cum_col in df.columns:
             selected_columns.append(cum_col)
@@ -166,14 +166,13 @@ def main():
                    any(metric in base for base in selected_report_bases)
             ]
 
-            table_target_columns = []
-            for month in selected_table_months:
-                for metric in allowed_metrics:
-                    col_name = f"{month} {metric}"
-                    if col_name in df.columns:
-                        table_target_columns.append(col_name)
+            table_target_columns = [
+                f"{month} {metric}"
+                for month in selected_table_months
+                for metric in allowed_metrics
+                if f"{month} {metric}" in df.columns
+            ]
 
-            # Kümülatif sütunları özel olarak filtrele
             allowed_cumulative = [
                 f"Kümüle {metric}"
                 for metric in FIXED_METRICS
@@ -243,13 +242,15 @@ def main():
                 if "Hepsi" in selected_ilgili1_months:
                     selected_ilgili1_months = MONTHS
 
-            ilgili1_target_columns = []
-            for month in selected_ilgili1_months:
-                for metric in FIXED_METRICS:
-                    col_name = f"{month} {metric}"
-                    if col_name in df.columns:
-                        ilgili1_target_columns.append(col_name)
+            # Optimized İlgili1 Target Columns Construction
+            ilgili1_target_columns = [
+                f"{month} {metric}"
+                for month in selected_ilgili1_months
+                for metric in FIXED_METRICS
+                if f"{month} {metric}" in df.columns
+            ]
 
+            # Optimized Kümülatif sütunları ekleme
             ilgili1_target_columns += [
                 f"Kümüle {metric}"
                 for metric in FIXED_METRICS
