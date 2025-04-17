@@ -6,7 +6,7 @@ Bu modül, finansal verileri analiz ederek anlamlı öngörüler
 """
 
 import pandas as pd
-from typing import List, Optional
+from typing import List
 from utils.error_handler import handle_error
 
 

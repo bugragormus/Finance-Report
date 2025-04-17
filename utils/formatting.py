@@ -8,6 +8,7 @@ tekrar eden formatlama kodlarını merkezileştirmek için kullanılır.
 from typing import Union, Optional
 import pandas as pd
 import numpy as np
+from pandas.io.formats.style import Styler
 
 
 def format_currency(value: Union[int, float], decimal_places: int = 0) -> str:
@@ -79,7 +80,7 @@ def format_change(value: Union[int, float],
     return formatted
 
 
-def highlight_negatives(df: pd.DataFrame, columns: Optional[list] = None) -> pd.DataFrame:
+def highlight_negatives(df: pd.DataFrame, columns: Optional[list] = None) -> Styler:
     """
     Negatif değerleri vurgulayarak stillendirir.
     

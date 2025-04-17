@@ -9,9 +9,8 @@ import streamlit as st
 import plotly.express as px
 from io import BytesIO
 import plotly.io as pio
-from PIL import Image
 import pandas as pd
-from typing import Tuple, Optional, Any
+from typing import Tuple, Optional
 from utils.error_handler import handle_error, display_friendly_error
 from utils.warning_system import style_overused_rows
 

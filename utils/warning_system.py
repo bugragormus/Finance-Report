@@ -6,13 +6,15 @@ eklenmesi için fonksiyonlar içerir.
 """
 
 import pandas as pd
-from typing import List
+
+from pandas.io.formats.style import Styler
+
 from config.constants import MONTHS
 from utils.error_handler import handle_error
 
 
 @handle_error
-def style_warning_rows(df: pd.DataFrame) -> pd.DataFrame:
+def style_warning_rows(df: pd.DataFrame) -> Styler:
     """
     Uyarı gerektiren satırları stillendirir.
     
@@ -72,7 +74,7 @@ def style_warning_rows(df: pd.DataFrame) -> pd.DataFrame:
 
 
 @handle_error
-def style_negatives_red(df: pd.DataFrame) -> pd.DataFrame:
+def style_negatives_red(df: pd.DataFrame) -> Styler:
     """
     Negatif değerleri kırmızı renkle stillendirir.
     
@@ -89,7 +91,7 @@ def style_negatives_red(df: pd.DataFrame) -> pd.DataFrame:
 
 
 @handle_error
-def style_overused_rows(df: pd.DataFrame) -> pd.DataFrame:
+def style_overused_rows(df: pd.DataFrame) -> Styler:
     """
     Bütçesi aşılan satırları stillendirir.
     

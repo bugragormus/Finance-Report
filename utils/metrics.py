@@ -6,7 +6,6 @@ fonksiyonları içerir.
 """
 
 from typing import Tuple
-import pandas as pd
 from utils.error_handler import handle_error
 
 

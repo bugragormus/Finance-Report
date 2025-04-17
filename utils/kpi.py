@@ -6,7 +6,7 @@ gösterilmesini sağlayan fonksiyonları içerir.
 """
 
 import streamlit as st
-from typing import Dict, Any
+from typing import Dict
 from utils.error_handler import handle_error, display_friendly_error
 
 
