@@ -33,16 +33,14 @@ def create_charts(df: pd.DataFrame, group_col: str, time_period: str, metric: st
     Parameters:
         df (DataFrame): İşlenecek veri çerçevesi
         group_col (str): Gruplama kolonu
-        time_period (str): Zaman periyodu (ay veya Kümüle)
+        time_period (str): Zaman periyodu (ay veya Toplam)
         metric (str): Metrik adı (Bütçe, Fiili, BE, vb.)
         
     Returns:
         Tuple[Optional[Figure], Optional[Figure]]: (pasta_grafik, sütun_grafik) tuple
     """
     # Sütun adını oluştur
-    col_name = (
-        f"{time_period} {metric}" if time_period != "Kümüle" else f"Kümüle {metric}"
-    )
+    col_name = f"{time_period} {metric}" if time_period != "Toplam" else f"Toplam {metric}"
 
     if col_name not in df.columns:
         return None, None
@@ -57,21 +55,21 @@ def create_charts(df: pd.DataFrame, group_col: str, time_period: str, metric: st
         fig_pie = px.pie(
             df_sorted,
             values=col_name,
-            title=f"{metric} Dağılımı - {time_period}",
+            title=f"{metric} Dağılımı - Year to Date",
             names=group_col,
             hole=0.4,
             color_discrete_sequence=px.colors.qualitative.Pastel,
         )
         fig_pie.update_layout(
             font=dict(size=14, family="Arial"),
-            margin=dict(t=60, b=60, l=20, r=150),  # sağ boşluk artırıldı
+            margin=dict(t=60, b=60, l=20, r=150),
             showlegend=True,
             legend=dict(
-                orientation="v",  # dikey hizalama
+                orientation="v",
                 yanchor="top",
                 y=1,
                 xanchor="left",
-                x=1.05  # sağa kaydır
+                x=1.05
             ),
         )
 
@@ -81,7 +79,7 @@ def create_charts(df: pd.DataFrame, group_col: str, time_period: str, metric: st
             x=group_col,
             y=col_name,
             text=col_name,
-            title=f"{metric} Karşılaştırması - {time_period}",
+            title=f"{metric} Karşılaştırması - Year to Date",
             color=group_col,
             color_discrete_sequence=px.colors.qualitative.Pastel,
         )
@@ -89,34 +87,34 @@ def create_charts(df: pd.DataFrame, group_col: str, time_period: str, metric: st
         fig_bar.update_layout(
             xaxis=dict(
                 title=None,
-                tickangle=-60,  # Açıyı artır
+                tickangle=-60,
                 tickfont=dict(size=9, family="Arial"),
-                automargin=True,  # Otomatik marj ayarı
-                side="bottom",  # X eksenini alta sabitle
+                automargin=True,
+                side="bottom",
             ),
             yaxis=dict(title=None, tickformat=",.0f", automargin=True),
             margin=dict(
-                t=80,  # Üst
-                b=350,  # Alt (uzun etiketler için)
-                l=150,  # Sol (artırıldı)
-                r=50,  # Sağ
+                t=80,
+                b=350,
+                l=150,
+                r=50,
             ),
         )
 
         fig_bar.update_traces(
             textposition="auto",
-            textangle=0,  # Metin dönüş açısı
-            cliponaxis=False,  # Ekseni aşan verilere izin ver
+            textangle=0,
+            cliponaxis=False,
         )
 
         # Kenar boşluklarını zorla ayarla
-        fig_bar.update_layout(autosize=False, width=1400, height=900)  # Genişliği artır
+        fig_bar.update_layout(autosize=False, width=1400, height=900)
 
         return fig_pie, fig_bar
     except Exception as e:
         display_friendly_error(
             f"Grafik oluşturma hatası: {str(e)}",
-            f"{time_period} {metric} için grafik oluşturulamadı."
+            f"{metric} için grafik oluşturulamadı."
         )
         return None, None
 
@@ -166,7 +164,7 @@ def show_category_charts(df: pd.DataFrame) -> Optional[BytesIO]:
         Optional[BytesIO]: Tüm grafikleri içeren ZIP buffer'ı veya None
     """
     with st.expander("⚙️ Analiz Ayarları", expanded=True):
-        col1, col2, col3 = st.columns(3)
+        col1, col2 = st.columns(2)
 
         with col1:
             group_options = [
@@ -190,10 +188,6 @@ def show_category_charts(df: pd.DataFrame) -> Optional[BytesIO]:
             )
 
         with col2:
-            time_options = ["Kümüle"] + MONTHS
-            selected_time = st.selectbox("**Zaman Periyodu**", time_options, index=0)
-
-        with col3:
             top_n = st.slider(
                 "**Gösterilecek Grup Sayısı**",
                 min_value=1,
@@ -206,39 +200,58 @@ def show_category_charts(df: pd.DataFrame) -> Optional[BytesIO]:
     metric_data = {
         "Bütçe": {"color": "#636EFA"},
         "Fiili": {"color": "#EF553B"},
-        "BE Bakiye" if selected_time == "Kümüle" else "BE": {"color": "#00CC96"},
+        "BE": {"color": "#00CC96"},
     }
 
     all_images = {}
-    has_data = False  # En az bir grafik oluşturuldu mu kontrol et
+    has_data = False
 
+    # Seçilen ayları al
+    selected_months = st.session_state.get("month_filter", ["Hepsi"])
+    if "Hepsi" in selected_months:
+        selected_months = MONTHS
+
+    # Her metrik için toplam grafik oluştur
     for metric in metric_data.keys():
-        fig_pie, fig_bar = create_charts(df, selected_group, selected_time, metric)
+        # Seçilen ayların toplamını hesapla
+        total_data = []
+        for month in selected_months:
+            col_name = f"{month} {metric}"
+            if col_name in df.columns:
+                total_data.append(df[col_name])
+        
+        if total_data:
+            # Toplam veriyi oluştur
+            total_df = df.copy()
+            total_df[f"Toplam {metric}"] = sum(total_data)
+            
+            # Grafikleri oluştur
+            fig_pie, fig_bar = create_charts(total_df, selected_group, "Toplam", metric)
 
-        if fig_pie and fig_bar:
-            has_data = True
-            with st.container():
-                st.markdown(f"### {metric} Analizi")
+            if fig_pie and fig_bar:
+                has_data = True
+                with st.container():
+                    st.markdown(f"### {metric} Analizi - Year to Date")
 
-                # Pasta Grafik
-                st.plotly_chart(fig_pie, use_container_width=True)
+                    # Pasta Grafik
+                    st.plotly_chart(fig_pie, use_container_width=True)
 
-                # Boşluk
-                st.write("")
+                    # Boşluk
+                    st.write("")
 
-                # Sütun Grafik
-                st.plotly_chart(fig_bar, use_container_width=True)
+                    # Sütun Grafik
+                    st.plotly_chart(fig_bar, use_container_width=True)
 
-                # Grafikleri kaydet
-                pie_img = save_figure(fig_pie)
-                bar_img = save_figure(fig_bar)
-                all_images[f"{metric}_Pasta.png"] = pie_img.getvalue()
-                all_images[f"{metric}_Sütun.png"] = bar_img.getvalue()
+                    # Grafikleri kaydet
+                    pie_img = save_figure(fig_pie)
+                    bar_img = save_figure(fig_bar)
+                    all_images[f"{metric}_Pasta.png"] = pie_img.getvalue()
+                    all_images[f"{metric}_Sütun.png"] = bar_img.getvalue()
 
-                # Bölüm ayracı
-                st.markdown("---")
-        else:
-            st.info(f"{selected_time} {metric} verisi bulunamadı", icon="ℹ️")
+                    # Bölüm ayracı
+                    st.markdown("---")
+            else:
+                st.info(f"{metric} verisi bulunamadı", icon="ℹ️")
 
     # İndirme butonu
     if all_images:
@@ -268,7 +281,7 @@ def show_category_charts(df: pd.DataFrame) -> Optional[BytesIO]:
     elif not has_data:
         display_friendly_error(
             "Hiçbir veri görselleştirilemedi",
-            "Seçilen zamanda ve metrikte veri bulunamadı."
+            "Seçilen aylarda ve metriklerde veri bulunamadı."
         )
         return None
         
