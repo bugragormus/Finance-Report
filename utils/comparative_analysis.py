@@ -50,57 +50,48 @@ def show_comparative_analysis(
         )
         return None, None
 
-    # Kullanıcıya ay seçme seçeneği ekle
-    selected_month = st.selectbox(
-        "📅 Ay Seçimi (İsteğe Bağlı)", ["Kümüle"] + MONTHS, index=0
-    )
+    # Sidebar'dan seçilen ayları al
+    selected_months = st.session_state.get("month_filter", ["Hepsi"])
+    if "Hepsi" in selected_months:
+        selected_months = MONTHS
 
-    # Bütçe ve Fiili kolonlarının adı
-    if selected_month == "Kümüle":
-        group_cols = ["Kümüle Bütçe", "Kümüle Fiili"]
-    else:
-        # Seçilen ay ismi ile uygun Bütçe ve Fiili kolonlarını oluşturuyoruz
-        month_budget_col = f"{selected_month} Bütçe"
-        month_actual_col = f"{selected_month} Fiili"
+    # Seçilen ayların toplam bütçe ve fiili verilerini hesapla
+    total_budget_cols = [f"{month} Bütçe" for month in selected_months if f"{month} Bütçe" in df.columns]
+    total_actual_cols = [f"{month} Fiili" for month in selected_months if f"{month} Fiili" in df.columns]
 
-        # Kolonların mevcut olup olmadığını kontrol et
-        if month_budget_col not in df.columns or month_actual_col not in df.columns:
-            display_friendly_error(
-                f"{selected_month} için Bütçe veya Fiili verisi eksik",
-                "Farklı bir ay veya 'Kümüle' seçebilirsiniz."
-            )
-            return None, None
-
-        group_cols = [month_budget_col, month_actual_col]
-
-    # Sütunların varlığını kontrol et
-    for col in group_cols:
-        if col not in df.columns:
-            display_friendly_error(
-                f"{col} sütunu eksik",
-                "Veri formatınızı kontrol edin."
-            )
-            return None, None
+    if not total_budget_cols or not total_actual_cols:
+        display_friendly_error(
+            "Seçilen aylar için veri bulunamadı",
+            "Farklı aylar seçin veya veri formatını kontrol edin."
+        )
+        return None, None
 
     try:
-        # Verileri gruplama
-        grouped = df.groupby(group_by_col)[group_cols].sum().reset_index()
-
-        # Kullanım yüzdesi
-        grouped["Kullanım (%)"] = (grouped[group_cols[1]] / grouped[group_cols[0]]) * 100
-
+        # Verileri gruplama ve toplama
+        grouped = df.groupby(group_by_col)[total_budget_cols + total_actual_cols].sum()
+        
+        # Toplam bütçe ve fiili hesapla
+        grouped["Toplam Bütçe"] = grouped[total_budget_cols].sum(axis=1)
+        grouped["Toplam Fiili"] = grouped[total_actual_cols].sum(axis=1)
+        
+        # Kullanım yüzdesi hesapla
+        grouped["Kullanım (%)"] = (grouped["Toplam Fiili"] / grouped["Toplam Bütçe"]) * 100
+        
         # NaN değerleri ve sonsuz değerleri temizle
         grouped.replace([float('inf'), -float('inf')], pd.NA, inplace=True)
         
+        # Sadece toplam sütunları al
+        result_df = grouped[["Toplam Bütçe", "Toplam Fiili", "Kullanım (%)"]].reset_index()
+        
         # Grafik oluşturma
         fig = px.bar(
-            grouped.sort_values(group_cols[1], ascending=False),
+            result_df.sort_values("Toplam Fiili", ascending=False),
             x=group_by_col,
-            y=group_cols,
+            y=["Toplam Bütçe", "Toplam Fiili"],
             barmode="group",
-            title=f"{group_by_col} Bazında {selected_month} Karşılaştırması",
+            title=f"{group_by_col} Bazında {', '.join(selected_months)} Toplam Karşılaştırması",
             color_discrete_sequence=["#636EFA", "#EF553B"],
-        )  # Mavi ve kırmızı renkler
+        )
 
         # Grafik stil ayarları
         fig.update_layout(
@@ -131,14 +122,14 @@ def show_comparative_analysis(
 
         # Tablo gösterimi
         styled_grouped = style_overused_rows(
-            grouped.sort_values(group_cols[1], ascending=False)
+            result_df.sort_values("Toplam Fiili", ascending=False)
         )
         st.dataframe(styled_grouped, use_container_width=True)
 
         # Excel dosyası oluştur
         excel_buffer = BytesIO()
         try:
-            grouped.sort_values(group_cols[1], ascending=False).to_excel(
+            result_df.sort_values("Toplam Fiili", ascending=False).to_excel(
                 excel_buffer, index=False
             )
             excel_buffer.seek(0)
