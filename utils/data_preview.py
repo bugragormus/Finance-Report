@@ -61,38 +61,55 @@ def show_filtered_data(
     else:
         display_df = df
     
+    # Sütun yapılandırması
+    column_config = {}
+    for col in display_df.columns:
+        if pd.api.types.is_numeric_dtype(display_df[col]):
+            column_config[col] = st.column_config.NumberColumn(
+                col,
+                format="%.2f",
+                help=f"{col} değerleri"
+            )
+        else:
+            column_config[col] = st.column_config.TextColumn(
+                col,
+                help=f"{col} değerleri"
+            )
+    
+    # Sabit sütun yapılandırması
+    if column_to_stick:
+        column_config[column_to_stick] = st.column_config.Column(
+            column_to_stick,
+            width="medium",
+            help="Bu sütun sabit kalacak",
+            pinned="left"
+        )
+    
+    # Benzersiz anahtar oluştur
+    unique_key = f"data_editor_{filename}_{page if total_pages > 1 else 1}"
+    
     # Stil fonksiyonu varsa ve seçilmişse uygula
     if style_func and apply_style:
         styled_df = style_func(display_df.copy())
-        if column_to_stick:
-            st.dataframe(
-                styled_df, 
-                use_container_width=True,
-                column_config={
-                    column_to_stick: st.column_config.Column(
-                        width="medium",
-                        help="This column is sticky",
-                        pinned="left"
-                    )
-                }
-            )
-        else:
-            st.dataframe(styled_df, use_container_width=True)
+        # Stil uygulanmış DataFrame'i göster
+        st.data_editor(
+            styled_df,
+            column_config=column_config,
+            use_container_width=True,
+            disabled=True,  # Düzenleme devre dışı
+            hide_index=True,
+            key=unique_key
+        )
     else:
-        if column_to_stick:
-            st.dataframe(
-                display_df, 
-                use_container_width=True,
-                column_config={
-                    column_to_stick: st.column_config.Column(
-                        width="medium",
-                        help="This column is sticky",
-                        pinned="left"
-                    )
-                }
-            )
-        else:
-            st.dataframe(display_df, use_container_width=True)
+        # Normal DataFrame'i göster
+        st.data_editor(
+            display_df,
+            column_config=column_config,
+            use_container_width=True,
+            disabled=True,  # Düzenleme devre dışı
+            hide_index=True,
+            key=unique_key
+        )
 
     # Excel çıktısı oluştur
     excel_buffer = BytesIO()

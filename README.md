@@ -1,34 +1,60 @@
-# Financial Performance Analysis Dashboard
+# Finansal Performans Analiz Paneli
 
-A comprehensive financial analysis dashboard built with Streamlit that provides detailed insights into financial performance metrics, trends, and comparative analysis.
+Finansal verilerin analizi, görselleştirilmesi ve raporlanması için geliştirilmiş bir Streamlit uygulaması.
 
-## 🚀 Features
+## 🚀 Özellikler
 
-- **Interactive Dashboard**: User-friendly interface with real-time data visualization
-- **Comprehensive Analysis**:
-  - KPI Panels
-  - Category Analysis
-  - Comparative Analysis
-  - Trend Analysis
-  - Pivot Tables
-  - Automated Insights
-- **Data Processing**:
-  - Excel file upload support
-  - Advanced filtering capabilities
-  - Data preview and validation
-- **Reporting**:
-  - PDF report generation
-  - Customizable metrics
-  - Warning system for negative values
+- 📊 Veri Görüntüleme ve Analiz
 
-## 📋 Prerequisites
+  - Yüksek performanslı veri görüntüleme (st.data_editor kullanımı)
+  - Sayfalama desteği (büyük veri setleri için)
+  - İsteğe bağlı stil uygulama
+  - Sabit sütun desteği
+  - Excel formatında dışa aktarım
 
-- Python 3.8 or higher
-- pip (Python package installer)
+- 🔍 Filtreleme ve Gruplama
 
-## 🔧 Installation
+  - Dinamik filtreleme
+  - Çoklu grup analizi
+  - Kategori bazlı karşılaştırmalar
 
-1. Clone the repository:
+- 📈 Görselleştirme
+
+  - Trend analizi
+  - Kategori bazlı grafikler
+  - Karşılaştırmalı analizler
+  - Pivot tablo desteği
+
+- 📑 Raporlama
+  - PDF rapor oluşturma
+  - ZIP formatında toplu indirme
+  - Özelleştirilebilir rapor formatları
+
+## 🛠️ Teknik Özellikler
+
+- **Performans Optimizasyonları**
+
+  - Büyük veri setleri için sayfalama
+  - İsteğe bağlı stil uygulama
+  - Optimize edilmiş veri görüntüleme
+  - Lazy loading desteği
+
+- **Veri İşleme**
+
+  - Pandas DataFrame entegrasyonu
+  - Otomatik veri tipi algılama
+  - Sayısal değer formatlaması
+  - Hata yönetimi
+
+- **Kullanıcı Arayüzü**
+  - Responsive tasarım
+  - Kolay navigasyon
+  - Sezgisel filtreleme
+  - Türkçe arayüz
+
+## 📦 Kurulum
+
+1. Gerekli paketleri yükleyin:
 
 ```bash
 git clone [your-repository-url]
@@ -48,71 +74,30 @@ source .venv/bin/activate  # On Windows, use: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-## 🎮 Usage
+## 🎯 Kullanım
 
-1. Start the application:
+1. Excel dosyasını yükleyin
+2. Filtreleri ayarlayın
+3. Analiz seçeneklerini belirleyin
+4. Raporları oluşturun ve indirin
 
-```bash
-streamlit run main.py
-```
+## 🔧 Performans İpuçları
 
-2. Open your web browser and navigate to `http://localhost:8501`
+- Büyük veri setleri için sayfalama kullanın
+- Stil uygulamayı sadece gerektiğinde etkinleştirin
+- Gereksiz sütunları filtreleyin
+- Önbelleği temizleyin gerektiğinde
 
-3. Upload your Excel file (ZFMR0003 report format)
+## 📝 Lisans
 
-4. Use the sidebar to:
+MIT
 
-   - Apply filters
-   - Select months for analysis
-   - Configure visualization settings
+## 🤝 Katkıda Bulunma
 
-5. Explore different analysis sections:
-
-   - KPI Panel
-   - Category Analysis
-   - Comparative Analysis
-   - Trend Analysis
-   - Pivot Tables
-
-6. Generate PDF reports as needed
-
-## 📊 Data Format
-
-The application expects Excel files in the ZFMR0003 report format. Ensure your data includes the following columns:
-
-- Date/Time information
-- Financial metrics
-- Category information
-- Transaction details
-
-## 🛠️ Project Structure
-
-```
-Finance-Report/
-├── main.py              # Main application file
-├── config/              # Configuration files
-├── utils/               # Utility functions
-│   ├── loader.py        # Data loading utilities
-│   ├── filters.py       # Data filtering functions
-│   ├── metrics.py       # Metric calculations
-│   ├── report.py        # PDF report generation
-│   └── ...              # Other utility modules
-├── assets/              # Static assets
-└── requirements.txt     # Project dependencies
-```
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📝 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 📞 Support
-
-For support, please open an issue in the GitHub repository or contact the maintainers.
-
-streamlit run main.py --theme.base="light" --theme.primaryColor="#6eb52f" --theme.backgroundColor="#f0f0f5" --theme.secondaryBackgroundColor="#e0e0ef" --theme.textColor="#262730" --theme.font="sans serif"
+1. Fork edin
+2. Feature branch oluşturun (`git checkout -b feature/amazing-feature`)
+3. Değişikliklerinizi commit edin (`git commit -m 'Add some amazing feature'`)
+4. Branch'inizi push edin (`git push origin feature/amazing-feature`)
+5. Pull Request oluşturun
 
 streamlit run main.py --server.port 8080 --theme.base="light" --theme.primaryColor="#6eb52f" --theme.backgroundColor="#f0f0f5" --theme.secondaryBackgroundColor="#e0e0ef" --theme.textColor="#262730" --theme.font="sans serif"
