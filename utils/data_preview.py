@@ -3,6 +3,29 @@ data_preview.py - Veri önizleme ve görüntüleme işlemlerini yönetir.
 
 Bu modül, veri çerçevelerinin görüntülenmesi, özetlenmesi ve
 çeşitli formatlarda dışa aktarılması için fonksiyonlar içerir.
+
+Fonksiyonlar:
+    - show_filtered_data: DataFrame'i gösterir ve Excel çıktısı verir
+    - show_grouped_summary: Gruplandırılmış veri özetini gösterir
+    - calculate_group_totals: Grup toplamlarını hesaplar
+    - show_column_totals: Sütun toplamlarını gösterir
+
+Özellikler:
+    - Sayfalama desteği
+    - Stil uygulama
+    - Sabit sütun desteği
+    - Excel dışa aktarım
+    - Hata yönetimi
+
+Kullanım:
+    from utils.data_preview import show_filtered_data
+    
+    excel_buffer = show_filtered_data(
+        df,
+        filename="rapor.xlsx",
+        style_func=style_warning_rows,
+        title="Filtrelenmiş Veri"
+    )
 """
 
 import streamlit as st
@@ -24,16 +47,40 @@ def show_filtered_data(
     """
     DataFrame'i gösterir, istenirse stil uygular, Excel çıktısı verir.
     
+    Bu fonksiyon:
+    1. Veri çerçevesini sayfalar
+    2. Stil uygulama seçeneği sunar
+    3. Sütun yapılandırmasını ayarlar
+    4. Sabit sütun desteği sağlar
+    5. Excel çıktısı oluşturur
+    
     Parameters:
         df (DataFrame): Görüntülenecek veri çerçevesi
         filename (str): İndirme için dosya adı
         style_func (Callable, optional): Veri çerçevesine uygulanacak stil fonksiyonu
         title (str, optional): Görüntüleme başlığı
-        sticky_column (Union[str, int], optional): Sabit kalacak sütun adı veya pozisyonu (0'dan başlar)
+        sticky_column (Union[str, int], optional): Sabit kalacak sütun adı veya pozisyonu
         page_size (int): Sayfa başına gösterilecek satır sayısı
         
     Returns:
         BytesIO: Excel dosyası buffer'ı
+        
+    Hata durumunda:
+    - Hata loglanır
+    - Kullanıcıya hata mesajı gösterilir
+    - Boş buffer döndürülür
+    
+    Örnek:
+        >>> df = pd.DataFrame({
+        ...     "Masraf Yeri": ["A", "B", "C"],
+        ...     "Bütçe": [1000, 2000, 3000]
+        ... })
+        >>> buffer = show_filtered_data(
+        ...     df,
+        ...     filename="rapor.xlsx",
+        ...     style_func=style_warning_rows,
+        ...     sticky_column="Masraf Yeri"
+        ... )
     """
     if title:
         st.markdown(title)
@@ -82,7 +129,7 @@ def show_filtered_data(
             column_to_stick,
             width="medium",
             help="Bu sütun sabit kalacak",
-            pinned="left"
+            pinned=True
         )
     
     # Benzersiz anahtar oluştur
@@ -145,20 +192,43 @@ def show_grouped_summary(
     page_size: int = 1000
 ) -> Optional[BytesIO]:
     """
-    Belirtilen sütuna göre gruplandırılmış özet tablo gösterir.
+    Gruplandırılmış veri özetini gösterir ve Excel çıktısı verir.
+    
+    Bu fonksiyon:
+    1. Veriyi belirtilen sütuna göre gruplar
+    2. Hedef sütunlar için özet istatistikler hesaplar
+    3. Sonuçları görüntüler
+    4. Excel çıktısı oluşturur
     
     Parameters:
-        df (DataFrame): Gruplanacak veri çerçevesi
+        df (DataFrame): İşlenecek veri çerçevesi
         group_column (str): Gruplama yapılacak sütun
-        target_columns (List[str]): Gruplanacak hedef sütunlar
+        target_columns (List[str]): Özetlenecek sütunlar
         filename (str): İndirme için dosya adı
         title (str, optional): Görüntüleme başlığı
-        style_func (Callable, optional): Veri çerçevesine uygulanacak stil fonksiyonu
-        sticky_column (Union[str, int], optional): Sabit kalacak sütun adı veya pozisyonu (0'dan başlar)
-        page_size (int): Sayfa başına gösterilecek satır sayısı
+        style_func (Callable, optional): Uygulanacak stil fonksiyonu
+        sticky_column (Union[str, int], optional): Sabit kalacak sütun
+        page_size (int): Sayfa başına satır sayısı
         
     Returns:
         Optional[BytesIO]: Excel dosyası buffer'ı veya None
+        
+    Hata durumunda:
+    - Hata loglanır
+    - Kullanıcıya hata mesajı gösterilir
+    - None döndürülür
+    
+    Örnek:
+        >>> df = pd.DataFrame({
+        ...     "Kategori": ["A", "A", "B"],
+        ...     "Bütçe": [1000, 2000, 3000]
+        ... })
+        >>> buffer = show_grouped_summary(
+        ...     df,
+        ...     group_column="Kategori",
+        ...     target_columns=["Bütçe"],
+        ...     filename="ozet.xlsx"
+        ... )
     """
     # Gerçekten var olan kolonları filtrele
     existing_columns = [col for col in target_columns if col in df.columns]
@@ -194,16 +264,38 @@ def calculate_group_totals(
     metrics: List[str]
 ) -> pd.DataFrame:
     """
-    Grup bazında seçilen ayların toplamlarını hesaplar.
+    Grup toplamlarını hesaplar.
+    
+    Bu fonksiyon:
+    1. Veriyi belirtilen sütuna göre gruplar
+    2. Seçili aylar için metrikleri hesaplar
+    3. Toplamları hesaplar
+    4. Sonuçları DataFrame olarak döndürür
     
     Parameters:
         df (DataFrame): İşlenecek veri çerçevesi
         group_column (str): Gruplama yapılacak sütun
-        selected_months (List[str]): Seçilen aylar listesi
-        metrics (List[str]): Toplanacak metrik adları
+        selected_months (List[str]): İşlenecek aylar
+        metrics (List[str]): Hesaplanacak metrikler
         
     Returns:
-        DataFrame: Gruplandırılmış toplamlar
+        DataFrame: Hesaplanmış toplamlar
+        
+    Hata durumunda:
+    - Hata loglanır
+    - Boş DataFrame döndürülür
+    
+    Örnek:
+        >>> df = pd.DataFrame({
+        ...     "Kategori": ["A", "A", "B"],
+        ...     "Ocak Bütçe": [1000, 2000, 3000]
+        ... })
+        >>> totals = calculate_group_totals(
+        ...     df,
+        ...     group_column="Kategori",
+        ...     selected_months=["Ocak"],
+        ...     metrics=["Bütçe"]
+        ... )
     """
     # Toplanacak sütunları belirle
     columns_to_sum = []
@@ -275,7 +367,12 @@ def show_column_totals(
     title: Optional[str] = None
 ) -> BytesIO:
     """
-    GENERAL_COLUMNS dışında kalan sayısal sütunların toplamlarını gösterir.
+    Sütun toplamlarını gösterir ve Excel çıktısı verir.
+    
+    Bu fonksiyon:
+    1. Sayısal sütunların toplamlarını hesaplar
+    2. Sonuçları görüntüler
+    3. Excel çıktısı oluşturur
     
     Parameters:
         df (DataFrame): İşlenecek veri çerçevesi
@@ -284,6 +381,21 @@ def show_column_totals(
         
     Returns:
         BytesIO: Excel dosyası buffer'ı
+        
+    Hata durumunda:
+    - Hata loglanır
+    - Kullanıcıya hata mesajı gösterilir
+    - Boş buffer döndürülür
+    
+    Örnek:
+        >>> df = pd.DataFrame({
+        ...     "Bütçe": [1000, 2000, 3000],
+        ...     "Fiili": [900, 2100, 2900]
+        ... })
+        >>> buffer = show_column_totals(
+        ...     df,
+        ...     filename="toplamlar.xlsx"
+        ... )
     """
     from config.constants import GENERAL_COLUMNS
     

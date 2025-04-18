@@ -3,6 +3,24 @@ comparative_analysis.py - Karşılaştırmalı analiz ve görselleştirme işlem
 
 Bu modül, farklı kategoriler arasında karşılaştırmalı analizler oluşturmak ve 
 görselleştirmek için fonksiyonlar içerir.
+
+Fonksiyonlar:
+    - show_comparative_analysis: Seçilen gruplama faktörüne göre karşılaştırmalı analiz gösterir
+
+Özellikler:
+    - Gruplama bazlı analiz
+    - Görselleştirme desteği
+    - Excel ve PNG export
+    - Hata yönetimi
+    - Özelleştirilebilir grafikler
+
+Kullanım:
+    from utils.comparative_analysis import show_comparative_analysis
+    
+    excel_buffer, img_buffer = show_comparative_analysis(df, "İlgili 1")
+    if excel_buffer and img_buffer:
+        # Buffers kullanılabilir
+        pass
 """
 
 import streamlit as st
@@ -33,6 +51,14 @@ def show_comparative_analysis(
     """
     Seçilen gruplama faktörüne göre karşılaştırmalı analiz gösterir.
     
+    Bu fonksiyon:
+    1. Seçilen gruplama faktörüne göre verileri gruplar
+    2. Toplam bütçe ve fiili değerleri hesaplar
+    3. Kullanım yüzdelerini hesaplar
+    4. Karşılaştırmalı grafik oluşturur
+    5. Sonuçları tablo olarak gösterir
+    6. Excel ve PNG formatında export sağlar
+    
     Parameters:
         df (DataFrame): İşlenecek veri çerçevesi
         group_by_col (str): Gruplama yapılacak sütun adı
@@ -40,6 +66,22 @@ def show_comparative_analysis(
     Returns:
         Tuple[Optional[BytesIO], Optional[BytesIO]]: 
             (excel_buffer, görüntü_buffer) tuple
+            
+    Hata durumunda:
+    - Hata loglanır
+    - Kullanıcıya anlaşılır hata mesajı gösterilir
+    - (None, None) döndürülür
+    
+    Örnek:
+        >>> df = pd.DataFrame({
+        ...     "İlgili 1": ["A", "A", "B", "B"],
+        ...     "Ocak Bütçe": [1000, 2000, 3000, 4000],
+        ...     "Ocak Fiili": [900, 2100, 2900, 4100]
+        ... })
+        >>> excel_buffer, img_buffer = show_comparative_analysis(df, "İlgili 1")
+        >>> if excel_buffer and img_buffer:
+        ...     # Buffers kullanılabilir
+        ...     pass
     """
     st.subheader(f"📊 {group_by_col} Bazında Harcama Karşılaştırması")
 

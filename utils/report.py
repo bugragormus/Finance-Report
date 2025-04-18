@@ -3,13 +3,39 @@ report.py - PDF rapor oluşturma işlemlerini yönetir.
 
 Bu modül, uygulama verileri kullanılarak PDF formatında 
 raporlar oluşturur.
+
+Fonksiyonlar:
+    - generate_pdf_report: Finansal performans raporu PDF dosyası oluşturur
+    - add_chart_to_pdf: PDF'e grafik ekler
+    - format_currency: Para birimini formatlar
+
+Özellikler:
+    - Özelleştirilebilir rapor şablonları
+    - Grafik entegrasyonu
+    - Çoklu dil desteği
+    - Hata yönetimi
+    - Geçici dosya yönetimi
+
+Kullanım:
+    from utils.report import generate_pdf_report
+    
+    pdf_data = generate_pdf_report(
+        total_budget=1000000,
+        total_actual=950000,
+        variance=50000,
+        variance_pct=5.0,
+        img_buffer=trend_chart,
+        comparative_img_buffer=comparative_chart
+    )
+    if pdf_data:
+        with open("rapor.pdf", "wb") as f:
+            f.write(pdf_data)
 """
 
 from fpdf import FPDF
-import streamlit as st
 import os
 import tempfile
-from typing import Optional, Union, Any
+from typing import Optional
 from io import BytesIO
 from utils.error_handler import handle_error, display_friendly_error
 
@@ -26,6 +52,13 @@ def generate_pdf_report(
     """
     Finansal performans raporu PDF dosyası oluşturur.
     
+    Bu fonksiyon:
+    1. PDF nesnesi oluşturur
+    2. Font dosyalarını yükler
+    3. Başlık ve metin ekler
+    4. Grafikleri ekler
+    5. PDF'i byte dizisine dönüştürür
+    
     Parameters:
         total_budget (float): Toplam bütçe değeri
         total_actual (float): Toplam fiili değeri
@@ -36,6 +69,25 @@ def generate_pdf_report(
         
     Returns:
         Optional[bytes]: PDF içeriği byte cinsinden veya None
+        
+    Hata durumunda:
+    - Font dosyaları bulunamazsa hata mesajı gösterilir
+    - Grafik eklenemezse hata mesajı gösterilir
+    - PDF oluşturulamazsa hata mesajı gösterilir
+    - None değeri döndürülür
+    
+    Örnek:
+        >>> pdf_data = generate_pdf_report(
+        ...     total_budget=1000000,
+        ...     total_actual=950000,
+        ...     variance=50000,
+        ...     variance_pct=5.0,
+        ...     img_buffer=trend_chart,
+        ...     comparative_img_buffer=comparative_chart
+        ... )
+        >>> if pdf_data:
+        ...     with open("rapor.pdf", "wb") as f:
+        ...         f.write(pdf_data)
     """
     pdf = FPDF()
     pdf.add_page()

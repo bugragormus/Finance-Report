@@ -3,6 +3,26 @@ filters.py - Veri filtreleme işlemlerini yönetir.
 
 Bu modül, veri çerçevelerinin filtrelenmesini ve kullanıcı tarafından
 seçilen filtre kriterlerinin uygulanmasını sağlar.
+
+Fonksiyonlar:
+    - apply_filters: Streamlit arayüzünde seçilen filtre kriterlerine göre veriyi filtreler
+    - clear_filters: Tüm filtreleri temizler
+
+Özellikler:
+    - Dinamik filtreleme
+    - Kademeli filtreleme
+    - Oturum durumu yönetimi
+    - Hata yönetimi
+    - Kullanıcı dostu arayüz
+
+Kullanım:
+    from utils.filters import apply_filters
+    
+    filtered_df = apply_filters(df, columns, "filter")
+    if filtered_df is not None:
+        # Filtrelenmiş veri ile işlem yap
+    else:
+        # Hata durumu yönet
 """
 
 import streamlit as st
@@ -14,6 +34,12 @@ def apply_filters(df, columns, key_prefix):
     """
     Streamlit arayüzünde seçilen filtre kriterlerine göre veriyi filtreler.
     
+    Bu fonksiyon:
+    1. Her sütun için filtre seçeneklerini belirler
+    2. Kademeli filtreleme uygular
+    3. Kullanıcı seçimlerini yönetir
+    4. Filtreleri veri çerçevesine uygular
+    
     Parameters:
         df (DataFrame): Filtrelenecek veri çerçevesi
         columns (list): Filtrelenecek sütunlar
@@ -21,6 +47,16 @@ def apply_filters(df, columns, key_prefix):
         
     Returns:
         DataFrame: Filtrelenmiş veri çerçevesi
+        
+    Hata durumunda:
+    - Kullanıcıya hata mesajı gösterilir
+    - Filtre seçimleri sıfırlanır
+    - Orijinal veri çerçevesi döndürülür
+    
+    Örnek:
+        >>> columns = ["Masraf Yeri", "Kategori"]
+        >>> filtered_df = apply_filters(df, columns, "filter")
+        >>> print(f"Filtrelenmiş satır sayısı: {len(filtered_df)}")
     """
     selected_filters = {}
     for col in columns:

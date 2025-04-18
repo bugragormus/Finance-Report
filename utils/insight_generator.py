@@ -3,6 +3,25 @@ insight_generator.py - Veri analizine dayalı öngörü oluşturma işlemlerini 
 
 Bu modül, finansal verileri analiz ederek anlamlı öngörüler 
 (insights) oluşturan fonksiyonlar içerir.
+
+Fonksiyonlar:
+    - generate_insights: Finansal verilerden anlamlı öngörüler üretir
+    - analyze_spending_patterns: Harcama kalıplarını analiz eder
+    - identify_anomalies: Anomali tespiti yapar
+
+Özellikler:
+    - Otomatik öngörü üretimi
+    - Harcama analizi
+    - Bütçe kullanım analizi
+    - Anomali tespiti
+    - Hata yönetimi
+
+Kullanım:
+    from utils.insight_generator import generate_insights
+    
+    insights = generate_insights(df)
+    for insight in insights:
+        print(insight)
 """
 
 import pandas as pd
@@ -15,11 +34,34 @@ def generate_insights(df: pd.DataFrame) -> List[str]:
     """
     Finansal verilerden anlamlı öngörüler üretir.
     
+    Bu fonksiyon:
+    1. En fazla harcama yapan masraf yerini tespit eder
+    2. Bütçeyi aşan masraf yerlerini belirler
+    3. Hiç harcama yapılmayan yerleri tespit eder
+    4. En az harcama yapan aktif yerleri belirler
+    5. Bütçe kullanım oranlarını analiz eder
+    6. En çok harcama yapılan masraf grubunu tespit eder
+    
     Parameters:
         df (DataFrame): Analiz edilecek veri çerçevesi
         
     Returns:
         List[str]: Öngörü metinleri listesi
+        
+    Hata durumunda:
+    - Hata loglanır
+    - Eksik veri durumunda sessizce devam eder
+    - Boş liste döndürülür
+    
+    Örnek:
+        >>> df = pd.DataFrame({
+        ...     "Masraf Yeri Adı": ["A", "B", "C"],
+        ...     "Kümüle Bütçe": [1000, 2000, 3000],
+        ...     "Kümüle Fiili": [900, 2100, 2900]
+        ... })
+        >>> insights = generate_insights(df)
+        >>> for insight in insights:
+        ...     print(insight)
     """
     insights = []
 

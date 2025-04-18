@@ -3,6 +3,24 @@ main.py - Finansal Performans Analiz Paneli ana uygulaması
 
 Bu uygulama, finansal performans metriklerinin analizi, görselleştirilmesi 
 ve raporlanması için kullanılır.
+
+Modüller:
+    - loader: Veri yükleme ve doğrulama
+    - filters: Veri filtreleme işlemleri
+    - metrics: Performans metriklerinin hesaplanması
+    - report: PDF rapor oluşturma
+    - kpi: KPI paneli görüntüleme
+    - category_analysis: Kategori bazlı analizler
+    - comparative_analysis: Karşılaştırmalı analizler
+    - trend_analysis: Trend analizi
+    - pivot_table: Pivot tablo görüntüleme
+    - insight_generator: Veri içgörüleri oluşturma
+    - data_preview: Veri önizleme
+    - warning_system: Uyarı sistemi
+    - error_handler: Hata yönetimi
+
+Kullanım:
+    streamlit run main.py
 """
 
 import streamlit as st
@@ -35,6 +53,16 @@ from utils.error_handler import handle_critical_error, display_friendly_error
 def setup_page_config():
     """
     Sayfa yapılandırmasını ayarlar.
+    
+    Bu fonksiyon:
+    1. Favicon'u yükler
+    2. Sayfa başlığını ayarlar
+    3. Sayfa düzenini belirler
+    4. Kenar çubuğu durumunu ayarlar
+    
+    Hata durumunda:
+    - Favicon yüklenemezse varsayılan yapılandırmayı kullanır
+    - Hata mesajını kullanıcıya gösterir
     """
     try:
         im = Image.open("assets/favicon.png")
@@ -57,8 +85,17 @@ def load_and_validate_data():
     """
     Veri dosyasını yükler ve doğrular.
     
+    Bu fonksiyon:
+    1. Kullanıcıdan Excel dosyası yüklemesini bekler
+    2. Yüklenen dosyayı işler
+    3. Veri doğrulama işlemlerini gerçekleştirir
+    
     Returns:
         DataFrame or None: Yüklenen veri çerçevesi veya hata durumunda None
+        
+    Hata durumunda:
+    - Kullanıcıya bilgi mesajı gösterir
+    - None döndürür
     """
     uploaded_file = st.file_uploader("Excel dosyasını yükleyin", type=["xlsx", "xls"])
     if uploaded_file:
@@ -72,11 +109,26 @@ def setup_sidebar_filters(df):
     """
     Kenar çubuğundaki filtreleri ayarlar.
     
+    Bu fonksiyon:
+    1. Filtre başlığını gösterir
+    2. Genel filtreleri uygular
+    3. Ay filtrelerini ayarlar
+    4. Rapor bazı filtrelerini ayarlar
+    5. Kümülatif filtreleri ayarlar
+    
     Parameters:
         df (DataFrame): Filtrelenecek veri çerçevesi
         
     Returns:
         tuple: (filtered_df, selected_months, selected_report_bases, selected_cumulative)
+            - filtered_df: Filtrelenmiş veri çerçevesi
+            - selected_months: Seçili aylar
+            - selected_report_bases: Seçili rapor bazları
+            - selected_cumulative: Seçili kümülatif değerler
+            
+    Hata durumunda:
+    - Varsayılan veriyi kullanır
+    - Kullanıcıya hata mesajı gösterir
     """
     with st.sidebar:
         st.header("🔧 Filtre & Grafik Ayarları")
@@ -134,7 +186,15 @@ def setup_sidebar_filters(df):
 
 def clear_all_filters():
     """
-    Tüm filtreleri temizler ve sayfayı yeniden yükler.
+    Tüm filtreleri temizler.
+    
+    Bu fonksiyon:
+    1. Tüm filtre durumlarını sıfırlar
+    2. Kullanıcıya bilgi mesajı gösterir
+    
+    Hata durumunda:
+    - Hata mesajını loglar
+    - Kullanıcıya bilgi verir
     """
     try:
         for key in list(st.session_state.keys()):
@@ -158,10 +218,27 @@ def clear_all_filters():
 
 def prepare_final_dataframe(df, filtered_df, selected_months, selected_report_bases, selected_cumulative):
     """
-    Filtreli ve seçilen sütunlarla son veri çerçevesini hazırlar.
+    Son veri çerçevesini hazırlar.
     
+    Bu fonksiyon:
+    1. Ay filtrelerini uygular
+    2. Rapor bazı filtrelerini uygular
+    3. Kümülatif filtreleri uygular
+    4. Son veri çerçevesini oluşturur
+    
+    Parameters:
+        df (DataFrame): Orijinal veri çerçevesi
+        filtered_df (DataFrame): Önceden filtrelenmiş veri çerçevesi
+        selected_months (list): Seçili aylar
+        selected_report_bases (list): Seçili rapor bazları
+        selected_cumulative (list): Seçili kümülatif değerler
+        
     Returns:
-        DataFrame: İşlenmiş son veri çerçevesi
+        DataFrame: Hazırlanmış son veri çerçevesi
+        
+    Hata durumunda:
+    - Orijinal veriyi döndürür
+    - Hata mesajını loglar
     """
     selected_columns = GENERAL_COLUMNS.copy() + [
         f"{month} {base_col}"
@@ -179,7 +256,20 @@ def prepare_final_dataframe(df, filtered_df, selected_months, selected_report_ba
 @handle_critical_error
 def main():
     """
-    Uygulamanın ana fonksiyonu.
+    Ana uygulama fonksiyonu.
+    
+    Bu fonksiyon:
+    1. Sayfa yapılandırmasını ayarlar
+    2. Veriyi yükler ve doğrular
+    3. Filtreleri ayarlar
+    4. Veriyi hazırlar
+    5. Analiz panellerini gösterir
+    6. Raporlama seçeneklerini sunar
+    
+    Hata durumunda:
+    - Kritik hataları yönetir
+    - Kullanıcıya uygun hata mesajı gösterir
+    - Uygulamayı güvenli bir şekilde sonlandırır
     """
     # Sayfa yapılandırması
     setup_page_config()

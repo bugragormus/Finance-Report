@@ -1,8 +1,27 @@
 """
 category_analysis.py - Kategori bazlı analiz ve görselleştirme işlemlerini yönetir.
 
-Bu modül, kategori bazlı analizler oluşturmak ve görselleştirmek için
-fonksiyonlar içerir.
+Bu modül, finansal verilerin kategori bazlı analizlerini oluşturmak ve görselleştirmek için
+gerekli fonksiyonları içerir. Modül, aşağıdaki temel işlevleri sağlar:
+
+- Kategori bazlı pasta ve sütun grafikleri oluşturma
+- Farklı metrikler (Bütçe, Fiili, BE) için analiz yapma
+- Grafikleri PNG formatında kaydetme ve indirme
+- Streamlit arayüzü üzerinden interaktif analiz imkanı
+
+Kullanım:
+    Modül, Streamlit uygulaması içinde kullanılmak üzere tasarlanmıştır.
+    show_category_charts() fonksiyonu ana giriş noktasıdır ve kullanıcı arayüzünü
+    yönetir.
+
+Örnek:
+    >>> df = pd.read_excel("veri.xlsx")
+    >>> show_category_charts(df)
+
+Not:
+    - Grafikler otomatik olarak optimize edilmiş boyutlarda oluşturulur
+    - Hata yönetimi handle_error dekoratörü ile sağlanır
+    - Tüm grafikler PNG formatında kaydedilir ve indirilebilir
 """
 
 import streamlit as st

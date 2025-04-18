@@ -1,9 +1,27 @@
 """
-trend_analysis.py - Trend analizi ve görselleştirme işlemlerini yönetir.
+trend_analysis.py
 
-Bu modül, finansal verilerin zaman içindeki trendlerini analiz eder
-ve interaktif grafikler oluşturur.
+Bu modül, finansal verilerin aylık bazda zaman içindeki trendlerini analiz eder 
+ve interaktif grafiklerle görselleştirir. Kullanıcılar, seçilen aylar için bütçe, fiili ve 
+aradaki farkları aynı grafik üzerinde görüntüleyebilir, ayrıca bu grafikleri PNG formatında dışa aktarabilir.
+
+Ana Özellikler:
+---------------
+- Seçilen aylar için toplam bütçe ve fiili değerlerin hesaplanması
+- Bütçe ve fiili değerlerin çubuk grafikle, farkların ise çizgi grafikle gösterimi
+- Grafiklerin PNG formatında dışa aktarılabilmesi
+- Hata yönetimi ve kullanıcı dostu uyarılar
+
+Kütüphaneler:
+-------------
+- streamlit: Kullanıcı arayüzü için
+- pandas: Veri işleme ve tablo oluşturma
+- plotly.graph_objects: Gelişmiş grafik oluşturma
+- io.BytesIO: Grafik çıktısını bellekte tutma ve indirme işlemleri
+- datetime: Dosya adlarında zaman damgası kullanımı
+- utils.error_handler: Hata yakalama ve kullanıcıya dostça gösterme
 """
+
 
 import streamlit as st
 import pandas as pd

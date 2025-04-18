@@ -3,6 +3,32 @@ error_handler.py - Merkezi hata yönetim sistemi
 
 Bu modül, uygulamadaki tüm hataları merkezi bir şekilde yönetmek için
 gerekli fonksiyonları ve dekoratörleri içerir.
+
+Fonksiyonlar:
+    - log_error: Hata detaylarını loga kaydeder
+    - handle_error: Genel hata yakalama dekoratörü
+    - handle_critical_error: Kritik hata yakalama dekoratörü
+    - display_friendly_error: Kullanıcı dostu hata mesajı görüntüler
+
+Özellikler:
+    - Merkezi hata yönetimi
+    - Detaylı hata loglama
+    - Kullanıcı dostu hata mesajları
+    - Kritik hata yönetimi
+    - Stack trace kaydı
+
+Kullanım:
+    from utils.error_handler import handle_error, display_friendly_error
+    
+    @handle_error
+    def my_function():
+        # Kod buraya
+        pass
+    
+    try:
+        result = my_function()
+    except Exception as e:
+        display_friendly_error("İşlem başarısız", "Lütfen tekrar deneyin")
 """
 
 import streamlit as st
@@ -26,9 +52,25 @@ def log_error(error: Exception, function_name: str) -> None:
     """
     Hata detaylarını loga kaydeder.
     
+    Bu fonksiyon:
+    1. Hata mesajını oluşturur
+    2. Stack trace'i alır
+    3. Log dosyasına kaydeder
+    4. Hata log dosyasına kaydeder
+    
     Parameters:
         error (Exception): Yakalanan hata
         function_name (str): Hatanın oluştuğu fonksiyon adı
+        
+    Hata durumunda:
+    - Log dosyasına yazma hatası oluşursa sessizce devam eder
+    - Hata log dosyasına yazma hatası oluşursa sessizce devam eder
+    
+    Örnek:
+        >>> try:
+        ...     # Kod buraya
+        ... except Exception as e:
+        ...     log_error(e, "my_function")
     """
     error_message = f"HATA ({function_name}): {str(error)}"
     stack_trace = traceback.format_exc()
@@ -41,14 +83,28 @@ def handle_error(func: F) -> F:
     """
     Hata yakalama dekoratörü.
     
-    Fonksiyonun çalışması sırasında oluşabilecek hataları yakalar,
-    loglar ve kullanıcıya bildirir.
+    Bu dekoratör:
+    1. Fonksiyonun çalışmasını izler
+    2. Hataları yakalar
+    3. Hataları loglar
+    4. Kullanıcıya bildirir
     
     Parameters:
         func: Decorator uygulanacak fonksiyon
         
     Returns:
         Wrapped function
+        
+    Hata durumunda:
+    - Hata loglanır
+    - Kullanıcıya hata mesajı gösterilir
+    - None değeri döndürülür
+    
+    Örnek:
+        >>> @handle_error
+        ... def my_function():
+        ...     # Kod buraya
+        ...     pass
     """
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
@@ -64,14 +120,29 @@ def handle_critical_error(func: F) -> F:
     """
     Kritik hata yakalama dekoratörü.
     
-    Ana uygulamayı etkileyebilecek kritik hataları yakalar,
-    loglar ve kullanıcıya daha detaylı bildirim yapar.
+    Bu dekoratör:
+    1. Kritik fonksiyonları izler
+    2. Hataları yakalar
+    3. Detaylı loglama yapar
+    4. Kullanıcıya detaylı bildirim yapar
     
     Parameters:
         func: Decorator uygulanacak fonksiyon
         
     Returns:
         Wrapped function
+        
+    Hata durumunda:
+    - Hata CRITICAL olarak loglanır
+    - Kullanıcıya detaylı hata mesajı gösterilir
+    - Stack trace gösterilir
+    - None değeri döndürülür
+    
+    Örnek:
+        >>> @handle_critical_error
+        ... def critical_function():
+        ...     # Kritik kod buraya
+        ...     pass
     """
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
@@ -90,9 +161,23 @@ def display_friendly_error(error_message: str, suggestion: Optional[str] = None)
     """
     Kullanıcı dostu hata mesajı görüntüler.
     
+    Bu fonksiyon:
+    1. Hata mesajını formatlar
+    2. Kullanıcıya gösterir
+    3. Varsa öneriyi gösterir
+    
     Parameters:
         error_message (str): Gösterilecek hata mesajı
         suggestion (str, optional): Kullanıcı için öneri
+        
+    Örnek:
+        >>> try:
+        ...     # Kod buraya
+        ... except Exception as e:
+        ...     display_friendly_error(
+        ...         "İşlem başarısız oldu",
+        ...         "Lütfen tekrar deneyin veya sistem yöneticisine başvurun"
+        ...     )
     """
     st.error(f"🚫 {error_message}")
     if suggestion:

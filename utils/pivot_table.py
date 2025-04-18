@@ -1,9 +1,29 @@
 """
-pivot_table.py - Dinamik pivot tablo oluşturma işlemlerini yönetir.
+pivot_table.py
 
-Bu modül, veri çerçevelerinden pivot tablolar ve ilgili
-görselleştirmeler oluşturmak için fonksiyonlar içerir.
+Bu modül, kullanıcıların etkileşimli bir arayüz üzerinden dinamik pivot tablolar oluşturmasını ve bu tabloları 
+görselleştirerek dışa aktarmasını sağlar. Streamlit arayüzü kullanılarak kolayca:
+- Satır ve sütun alanları seçilebilir
+- Sayısal değerler için özet fonksiyonları uygulanabilir (toplam, ortalama, maksimum, minimum, adet)
+- Oluşturulan tablo hem Excel hem de PNG formatında indirilebilir
+
+Ana Özellikler:
+---------------
+- Kategorik ve sayısal sütunların otomatik ayrımı
+- Kullanıcı dostu hata mesajları ve validasyon
+- Görselleştirilebilir tablo çıktısı (Plotly ile)
+- PNG formatında grafik çıktısı ve Excel formatında veri çıktısı
+
+Kütüphaneler:
+-------------
+- streamlit: Arayüz için
+- pandas: Veri işleme ve pivot tablo oluşturma
+- plotly.express: Görselleştirme
+- io.BytesIO: Bellek içi dosya nesneleriyle çalışma
+- openpyxl: Excel yazımı
+- utils.error_handler: Hata yakalama ve kullanıcı dostu hata gösterimi
 """
+
 
 import streamlit as st
 import pandas as pd
@@ -25,15 +45,31 @@ pio.kaleido.scope.default_plot_bgcolor = "white"
 @handle_error
 def show_pivot_table(df: pd.DataFrame) -> Tuple[Optional[BytesIO], Optional[BytesIO]]:
     """
-    Dinamik pivot tablo oluşturur ve görselleştirir.
-    
-    Parameters:
-        df (DataFrame): İşlenecek veri çerçevesi
-        
-    Returns:
-        Tuple[Optional[BytesIO], Optional[BytesIO]]: 
-            (excel_buffer, pivot_görüntüsü_buffer) tuple
+    Verilen bir DataFrame'den dinamik bir pivot tablo oluşturur ve görselleştirir.
+    Ayrıca oluşturulan pivot tabloyu Excel ve PNG formatlarında indirme seçenekleri sunar.
+
+    Kullanıcı arayüzü üzerinden:
+    - Satır ve sütun alanları (kategorik değişkenler)
+    - Değer alanı (sayısal değişkenler)
+    - Toplama fonksiyonu (sum, mean, max, min, count)
+
+    seçilerek pivot tablo oluşturulur.
+
+    Parametreler:
+        df (pd.DataFrame): Pivot tabloya dönüştürülecek veri çerçevesi.
+
+    Döndürür:
+        Tuple[Optional[BytesIO], Optional[BytesIO]]:
+            - `excel_buffer`: Oluşturulan pivot tablonun Excel dosyası olarak bellekteki temsili.
+            - `pivot_buffer`: Pivot tablonun PNG görseli olarak bellekteki temsili (görselleştirme mümkünse).
+              Görselleştirme yapılamazsa `None` döner.
+
+    Notlar:
+        - Eğer sayısal sütun yoksa veya gerekli seçimler yapılmadıysa, işlem gerçekleştirilmez.
+        - Görselleştirme, maksimum 15 sütunla sınırlıdır.
+        - Hatalar kullanıcı dostu şekilde arayüzde gösterilir.
     """
+
     st.subheader("📊 Dinamik Pivot Tablo Oluşturucu")
 
     # Sütunları numerik ve kategorik olarak ayır

@@ -1,8 +1,25 @@
 """
-kpi.py - KPI (Anahtar Performans Göstergeleri) panelini yönetir.
+KPI (Anahtar Performans Göstergeleri) Yönetim Modülü
 
-Bu modül, finansal performans metriklerinin hesaplanmasını ve 
-gösterilmesini sağlayan fonksiyonları içerir.
+Bu modül, finansal performans metriklerinin hesaplanmasını ve görselleştirilmesini sağlayan 
+fonksiyonları içerir. Temel olarak bütçe, fiili harcamalar, bütçe farkları ve çeşitli 
+oranların hesaplanması ve gösterilmesi işlemlerini yönetir.
+
+Ana Fonksiyonlar:
+    - calculate_kpi_metrics: Tüm KPI metriklerini hesaplar
+    - show_kpi_panel: Hesaplanan metrikleri görsel bir panelde gösterir
+    - _display_budget_warning: Bütçe kullanım durumuna göre uyarı mesajları gösterir
+
+Hesaplanan Metrikler:
+    - Toplam Bütçe ve Fiili Harcamalar
+    - Bütçe Farkı ve Yüzdesi
+    - Bütçe Kullanım Oranı
+    - BE (Bütçe Eki) / Fiili Oranı
+    - Karşılık / Fiili Oranı
+
+Kullanım:
+    >>> from utils.kpi import show_kpi_panel
+    >>> show_kpi_panel(df)  # DataFrame'de gerekli sütunlar olmalıdır
 """
 
 import streamlit as st
