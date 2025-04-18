@@ -867,3 +867,202 @@ streamlit.errors.StreamlitDuplicateElementId: There are multiple `number_input` 
 To fix this error, please pass a unique `key` argument to the `number_input` element.
 
 
+2025-04-18 10:44:19.561353: HATA (show_filtered_data): Column() got an unexpected keyword argument 'frozen'
+Stack Trace: Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 56, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/data_preview.py", line 44, in show_filtered_data
+    df.columns[1]: st.column_config.Column(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/runtime/metrics_util.py", line 410, in wrapped_func
+    result = non_optional_func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: Column() got an unexpected keyword argument 'frozen'
+
+
+2025-04-18 10:44:19.566429: HATA (show_filtered_data): Column() got an unexpected keyword argument 'frozen'
+Stack Trace: Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 56, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/data_preview.py", line 57, in show_filtered_data
+    df.columns[1]: st.column_config.Column(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/runtime/metrics_util.py", line 410, in wrapped_func
+    result = non_optional_func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: Column() got an unexpected keyword argument 'frozen'
+
+
+2025-04-18 10:44:19.577990: HATA (show_filtered_data): Column() got an unexpected keyword argument 'frozen'
+Stack Trace: Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 56, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/data_preview.py", line 44, in show_filtered_data
+    df.columns[1]: st.column_config.Column(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/runtime/metrics_util.py", line 410, in wrapped_func
+    result = non_optional_func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: Column() got an unexpected keyword argument 'frozen'
+
+
+2025-04-18 10:44:19.580501: HATA (show_filtered_data): Column() got an unexpected keyword argument 'frozen'
+Stack Trace: Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 56, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/data_preview.py", line 57, in show_filtered_data
+    df.columns[1]: st.column_config.Column(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/runtime/metrics_util.py", line 410, in wrapped_func
+    result = non_optional_func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: Column() got an unexpected keyword argument 'frozen'
+
+
+2025-04-18 10:44:19.592620: HATA (show_filtered_data): Column() got an unexpected keyword argument 'frozen'
+Stack Trace: Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 56, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/data_preview.py", line 44, in show_filtered_data
+    df.columns[1]: st.column_config.Column(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/runtime/metrics_util.py", line 410, in wrapped_func
+    result = non_optional_func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: Column() got an unexpected keyword argument 'frozen'
+
+
+2025-04-18 10:44:19.598263: HATA (show_filtered_data): Column() got an unexpected keyword argument 'frozen'
+Stack Trace: Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 56, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/data_preview.py", line 57, in show_filtered_data
+    df.columns[1]: st.column_config.Column(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/runtime/metrics_util.py", line 410, in wrapped_func
+    result = non_optional_func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: Column() got an unexpected keyword argument 'frozen'
+
+
+2025-04-18 10:44:19.608844: HATA (show_filtered_data): Column() got an unexpected keyword argument 'frozen'
+Stack Trace: Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 56, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/data_preview.py", line 44, in show_filtered_data
+    df.columns[1]: st.column_config.Column(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/runtime/metrics_util.py", line 410, in wrapped_func
+    result = non_optional_func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: Column() got an unexpected keyword argument 'frozen'
+
+
+2025-04-18 10:44:19.610654: HATA (show_filtered_data): Column() got an unexpected keyword argument 'frozen'
+Stack Trace: Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 56, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/data_preview.py", line 57, in show_filtered_data
+    df.columns[1]: st.column_config.Column(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/runtime/metrics_util.py", line 410, in wrapped_func
+    result = non_optional_func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: Column() got an unexpected keyword argument 'frozen'
+
+
+2025-04-18 10:44:19.614109: HATA (show_filtered_data): Column() got an unexpected keyword argument 'frozen'
+Stack Trace: Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 56, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/data_preview.py", line 44, in show_filtered_data
+    df.columns[1]: st.column_config.Column(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/runtime/metrics_util.py", line 410, in wrapped_func
+    result = non_optional_func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: Column() got an unexpected keyword argument 'frozen'
+
+
+2025-04-18 10:44:19.617930: HATA (show_filtered_data): Column() got an unexpected keyword argument 'frozen'
+Stack Trace: Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 56, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/data_preview.py", line 57, in show_filtered_data
+    df.columns[1]: st.column_config.Column(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/runtime/metrics_util.py", line 410, in wrapped_func
+    result = non_optional_func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: Column() got an unexpected keyword argument 'frozen'
+
+
+2025-04-18 10:44:20.881469: HATA (CRITICAL-main): 'NoneType' object has no attribute 'getvalue'
+Stack Trace: Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 79, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 488, in main
+    zip_file.writestr("veri.xlsx", excel_buffer.getvalue())
+                                   ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'getvalue'
+
+
+2025-04-18 10:56:14.183933: HATA (show_grouped_summary): show_grouped_summary() got an unexpected keyword argument 'sticky_column'
+Stack Trace: Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 56, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+TypeError: show_grouped_summary() got an unexpected keyword argument 'sticky_column'
+
+
+2025-04-18 10:56:14.380755: HATA (show_grouped_summary): show_grouped_summary() got an unexpected keyword argument 'sticky_column'
+Stack Trace: Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 56, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+TypeError: show_grouped_summary() got an unexpected keyword argument 'sticky_column'
+
+
+2025-04-18 10:56:19.080447: HATA (show_grouped_summary): show_grouped_summary() got an unexpected keyword argument 'sticky_column'
+Stack Trace: Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 56, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+TypeError: show_grouped_summary() got an unexpected keyword argument 'sticky_column'
+
+
+2025-04-18 10:56:19.445646: HATA (show_grouped_summary): show_grouped_summary() got an unexpected keyword argument 'sticky_column'
+Stack Trace: Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 56, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+TypeError: show_grouped_summary() got an unexpected keyword argument 'sticky_column'
+
+
+2025-04-18 10:56:21.293263: HATA (show_grouped_summary): show_grouped_summary() got an unexpected keyword argument 'sticky_column'
+Stack Trace: Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 56, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+TypeError: show_grouped_summary() got an unexpected keyword argument 'sticky_column'
+
+
+2025-04-18 10:56:22.154663: HATA (show_grouped_summary): show_grouped_summary() got an unexpected keyword argument 'sticky_column'
+Stack Trace: Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 56, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+TypeError: show_grouped_summary() got an unexpected keyword argument 'sticky_column'
+
+

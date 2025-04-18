@@ -8,7 +8,7 @@ Bu modül, veri çerçevelerinin görüntülenmesi, özetlenmesi ve
 import streamlit as st
 import pandas as pd
 from io import BytesIO
-from typing import Optional, List, Callable
+from typing import Optional, List, Callable, Union
 from utils.error_handler import handle_error, display_friendly_error
 
 
@@ -17,7 +17,8 @@ def show_filtered_data(
     df: pd.DataFrame, 
     filename: str = "filtrelenmis_rapor.xlsx", 
     style_func: Optional[Callable] = None, 
-    title: Optional[str] = None
+    title: Optional[str] = None,
+    sticky_column: Optional[Union[str, int]] = None
 ) -> BytesIO:
     """
     DataFrame'i gösterir, istenirse stil uygular, Excel çıktısı verir.
@@ -27,6 +28,7 @@ def show_filtered_data(
         filename (str): İndirme için dosya adı
         style_func (Callable, optional): Veri çerçevesine uygulanacak stil fonksiyonu
         title (str, optional): Görüntüleme başlığı
+        sticky_column (Union[str, int], optional): Sabit kalacak sütun adı veya pozisyonu (0'dan başlar)
         
     Returns:
         BytesIO: Excel dosyası buffer'ı
@@ -34,12 +36,46 @@ def show_filtered_data(
     if title:
         st.markdown(title)
     
+    # Sabit sütun belirleme
+    column_to_stick = None
+    if sticky_column is not None:
+        if isinstance(sticky_column, str) and sticky_column in df.columns:
+            column_to_stick = sticky_column
+        elif isinstance(sticky_column, int) and 0 <= sticky_column < len(df.columns):
+            column_to_stick = df.columns[sticky_column]
+    
     # Stil fonksiyonu varsa uygula
     if style_func:
         styled_df = style_func(df.copy())
-        st.dataframe(styled_df, use_container_width=True)
+        if column_to_stick:
+            st.dataframe(
+                styled_df, 
+                use_container_width=True,
+                column_config={
+                    column_to_stick: st.column_config.Column(
+                        width="medium",
+                        help="This column is sticky",
+                        pinned="left"
+                    )
+                }
+            )
+        else:
+            st.dataframe(styled_df, use_container_width=True)
     else:
-        st.dataframe(df, use_container_width=True)
+        if column_to_stick:
+            st.dataframe(
+                df, 
+                use_container_width=True,
+                column_config={
+                    column_to_stick: st.column_config.Column(
+                        width="medium",
+                        help="This column is sticky",
+                        pinned="left"
+                    )
+                }
+            )
+        else:
+            st.dataframe(df, use_container_width=True)
 
     # Excel çıktısı oluştur
     excel_buffer = BytesIO()
@@ -70,7 +106,8 @@ def show_grouped_summary(
     target_columns: List[str], 
     filename: str, 
     title: Optional[str] = None, 
-    style_func: Optional[Callable] = None
+    style_func: Optional[Callable] = None,
+    sticky_column: Optional[Union[str, int]] = None
 ) -> Optional[BytesIO]:
     """
     Belirtilen sütuna göre gruplandırılmış özet tablo gösterir.
@@ -82,6 +119,7 @@ def show_grouped_summary(
         filename (str): İndirme için dosya adı
         title (str, optional): Görüntüleme başlığı
         style_func (Callable, optional): Veri çerçevesine uygulanacak stil fonksiyonu
+        sticky_column (Union[str, int], optional): Sabit kalacak sütun adı veya pozisyonu (0'dan başlar)
         
     Returns:
         Optional[BytesIO]: Excel dosyası buffer'ı veya None
@@ -97,7 +135,12 @@ def show_grouped_summary(
         numeric_columns = [col for col in existing_columns if pd.api.types.is_numeric_dtype(df[col])]
         grouped_df = df.groupby(group_column)[numeric_columns].sum().reset_index()
         
-        return show_filtered_data(grouped_df, filename=filename, style_func=style_func)
+        return show_filtered_data(
+            grouped_df, 
+            filename=filename, 
+            style_func=style_func,
+            sticky_column=sticky_column
+        )
     else:
         display_friendly_error(
             f"'{group_column}' bazında özet oluşturulamadı", 
