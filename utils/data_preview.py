@@ -144,7 +144,7 @@ def show_filtered_data(
             column_config=column_config,
             use_container_width=True,
             disabled=True,  # Düzenleme devre dışı
-            hide_index=True,
+            #hide_index=True,
             key=unique_key
         )
     else:
@@ -154,7 +154,7 @@ def show_filtered_data(
             column_config=column_config,
             use_container_width=True,
             disabled=True,  # Düzenleme devre dışı
-            hide_index=True,
+            #hide_index=True,
             key=unique_key
         )
 
