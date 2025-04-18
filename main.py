@@ -306,7 +306,8 @@ def main():
                 filename="masraf_grubu_ozet.xlsx",
                 title="#### 📊 Grup Bazında Detaylar",
                 style_func=style_negatives_red,
-                sticky_column="Masraf Çeşidi Grubu 1"
+                sticky_column="Masraf Çeşidi Grubu 1",
+                page_size=1000
             )
 
             show_column_totals(
@@ -329,7 +330,8 @@ def main():
                 masraf_totals,
                 filename="masraf_grubu_toplamlar.xlsx",
                 title="#### 📌 Toplamlar",
-                style_func=style_negatives_red
+                style_func=style_negatives_red,
+                page_size=1000
             )
 
             show_column_totals(
@@ -437,7 +439,8 @@ def main():
                 visible_df,
                 style_func=style_warning_rows,
                 filename="ham_veri.xlsx",
-                sticky_column=0
+                sticky_column=0,
+                page_size=1000
             )
 
             show_column_totals(

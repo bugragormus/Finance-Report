@@ -89,7 +89,7 @@ def show_comparative_analysis(
             x=group_by_col,
             y=["Toplam Bütçe", "Toplam Fiili"],
             barmode="group",
-            title=f"{group_by_col} Bazında {', '.join(selected_months)} Toplam Karşılaştırması",
+            title=f"{group_by_col} Bazında Year to Date Toplam Karşılaştırması",
             color_discrete_sequence=["#636EFA", "#EF553B"],
         )
 

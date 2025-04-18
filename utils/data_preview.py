@@ -18,7 +18,8 @@ def show_filtered_data(
     filename: str = "filtrelenmis_rapor.xlsx", 
     style_func: Optional[Callable] = None, 
     title: Optional[str] = None,
-    sticky_column: Optional[Union[str, int]] = None
+    sticky_column: Optional[Union[str, int]] = None,
+    page_size: int = 1000
 ) -> BytesIO:
     """
     DataFrame'i gösterir, istenirse stil uygular, Excel çıktısı verir.
@@ -29,6 +30,7 @@ def show_filtered_data(
         style_func (Callable, optional): Veri çerçevesine uygulanacak stil fonksiyonu
         title (str, optional): Görüntüleme başlığı
         sticky_column (Union[str, int], optional): Sabit kalacak sütun adı veya pozisyonu (0'dan başlar)
+        page_size (int): Sayfa başına gösterilecek satır sayısı
         
     Returns:
         BytesIO: Excel dosyası buffer'ı
@@ -44,9 +46,24 @@ def show_filtered_data(
         elif isinstance(sticky_column, int) and 0 <= sticky_column < len(df.columns):
             column_to_stick = df.columns[sticky_column]
     
-    # Stil fonksiyonu varsa uygula
-    if style_func:
-        styled_df = style_func(df.copy())
+    # Stil uygulama seçeneği
+    apply_style = False
+    if style_func and len(df) > page_size:
+        apply_style = st.checkbox("⚠️ Stil Uygula (Performansı Etkileyebilir)", value=False)
+    
+    # Sayfalama
+    total_pages = (len(df) + page_size - 1) // page_size
+    if total_pages > 1:
+        page = st.number_input("📄 Sayfa", min_value=1, max_value=total_pages, value=1)
+        start_idx = (page - 1) * page_size
+        end_idx = min(start_idx + page_size, len(df))
+        display_df = df.iloc[start_idx:end_idx]
+    else:
+        display_df = df
+    
+    # Stil fonksiyonu varsa ve seçilmişse uygula
+    if style_func and apply_style:
+        styled_df = style_func(display_df.copy())
         if column_to_stick:
             st.dataframe(
                 styled_df, 
@@ -64,7 +81,7 @@ def show_filtered_data(
     else:
         if column_to_stick:
             st.dataframe(
-                df, 
+                display_df, 
                 use_container_width=True,
                 column_config={
                     column_to_stick: st.column_config.Column(
@@ -75,7 +92,7 @@ def show_filtered_data(
                 }
             )
         else:
-            st.dataframe(df, use_container_width=True)
+            st.dataframe(display_df, use_container_width=True)
 
     # Excel çıktısı oluştur
     excel_buffer = BytesIO()
@@ -107,7 +124,8 @@ def show_grouped_summary(
     filename: str, 
     title: Optional[str] = None, 
     style_func: Optional[Callable] = None,
-    sticky_column: Optional[Union[str, int]] = None
+    sticky_column: Optional[Union[str, int]] = None,
+    page_size: int = 1000
 ) -> Optional[BytesIO]:
     """
     Belirtilen sütuna göre gruplandırılmış özet tablo gösterir.
@@ -120,6 +138,7 @@ def show_grouped_summary(
         title (str, optional): Görüntüleme başlığı
         style_func (Callable, optional): Veri çerçevesine uygulanacak stil fonksiyonu
         sticky_column (Union[str, int], optional): Sabit kalacak sütun adı veya pozisyonu (0'dan başlar)
+        page_size (int): Sayfa başına gösterilecek satır sayısı
         
     Returns:
         Optional[BytesIO]: Excel dosyası buffer'ı veya None
@@ -139,7 +158,8 @@ def show_grouped_summary(
             grouped_df, 
             filename=filename, 
             style_func=style_func,
-            sticky_column=sticky_column
+            sticky_column=sticky_column,
+            page_size=page_size
         )
     else:
         display_friendly_error(
