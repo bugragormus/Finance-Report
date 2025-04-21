@@ -86,28 +86,31 @@ def generate_insights(df: pd.DataFrame) -> List[str]:
                     top_fark = en_cok_asan.min()
                     insights.append(f"⚠️ Bütçeyi en fazla aşan masraf yeri: **{top_asan}** ({top_fark:,.0f} ₺ fark)")
 
-            # Hiç harcama yapılmayan masraf yerleri
+            # DataFrame'i parçalanmayı önlemek için kopyala
+            df = df.copy()
+            
+            # Kullanım oranını bir kez hesapla
+            df['Kullanım Oranı'] = df['Kümüle Fiili'] / df['Kümüle Bütçe'].replace(0, pd.NA)
+            
+            # Hiç harcama yapılmayan yerleri bul
             en_az_kullanan = df[df['Kümüle Fiili'] == 0]['Masraf Yeri Adı'].dropna().unique()
             if len(en_az_kullanan) > 0:
                 yerler_str = ", ".join(en_az_kullanan[:5])
                 insights.append(f"❗ Hiç harcama yapılmayan masraf yerleri: {yerler_str}")
 
-            # En az harcama yapan aktif masraf yerleri
+            # En az harcama yapan aktif yerleri bul
             active = df[df['Kümüle Fiili'] > 0]
             if not active.empty:
                 min_row = active.groupby("Masraf Yeri Adı")['Kümüle Fiili'].sum().nsmallest(1)
                 if not min_row.empty:
                     insights.append(f"🔍 En az harcama yapan (aktif) masraf yeri: **{min_row.index[0]}** ({min_row.iloc[0]:,.0f} ₺)")
 
-            # Bütçe kullanım oranları
-            df['Kullanım Oranı'] = df['Kümüle Fiili'] / df['Kümüle Bütçe'].replace(0, pd.NA)
-            
-            # Bütçesinin yarısından azını kullananlar
+            # Bütçesinin yarısından azını kullanan yerleri bul
             az_kullananlar = df[df['Kullanım Oranı'] < 0.5]['Masraf Yeri Adı'].dropna().unique()
             if len(az_kullananlar) > 0:
                 insights.append(f"🧊 Bütçesinin yarısından azını kullanan masraf yerleri: {', '.join(az_kullananlar[:5])}")
 
-            # En yüksek bütçe kullanım oranı
+            # En yüksek bütçe kullanım oranını bul
             kullanim_df = df[df['Kümüle Bütçe'] > 0]
             if not kullanim_df.empty:
                 max_row = kullanim_df.loc[kullanim_df['Kullanım Oranı'].idxmax()]
