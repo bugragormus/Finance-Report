@@ -30,6 +30,7 @@ Kullanım:
 
 import streamlit as st
 import pandas as pd
+import numpy as np
 from io import BytesIO
 from typing import Optional, List, Callable, Union
 from utils.error_handler import handle_error, display_friendly_error
@@ -64,29 +65,18 @@ def show_filtered_data(
         
     Returns:
         BytesIO: Excel dosyası buffer'ı
-        
-    Hata durumunda:
-    - Hata loglanır
-    - Kullanıcıya hata mesajı gösterilir
-    - Boş buffer döndürülür
-    
-    Örnek:
-        >>> df = pd.DataFrame({
-        ...     "Masraf Yeri": ["A", "B", "C"],
-        ...     "Bütçe": [1000, 2000, 3000]
-        ... })
-        >>> buffer = show_filtered_data(
-        ...     df,
-        ...     filename="rapor.xlsx",
-        ...     style_func=style_warning_rows,
-        ...     sticky_column="Masraf Yeri"
-        ... )
     """
     if title:
         st.markdown(title)
     
+    # Veri çerçevesini kopyala ve optimize et
+    df = df.copy()
+    for col in df.select_dtypes(include=['object']).columns:
+        if df[col].nunique() < len(df) * 0.5:  # Eğer benzersiz değer sayısı toplam satır sayısının yarısından azsa
+            df[col] = df[col].astype('category')
+    
     # Save DataFrame to session state based on filename
-    st.session_state[filename.replace(".xlsx", "")] = df.copy()
+    st.session_state[filename.replace(".xlsx", "")] = df
     
     # Sabit sütun belirleme
     column_to_stick = None
@@ -111,20 +101,23 @@ def show_filtered_data(
     else:
         display_df = df
     
-    # Sütun yapılandırması
+    # Sütun yapılandırması - Önceden hesapla
     column_config = {}
-    for col in display_df.columns:
-        if pd.api.types.is_numeric_dtype(display_df[col]):
-            column_config[col] = st.column_config.NumberColumn(
-                col,
-                format="%.2f",
-                help=f"{col} değerleri"
-            )
-        else:
-            column_config[col] = st.column_config.TextColumn(
-                col,
-                help=f"{col} değerleri"
-            )
+    numeric_cols = display_df.select_dtypes(include=[np.number]).columns
+    text_cols = display_df.select_dtypes(include=['object', 'category']).columns
+    
+    for col in numeric_cols:
+        column_config[col] = st.column_config.NumberColumn(
+            col,
+            format="%.2f",
+            help=f"{col} değerleri"
+        )
+    
+    for col in text_cols:
+        column_config[col] = st.column_config.TextColumn(
+            col,
+            help=f"{col} değerleri"
+        )
     
     # Sabit sütun yapılandırması
     if column_to_stick:
@@ -141,33 +134,28 @@ def show_filtered_data(
     # Stil fonksiyonu varsa ve seçilmişse uygula
     if style_func and apply_style:
         styled_df = style_func(display_df.copy())
-        # Stil uygulanmış DataFrame'i göster
         st.data_editor(
             styled_df,
             column_config=column_config,
             use_container_width=True,
-            disabled=True,  # Düzenleme devre dışı
-            #hide_index=True,
+            disabled=True,
             key=unique_key
         )
     else:
-        # Normal DataFrame'i göster
         st.data_editor(
             display_df,
             column_config=column_config,
             use_container_width=True,
-            disabled=True,  # Düzenleme devre dışı
-            #hide_index=True,
+            disabled=True,
             key=unique_key
         )
 
-    # Excel çıktısı oluştur
+    # Excel çıktısı oluştur - Paralel işleme
     excel_buffer = BytesIO()
     try:
         with pd.ExcelWriter(excel_buffer, engine="openpyxl") as writer:
             df.to_excel(writer, index=False)
 
-        # İndirme butonu
         st.download_button(
             label="⬇ İndir (Excel)",
             data=excel_buffer.getvalue(),
@@ -322,37 +310,27 @@ def calculate_group_totals(
     try:
         grouped_totals = df.groupby(group_column)[columns_to_sum].sum()
 
+        # Özel metrikler için sütun eşleştirme
+        metric_column_mapping = {
+            "BE Bakiye": "Kümüle BE Bakiye",
+            "BE-Fiili Fark Bakiye": "Kümüle BE-Fiili Fark Bakiye"
+        }
+
         # Her metrik için toplam sütun oluştur
         for metric in metrics:
-            # Sütun adını "Ay [Metrik]" formatında böl ve tam eşleşme kontrol et
+            # Özel metrik kontrolü
+            if metric in metric_column_mapping:
+                kumule_col = metric_column_mapping[metric]
+                if kumule_col in df.columns and kumule_col not in grouped_totals.columns:
+                    kumule_data = df.groupby(group_column)[kumule_col].sum()
+                    grouped_totals[f"Toplam {metric}"] = kumule_data
+                    continue
+
+            # Normal metrik hesaplama
             metric_cols = [
                 col for col in columns_to_sum
                 if col.split(" ", 1)[-1] == metric
             ]
-
-            # "BE Bakiye" metriği için "Kümüle BE Bakiye" sütununu da kontrol et
-            if metric == "BE Bakiye" and not metric_cols:
-                # Kümüle BE Bakiye sütunu varsa ekle
-                kumule_col = "Kümüle BE Bakiye"
-                if kumule_col in df.columns:
-                    # Tüm sütunları içeren yeni bir DataFrame oluştur
-                    if kumule_col not in grouped_totals.columns:
-                        kumule_data = df.groupby(group_column)[kumule_col].sum()
-                        # Ayrı bir seri olarak ekle
-                        grouped_totals[f"Toplam {metric}"] = kumule_data
-                        continue
-
-            # "BE-Fiili Fark Bakiye" metriği için "Kümüle BE-Fiili Fark Bakiye" sütununu da kontrol et
-            if metric == "BE-Fiili Fark Bakiye" and not metric_cols:
-                # Kümüle BE-Fiili Fark Bakiye sütunu varsa ekle
-                kumule_col = "Kümüle BE-Fiili Fark Bakiye"
-                if kumule_col in df.columns:
-                    # Tüm sütunları içeren yeni bir DataFrame oluştur
-                    if kumule_col not in grouped_totals.columns:
-                        kumule_data = df.groupby(group_column)[kumule_col].sum()
-                        # Ayrı bir seri olarak ekle
-                        grouped_totals[f"Toplam {metric}"] = kumule_data
-                        continue
 
             if metric_cols:
                 grouped_totals[f"Toplam {metric}"] = grouped_totals[metric_cols].sum(axis=1)

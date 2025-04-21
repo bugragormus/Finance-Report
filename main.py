@@ -20,7 +20,7 @@ Modüller:
     - error_handler: Hata yönetimi
 
 Kullanım:
-    streamlit run main.py
+    streamlit run main.py --theme.base="light" --theme.primaryColor="#2f64b5" --theme.backgroundColor="#dee2e6" --theme.secondaryBackgroundColor="#e9ecef" --theme.textColor="#262730" --theme.font="sans serif"
 """
 
 import streamlit as st
@@ -28,6 +28,7 @@ from io import BytesIO
 import zipfile
 from PIL import Image
 import pandas as pd
+import numpy as np
 
 from utils.loader import load_data
 from utils.filters import apply_filters
@@ -135,6 +136,11 @@ def setup_sidebar_filters(df):
         
         # Veri filtreleme
         try:
+            # Veri çerçevesini optimize et
+            df = df.copy()
+            numeric_cols = df.select_dtypes(include=[np.number]).columns
+            df[numeric_cols] = df[numeric_cols].fillna(0)
+            
             filtered_df = apply_filters(df, GENERAL_COLUMNS, "filter")
         except Exception as e:
             display_friendly_error(
@@ -219,57 +225,41 @@ def clear_all_filters():
 def prepare_final_dataframe(df, filtered_df, selected_months, selected_report_bases, selected_cumulative):
     """
     Son veri çerçevesini hazırlar.
-    
-    Bu fonksiyon:
-    1. Ay filtrelerini uygular
-    2. Rapor bazı filtrelerini uygular
-    3. Kümülatif filtreleri uygular
-    4. Son veri çerçevesini oluşturur
-    
-    Parameters:
-        df (DataFrame): Orijinal veri çerçevesi
-        filtered_df (DataFrame): Önceden filtrelenmiş veri çerçevesi
-        selected_months (list): Seçili aylar
-        selected_report_bases (list): Seçili rapor bazları
-        selected_cumulative (list): Seçili kümülatif değerler
-        
-    Returns:
-        DataFrame: Hazırlanmış son veri çerçevesi
-        
-    Hata durumunda:
-    - Orijinal veriyi döndürür
-    - Hata mesajını loglar
     """
-    selected_columns = GENERAL_COLUMNS.copy() + [
-        f"{month} {base_col}"
-        for month in selected_months
-        for base_col in selected_report_bases
-        if f"{month} {base_col}" in df.columns
-    ]
-    for cum_col in selected_cumulative:
-        if cum_col in df.columns:
-            selected_columns.append(cum_col)
-
-    return filtered_df[selected_columns]
+    # Veri çerçevesini optimize et
+    df = df.copy()
+    numeric_cols = df.select_dtypes(include=[np.number]).columns
+    df[numeric_cols] = df[numeric_cols].fillna(0)
+    
+    # Sütun seçimi için mapping oluştur
+    column_mapping = {
+        'general': GENERAL_COLUMNS.copy(),
+        'monthly': [
+            f"{month} {base_col}"
+            for month in selected_months
+            for base_col in selected_report_bases
+            if f"{month} {base_col}" in df.columns
+        ],
+        'cumulative': [
+            cum_col for cum_col in selected_cumulative
+            if cum_col in df.columns
+        ]
+    }
+    
+    # Tüm sütunları birleştir
+    selected_columns = (
+        column_mapping['general'] + 
+        column_mapping['monthly'] + 
+        column_mapping['cumulative']
+    )
+            
+    return df[selected_columns]
 
 
 @handle_critical_error
 def main():
     """
     Ana uygulama fonksiyonu.
-    
-    Bu fonksiyon:
-    1. Sayfa yapılandırmasını ayarlar
-    2. Veriyi yükler ve doğrular
-    3. Filtreleri ayarlar
-    4. Veriyi hazırlar
-    5. Analiz panellerini gösterir
-    6. Raporlama seçeneklerini sunar
-    
-    Hata durumunda:
-    - Kritik hataları yönetir
-    - Kullanıcıya uygun hata mesajı gösterir
-    - Uygulamayı güvenli bir şekilde sonlandırır
     """
     # Sayfa yapılandırması
     setup_page_config()
@@ -304,19 +294,21 @@ def main():
     show_kpi_panel(final_df)
 
     # Analiz sekmeleri tanımlamaları
-    tab_titles_analiz = [
-        "📊 Veri",
-        "📈 Trend",
-        "📊 Kategori Analizi",
-        "📈 Karşılaştırmalı Analiz",
-        "📎 Pivot Tablo",
-        "💡 Otomatik Özet",
-    ]
-    tab_titles_raporlama = ["⬇ İndir (ZIP)", "📄 PDF Raporu"]
+    tab_config = {
+        'analiz': [
+            "📊 Veri",
+            "📈 Trend",
+            "📊 Kategori Analizi",
+            "📈 Karşılaştırmalı Analiz",
+            "📎 Pivot Tablo",
+            "💡 Otomatik Özet",
+        ],
+        'raporlama': ["⬇ İndir (ZIP)", "📄 PDF Raporu"]
+    }
 
     # Sekme gruplarını oluştur
-    tabs_analiz = st.tabs(tab_titles_analiz)
-    tabs_raporlama = st.tabs(tab_titles_raporlama)
+    tabs_analiz = st.tabs(tab_config['analiz'])
+    tabs_raporlama = st.tabs(tab_config['raporlama'])
 
     # Analiz tabları
     with tabs_analiz[0]:
@@ -336,32 +328,31 @@ def main():
                 if "Hepsi" in selected_table_months:
                     selected_table_months = MONTHS
 
-                # Kümüle seçimi
                 show_cumulative = st.checkbox("Kümüle Verileri Göster", value=False)
 
+            # İzin verilen metrikleri filtrele
             allowed_metrics = [
                 metric for metric in FIXED_METRICS
                 if "Hepsi" in selected_report_bases or
                    any(metric in base for base in selected_report_bases)
             ]
 
-            table_target_columns = []
-            # Aylık veriler
-            for month in selected_table_months:
-                table_target_columns.extend([
+            # Sütun oluşturma
+            table_columns = {
+                'monthly': [
                     f"{month} {metric}"
+                    for month in selected_table_months
                     for metric in allowed_metrics
                     if f"{month} {metric}" in df.columns
-                ])
-
-            # Kümüle veriler
-            if show_cumulative:
-                table_target_columns.extend([
+                ],
+                'cumulative': [
                     f"Kümüle {metric}"
                     for metric in allowed_metrics
-                    if f"Kümüle {metric}" in df.columns
-                ])
+                    if show_cumulative and f"Kümüle {metric}" in df.columns
+                ]
+            }
 
+            table_target_columns = table_columns['monthly'] + table_columns['cumulative']
             table_filtered_df = filtered_df[GENERAL_COLUMNS + table_target_columns]
 
             show_grouped_summary(
@@ -423,27 +414,24 @@ def main():
                 if "Hepsi" in selected_ilgili1_months:
                     selected_ilgili1_months = MONTHS
 
-                # Kümüle seçimi
                 show_cumulative_ilgili1 = st.checkbox("Kümüle Verileri Göster", value=False, key="cumulative_ilgili1")
 
-            # Optimized İlgili1 Target Columns Construction
-            ilgili1_target_columns = []
-            # Aylık veriler
-            for month in selected_ilgili1_months:
-                ilgili1_target_columns.extend([
+            # İlgili1 sütunları
+            ilgili1_columns = {
+                'monthly': [
                     f"{month} {metric}"
+                    for month in selected_ilgili1_months
                     for metric in FIXED_METRICS
                     if f"{month} {metric}" in df.columns
-                ])
-
-            # Kümüle veriler
-            if show_cumulative_ilgili1:
-                ilgili1_target_columns.extend([
+                ],
+                'cumulative': [
                     f"Kümüle {metric}"
                     for metric in FIXED_METRICS
-                    if f"Kümüle {metric}" in df.columns
-                ])
+                    if show_cumulative_ilgili1 and f"Kümüle {metric}" in df.columns
+                ]
+            }
 
+            ilgili1_target_columns = ilgili1_columns['monthly'] + ilgili1_columns['cumulative']
             ilgili1_filtered_df = df[GENERAL_COLUMNS + ilgili1_target_columns]
 
             show_grouped_summary(
@@ -562,74 +550,65 @@ def main():
     with tabs_raporlama[0]:
         if st.button("📦 ZIP Raporu Oluştur"):
             with st.spinner("Rapor oluşturuluyor..."):
+                # Excel dosyaları için mapping
+                excel_files = {
+                    'masraf_grubu': {
+                        'sheets': {
+                            'Özet': 'masraf_grubu_ozet',
+                            'Sayısal Toplam': 'masraf_grubu_toplam_sayisal',
+                            'Toplamlar': 'masraf_grubu_toplamlar',
+                            'Genel Toplam': 'masraf_grubu_toplamlar_sayisal'
+                        },
+                        'filename': 'masraf_cesidi_grubu_1_analizi.xlsx'
+                    },
+                    'ilgili1': {
+                        'sheets': {
+                            'Özet': 'ilgili1_ozet',
+                            'Sayısal Toplam': 'ilgili1_toplam_sayisal',
+                            'Toplamlar': 'ilgili1_toplamlar',
+                            'Genel Toplam': 'ilgili1_toplamlar_sayisal'
+                        },
+                        'filename': 'ilgili_1_analizi.xlsx'
+                    },
+                    'ham_veri': {
+                        'sheets': {
+                            'Ham Veri': 'ham_veri',
+                            'Sayısal Toplam': 'ham_veri_toplam_sayisal'
+                        },
+                        'filename': 'ham_veri.xlsx'
+                    }
+                }
+
+                # Görsel dosyaları için mapping
+                image_files = {
+                    'trend.png': trend_img_buffer,
+                    'kategori_analizi.png': combined_img_buffer,
+                    'karsilastirma_analizi.png': comperative_img_buffer,
+                    'pivot_analizi.png': pivot_buffer
+                }
+
+                # ZIP oluştur
                 zip_buffer = BytesIO()
                 with zipfile.ZipFile(zip_buffer, "w") as zip_file:
-                    # Masraf Çeşidi Grubu 1 Analizi Excel'i
-                    masraf_excel_buffer = BytesIO()
-                    with pd.ExcelWriter(masraf_excel_buffer, engine="openpyxl") as writer:
-                        if "masraf_grubu_ozet" in st.session_state:
-                            st.session_state["masraf_grubu_ozet"].to_excel(writer, sheet_name="Özet", index=False)
-                        if "masraf_grubu_toplam_sayisal" in st.session_state:
-                            st.session_state["masraf_grubu_toplam_sayisal"].to_excel(writer, sheet_name="Sayısal Toplam", index=False)
-                        if "masraf_grubu_toplamlar" in st.session_state:
-                            st.session_state["masraf_grubu_toplamlar"].to_excel(writer, sheet_name="Toplamlar", index=False)
-                        if "masraf_grubu_toplamlar_sayisal" in st.session_state:
-                            st.session_state["masraf_grubu_toplamlar_sayisal"].to_excel(writer, sheet_name="Genel Toplam", index=False)
-                    zip_file.writestr("masraf_cesidi_grubu_1_analizi.xlsx", masraf_excel_buffer.getvalue())
+                    # Excel dosyalarını ekle
+                    for file_config in excel_files.values():
+                        excel_buffer = BytesIO()
+                        with pd.ExcelWriter(excel_buffer, engine="openpyxl") as writer:
+                            for sheet_name, state_key in file_config['sheets'].items():
+                                if state_key in st.session_state:
+                                    st.session_state[state_key].to_excel(writer, sheet_name=sheet_name, index=False)
+                        zip_file.writestr(file_config['filename'], excel_buffer.getvalue())
 
-                    # İlgili 1 Analizi Excel'i
-                    ilgili1_excel_buffer = BytesIO()
-                    with pd.ExcelWriter(ilgili1_excel_buffer, engine="openpyxl") as writer:
-                        if "ilgili1_ozet" in st.session_state:
-                            st.session_state["ilgili1_ozet"].to_excel(writer, sheet_name="Özet", index=False)
-                        if "ilgili1_toplam_sayisal" in st.session_state:
-                            st.session_state["ilgili1_toplam_sayisal"].to_excel(writer, sheet_name="Sayısal Toplam", index=False)
-                        if "ilgili1_toplamlar" in st.session_state:
-                            st.session_state["ilgili1_toplamlar"].to_excel(writer, sheet_name="Toplamlar", index=False)
-                        if "ilgili1_toplamlar_sayisal" in st.session_state:
-                            st.session_state["ilgili1_toplamlar_sayisal"].to_excel(writer, sheet_name="Genel Toplam", index=False)
-                    zip_file.writestr("ilgili_1_analizi.xlsx", ilgili1_excel_buffer.getvalue())
+                    # Görsel dosyalarını ekle
+                    for filename, buffer in image_files.items():
+                        if buffer:
+                            zip_file.writestr(filename, buffer.getvalue())
 
-                    # Ham Veri Excel'i
-                    ham_veri_excel_buffer = BytesIO()
-                    with pd.ExcelWriter(ham_veri_excel_buffer, engine="openpyxl") as writer:
-                        if "ham_veri" in st.session_state:
-                            st.session_state["ham_veri"].to_excel(writer, sheet_name="Ham Veri", index=False)
-                        if "ham_veri_toplam_sayisal" in st.session_state:
-                            st.session_state["ham_veri_toplam_sayisal"].to_excel(writer, sheet_name="Sayısal Toplam", index=False)
-                    zip_file.writestr("ham_veri.xlsx", ham_veri_excel_buffer.getvalue())
-
-                    # Karşılaştırmalı Analiz Excel'i
-                    if "comparative_excel_buffer" in locals() and comparative_excel_buffer:
-                        comparative_df = pd.read_excel(comparative_excel_buffer)
-                        comparative_excel_buffer = BytesIO()
-                        with pd.ExcelWriter(comparative_excel_buffer, engine="openpyxl") as writer:
-                            comparative_df.to_excel(writer, sheet_name="Karşılaştırmalı Analiz", index=False)
-                        zip_file.writestr("karsilastirma_analizi.xlsx", comparative_excel_buffer.getvalue())
-
-                    # Pivot Tablo Excel'i
-                    if "pivot_excel_buffer" in locals() and pivot_excel_buffer:
-                        pivot_df = pd.read_excel(pivot_excel_buffer)
-                        pivot_excel_buffer = BytesIO()
-                        with pd.ExcelWriter(pivot_excel_buffer, engine="openpyxl") as writer:
-                            pivot_df.to_excel(writer, sheet_name="Pivot Tablo", index=False)
-                        zip_file.writestr("pivot_tablo.xlsx", pivot_excel_buffer.getvalue())
-
-                    # Add image files to ZIP
-                    if trend_img_buffer:
-                        zip_file.writestr("trend.png", trend_img_buffer.getvalue())
-                    if combined_img_buffer:
-                        zip_file.writestr("kategori_analizi.png", combined_img_buffer.getvalue())
-                    if comperative_img_buffer:
-                        zip_file.writestr("karsilastirma_analizi.png", comperative_img_buffer.getvalue())
-                    if pivot_buffer:
-                        zip_file.writestr("pivot_analizi.png", pivot_buffer.getvalue())
-
-                # Save the ZIP buffer to session state
+                # ZIP'i session state'e kaydet
                 st.session_state["zip_buffer"] = zip_buffer.getvalue()
                 st.success("Rapor oluşturuldu!")
 
-        # Show download button if ZIP is ready
+        # ZIP indirme butonu
         if "zip_buffer" in st.session_state:
             st.download_button(
                 "⬇ İndir (ZIP)",

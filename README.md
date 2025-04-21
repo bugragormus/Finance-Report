@@ -282,5 +282,3 @@ Finance-Report/
 ## 📝 Lisans
 
 MIT
-
-streamlit run main.py --theme.base="light" --theme.primaryColor="#2f64b5" --theme.backgroundColor="#dee2e6" --theme.secondaryBackgroundColor="#e9ecef" --theme.textColor="#262730" --theme.font="sans serif"
