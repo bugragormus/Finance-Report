@@ -283,4 +283,4 @@ Finance-Report/
 
 MIT
 
-streamlit run main.py --theme.base="light" --theme.primaryColor="#6eb52f" --theme.backgroundColor="#f0f0f5" --theme.secondaryBackgroundColor="#e0e0ef" --theme.textColor="#262730" --theme.font="sans serif"
+streamlit run main.py --theme.base="light" --theme.primaryColor="#2f64b5" --theme.backgroundColor="#dee2e6" --theme.secondaryBackgroundColor="#e9ecef" --theme.textColor="#262730" --theme.font="sans serif"
