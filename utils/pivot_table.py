@@ -32,6 +32,7 @@ from io import BytesIO
 import plotly.io as pio
 from typing import Tuple, Optional
 from utils.error_handler import handle_error, display_friendly_error
+from config.constants import REPORT_BASE_COLUMNS, MONTHS, CUMULATIVE_COLUMNS
 
 # Grafik export ayarları
 pio.kaleido.scope.default_format = "png"
@@ -50,7 +51,7 @@ def show_pivot_table(df: pd.DataFrame) -> Tuple[Optional[BytesIO], Optional[Byte
 
     Kullanıcı arayüzü üzerinden:
     - Satır ve sütun alanları (kategorik değişkenler)
-    - Değer alanı (sayısal değişkenler)
+    - Değer alanı (REPORT_BASE_COLUMNS değerleri)
     - Toplama fonksiyonu (sum, mean, max, min, count)
 
     seçilerek pivot tablo oluşturulur.
@@ -73,21 +74,48 @@ def show_pivot_table(df: pd.DataFrame) -> Tuple[Optional[BytesIO], Optional[Byte
     st.subheader("📊 Dinamik Pivot Tablo Oluşturucu")
 
     # Sütunları numerik ve kategorik olarak ayır
-    numeric_cols = df.select_dtypes(include="number").columns.tolist()
-    non_numeric_cols = [col for col in df.columns if col not in numeric_cols]
+    non_numeric_cols = [col for col in df.columns if col not in df.select_dtypes(include="number").columns]
 
     # Kullanıcı seçimleri
     row_col = st.multiselect("🧱 Satır Alanları", non_numeric_cols)
     col_col = st.multiselect("📏 Sütun Alanları", non_numeric_cols)
     
-    if not numeric_cols:
+    # Sidebar'dan seçilen ayları al
+    selected_months = st.session_state.get("month_filter", ["Hepsi"])
+    if "Hepsi" in selected_months:
+        selected_months = MONTHS
+
+    # Değer türü seçimi
+    value_type = st.radio(
+        "📊 Değer Türü",
+        ["Aylık Değerler", "Kümüle Değerler"],
+        horizontal=True
+    )
+
+    # Değer alanı seçimi
+    value_options = []
+    if value_type == "Aylık Değerler":
+        for base_col in REPORT_BASE_COLUMNS:
+            # Seçilen aylardan en az birinde bu değer varsa ekle
+            for month in selected_months:
+                col_name = f"{month} {base_col}"
+                if col_name in df.columns:
+                    value_options.append(base_col)
+                    break
+    else:  # Kümüle Değerler
+        for base_col in CUMULATIVE_COLUMNS:
+            col_name = f"Kümüle {base_col}"
+            if col_name in df.columns:
+                value_options.append(base_col)
+
+    if not value_options:
         display_friendly_error(
-            "Sayısal sütun bulunamadı",
-            "Pivot tablo için en az bir sayısal sütun gereklidir."
+            f"Seçilen tür için değerler bulunamadı",
+            "Farklı bir değer türü seçin veya veri formatını kontrol edin."
         )
         return None, None
-        
-    val_col = st.selectbox("🔢 Değer Alanı", numeric_cols)
+
+    val_col = st.selectbox("🔢 Değer Alanı", value_options)
 
     agg_func = st.selectbox(
         "🔧 Toplama Fonksiyonu", ["sum", "mean", "max", "min", "count"]
@@ -95,12 +123,25 @@ def show_pivot_table(df: pd.DataFrame) -> Tuple[Optional[BytesIO], Optional[Byte
 
     if row_col and col_col and val_col:
         try:
+            # Seçilen değer için veri sütunlarını belirle
+            if value_type == "Aylık Değerler":
+                value_columns = [f"{month} {val_col}" for month in selected_months if f"{month} {val_col}" in df.columns]
+            else:  # Kümüle Değerler
+                value_columns = [f"Kümüle {val_col}"]
+            
+            if not value_columns:
+                display_friendly_error(
+                    f"Seçilen değer için veri bulunamadı",
+                    "Farklı bir değer seçin veya veri formatını kontrol edin."
+                )
+                return None, None
+
             # Pivot tablo oluştur
             pivot = pd.pivot_table(
                 df,
                 index=row_col,
                 columns=col_col,
-                values=val_col,
+                values=value_columns,
                 aggfunc=agg_func,
                 fill_value=0,
             )
