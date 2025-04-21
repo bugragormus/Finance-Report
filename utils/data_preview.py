@@ -85,6 +85,9 @@ def show_filtered_data(
     if title:
         st.markdown(title)
     
+    # Save DataFrame to session state based on filename
+    st.session_state[filename.replace(".xlsx", "")] = df.copy()
+    
     # Sabit sütun belirleme
     column_to_stick = None
     if sticky_column is not None:
@@ -240,6 +243,9 @@ def show_grouped_summary(
         # Tüm sayısal sütunları topla
         numeric_columns = [col for col in existing_columns if pd.api.types.is_numeric_dtype(df[col])]
         grouped_df = df.groupby(group_column)[numeric_columns].sum().reset_index()
+        
+        # Save grouped DataFrame to session state
+        st.session_state[filename.replace(".xlsx", "")] = grouped_df.copy()
         
         return show_filtered_data(
             grouped_df, 
@@ -415,6 +421,9 @@ def show_column_totals(
     else:
         totals_df = pd.DataFrame(df[numeric_columns].sum()).T
         totals_df.index = ["Toplam"]
+
+    # Save totals DataFrame to session state
+    st.session_state[filename.replace(".xlsx", "")] = totals_df.copy()
 
     return show_filtered_data(
         totals_df,

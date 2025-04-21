@@ -1,0 +1,235 @@
+2025-04-21 13:30:27.409379: HATA (show_column_totals): There are multiple `data_editor` elements with the same auto-generated ID. When this element is created, it is assigned an internal ID based on the element type and provided parameters. Multiple elements with the same type and parameters will cause this error.
+
+To fix this error, please pass a unique `key` argument to the `data_editor` element.
+Stack Trace: Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 112, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/data_preview.py", line 431, in show_column_totals
+    st.data_editor(
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/runtime/metrics_util.py", line 410, in wrapped_func
+    result = non_optional_func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/elements/widgets/data_editor.py", line 897, in data_editor
+    element_id = compute_and_register_element_id(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/elements/lib/utils.py", line 239, in compute_and_register_element_id
+    _register_element_id(ctx, element_type, element_id)
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/elements/lib/utils.py", line 145, in _register_element_id
+    raise StreamlitDuplicateElementId(element_type)
+streamlit.errors.StreamlitDuplicateElementId: There are multiple `data_editor` elements with the same auto-generated ID. When this element is created, it is assigned an internal ID based on the element type and provided parameters. Multiple elements with the same type and parameters will cause this error.
+
+To fix this error, please pass a unique `key` argument to the `data_editor` element.
+
+
+2025-04-21 13:30:36.372013: HATA (show_column_totals): There are multiple `data_editor` elements with the same auto-generated ID. When this element is created, it is assigned an internal ID based on the element type and provided parameters. Multiple elements with the same type and parameters will cause this error.
+
+To fix this error, please pass a unique `key` argument to the `data_editor` element.
+Stack Trace: Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 112, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/data_preview.py", line 431, in show_column_totals
+    st.data_editor(
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/runtime/metrics_util.py", line 410, in wrapped_func
+    result = non_optional_func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/elements/widgets/data_editor.py", line 897, in data_editor
+    element_id = compute_and_register_element_id(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/elements/lib/utils.py", line 239, in compute_and_register_element_id
+    _register_element_id(ctx, element_type, element_id)
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/elements/lib/utils.py", line 145, in _register_element_id
+    raise StreamlitDuplicateElementId(element_type)
+streamlit.errors.StreamlitDuplicateElementId: There are multiple `data_editor` elements with the same auto-generated ID. When this element is created, it is assigned an internal ID based on the element type and provided parameters. Multiple elements with the same type and parameters will cause this error.
+
+To fix this error, please pass a unique `key` argument to the `data_editor` element.
+
+
+2025-04-21 13:37:10.982656: HATA (CRITICAL-main): name 'create_multi_sheet_excel' is not defined
+Stack Trace: Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 499, in main
+    ilgili1_excel_buffer = create_multi_sheet_excel(
+                           ^^^^^^^^^^^^^^^^^^^^^^^^
+NameError: name 'create_multi_sheet_excel' is not defined
+
+
+2025-04-21 13:37:34.690522: HATA (CRITICAL-main): name 'create_multi_sheet_excel' is not defined
+Stack Trace: Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 499, in main
+    ilgili1_excel_buffer = create_multi_sheet_excel(
+                           ^^^^^^^^^^^^^^^^^^^^^^^^
+NameError: name 'create_multi_sheet_excel' is not defined
+
+
+2025-04-21 13:38:03.828045: HATA (CRITICAL-main): name 'create_multi_sheet_excel' is not defined
+Stack Trace: Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 499, in main
+    ilgili1_excel_buffer = create_multi_sheet_excel(
+                           ^^^^^^^^^^^^^^^^^^^^^^^^
+NameError: name 'create_multi_sheet_excel' is not defined
+
+
+2025-04-21 13:41:14.084245: HATA (show_comparative_analysis): All arguments should have the same length. The length of argument `y` is 3, whereas the length of previously-processed arguments ['İlgili 1'] is 3184
+Stack Trace: Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 112, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/comparative_analysis.py", line 69, in show_comparative_analysis
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/plotly/express/_chart_types.py", line 381, in bar
+    return make_figure(
+           ^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/plotly/express/_core.py", line 2479, in make_figure
+    args = build_dataframe(args, constructor)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/plotly/express/_core.py", line 1727, in build_dataframe
+    df_output, wide_id_vars = process_args_into_dataframe(
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/plotly/express/_core.py", line 1373, in process_args_into_dataframe
+    raise ValueError(
+ValueError: All arguments should have the same length. The length of argument `y` is 3, whereas the length of previously-processed arguments ['İlgili 1'] is 3184
+
+
+2025-04-21 13:41:14.085333: HATA (CRITICAL-main): cannot unpack non-iterable NoneType object
+Stack Trace: Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 565, in main
+    comparative_excel_buffer, comperative_img_buffer = show_comparative_analysis(
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: cannot unpack non-iterable NoneType object
+
+
+2025-04-21 13:42:40.227261: HATA (show_filtered_data): There are multiple `checkbox` elements with the same auto-generated ID. When this element is created, it is assigned an internal ID based on the element type and provided parameters. Multiple elements with the same type and parameters will cause this error.
+
+To fix this error, please pass a unique `key` argument to the `checkbox` element.
+Stack Trace: Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 112, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/data_preview.py", line 84, in show_filtered_data
+    apply_style = st.checkbox("⚠️ Stil Uygula (Performansı Etkileyebilir)", value=False)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/runtime/metrics_util.py", line 410, in wrapped_func
+    result = non_optional_func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/elements/widgets/checkbox.py", line 156, in checkbox
+    return self._checkbox(
+           ^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/elements/widgets/checkbox.py", line 306, in _checkbox
+    element_id = compute_and_register_element_id(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/elements/lib/utils.py", line 239, in compute_and_register_element_id
+    _register_element_id(ctx, element_type, element_id)
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/elements/lib/utils.py", line 145, in _register_element_id
+    raise StreamlitDuplicateElementId(element_type)
+streamlit.errors.StreamlitDuplicateElementId: There are multiple `checkbox` elements with the same auto-generated ID. When this element is created, it is assigned an internal ID based on the element type and provided parameters. Multiple elements with the same type and parameters will cause this error.
+
+To fix this error, please pass a unique `key` argument to the `checkbox` element.
+
+
+2025-04-21 13:42:40.248663: HATA (show_filtered_data): There are multiple `checkbox` elements with the same auto-generated ID. When this element is created, it is assigned an internal ID based on the element type and provided parameters. Multiple elements with the same type and parameters will cause this error.
+
+To fix this error, please pass a unique `key` argument to the `checkbox` element.
+Stack Trace: Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 112, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/data_preview.py", line 84, in show_filtered_data
+    apply_style = st.checkbox("⚠️ Stil Uygula (Performansı Etkileyebilir)", value=False)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/runtime/metrics_util.py", line 410, in wrapped_func
+    result = non_optional_func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/elements/widgets/checkbox.py", line 156, in checkbox
+    return self._checkbox(
+           ^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/elements/widgets/checkbox.py", line 306, in _checkbox
+    element_id = compute_and_register_element_id(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/elements/lib/utils.py", line 239, in compute_and_register_element_id
+    _register_element_id(ctx, element_type, element_id)
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/elements/lib/utils.py", line 145, in _register_element_id
+    raise StreamlitDuplicateElementId(element_type)
+streamlit.errors.StreamlitDuplicateElementId: There are multiple `checkbox` elements with the same auto-generated ID. When this element is created, it is assigned an internal ID based on the element type and provided parameters. Multiple elements with the same type and parameters will cause this error.
+
+To fix this error, please pass a unique `key` argument to the `checkbox` element.
+
+
+2025-04-21 13:42:40.277955: HATA (show_filtered_data): There are multiple `checkbox` elements with the same auto-generated ID. When this element is created, it is assigned an internal ID based on the element type and provided parameters. Multiple elements with the same type and parameters will cause this error.
+
+To fix this error, please pass a unique `key` argument to the `checkbox` element.
+Stack Trace: Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 112, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/data_preview.py", line 84, in show_filtered_data
+    apply_style = st.checkbox("⚠️ Stil Uygula (Performansı Etkileyebilir)", value=False)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/runtime/metrics_util.py", line 410, in wrapped_func
+    result = non_optional_func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/elements/widgets/checkbox.py", line 156, in checkbox
+    return self._checkbox(
+           ^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/elements/widgets/checkbox.py", line 306, in _checkbox
+    element_id = compute_and_register_element_id(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/elements/lib/utils.py", line 239, in compute_and_register_element_id
+    _register_element_id(ctx, element_type, element_id)
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/elements/lib/utils.py", line 145, in _register_element_id
+    raise StreamlitDuplicateElementId(element_type)
+streamlit.errors.StreamlitDuplicateElementId: There are multiple `checkbox` elements with the same auto-generated ID. When this element is created, it is assigned an internal ID based on the element type and provided parameters. Multiple elements with the same type and parameters will cause this error.
+
+To fix this error, please pass a unique `key` argument to the `checkbox` element.
+
+
+2025-04-21 13:42:40.292352: HATA (show_filtered_data): There are multiple `checkbox` elements with the same auto-generated ID. When this element is created, it is assigned an internal ID based on the element type and provided parameters. Multiple elements with the same type and parameters will cause this error.
+
+To fix this error, please pass a unique `key` argument to the `checkbox` element.
+Stack Trace: Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 112, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/data_preview.py", line 84, in show_filtered_data
+    apply_style = st.checkbox("⚠️ Stil Uygula (Performansı Etkileyebilir)", value=False)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/runtime/metrics_util.py", line 410, in wrapped_func
+    result = non_optional_func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/elements/widgets/checkbox.py", line 156, in checkbox
+    return self._checkbox(
+           ^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/elements/widgets/checkbox.py", line 306, in _checkbox
+    element_id = compute_and_register_element_id(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/elements/lib/utils.py", line 239, in compute_and_register_element_id
+    _register_element_id(ctx, element_type, element_id)
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/elements/lib/utils.py", line 145, in _register_element_id
+    raise StreamlitDuplicateElementId(element_type)
+streamlit.errors.StreamlitDuplicateElementId: There are multiple `checkbox` elements with the same auto-generated ID. When this element is created, it is assigned an internal ID based on the element type and provided parameters. Multiple elements with the same type and parameters will cause this error.
+
+To fix this error, please pass a unique `key` argument to the `checkbox` element.
+
+
+2025-04-21 14:15:08.239866: HATA (CRITICAL-main): cannot access local variable 'zip_buffer' where it is not associated with a value
+Stack Trace: Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 657, in main
+    st.session_state["zip_buffer"] = zip_buffer.getvalue()
+                                     ^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'zip_buffer' where it is not associated with a value
+
+

@@ -320,33 +320,6 @@ def main():
 
     # Analiz tabları
     with tabs_analiz[0]:
-        # HEDEF SÜTUNLARIN OLUŞTURULMASI
-        target_columns = []
-        for month in selected_months:
-            target_columns.extend([
-                f"{month} Bütçe",
-                f"{month} Fiili",
-                f"{month} BE",
-                f"{month} Bütçe-Fiili Fark Bakiye",
-                f"{month} BE-Fiili Fark Bakiye",
-                f"{month} BE Bakiye"
-            ])
-
-        # KÜMÜLATİF SÜTUNLAR
-        allowed_cumulative = [
-            "Kümüle Bütçe",
-            "Kümüle Fiili",
-            "Kümüle BE Bakiye",
-            "Kümüle Bütçe-Fiili Fark Bakiye",
-            "Kümüle BE-Fiili Fark Bakiye",
-            "Kümüle BE"
-        ]
-        cumulative_to_include = [
-            col for col in selected_cumulative
-            if col in allowed_cumulative and col in df.columns
-        ]
-        target_columns += cumulative_to_include
-
         # 🚧 MASRAF ÇEŞİDİ GRUBU 1 ANALİZİ
         with st.container():
             st.markdown("## 🧾 Masraf Çeşidi Grubu 1 Analizi")
@@ -363,29 +336,31 @@ def main():
                 if "Hepsi" in selected_table_months:
                     selected_table_months = MONTHS
 
+                # Kümüle seçimi
+                show_cumulative = st.checkbox("Kümüle Verileri Göster", value=False)
+
             allowed_metrics = [
                 metric for metric in FIXED_METRICS
                 if "Hepsi" in selected_report_bases or
                    any(metric in base for base in selected_report_bases)
             ]
 
-            table_target_columns = [
-                f"{month} {metric}"
-                for month in selected_table_months
-                for metric in allowed_metrics
-                if f"{month} {metric}" in df.columns
-            ]
+            table_target_columns = []
+            # Aylık veriler
+            for month in selected_table_months:
+                table_target_columns.extend([
+                    f"{month} {metric}"
+                    for metric in allowed_metrics
+                    if f"{month} {metric}" in df.columns
+                ])
 
-            allowed_cumulative = [
-                f"Kümüle {metric}"
-                for metric in FIXED_METRICS
-                if f"Kümüle {metric}" in selected_cumulative
-            ]
-
-            table_target_columns += [
-                col for col in allowed_cumulative
-                if col in df.columns
-            ]
+            # Kümüle veriler
+            if show_cumulative:
+                table_target_columns.extend([
+                    f"Kümüle {metric}"
+                    for metric in allowed_metrics
+                    if f"Kümüle {metric}" in df.columns
+                ])
 
             table_filtered_df = filtered_df[GENERAL_COLUMNS + table_target_columns]
 
@@ -448,20 +423,26 @@ def main():
                 if "Hepsi" in selected_ilgili1_months:
                     selected_ilgili1_months = MONTHS
 
-            # Optimized İlgili1 Target Columns Construction
-            ilgili1_target_columns = [
-                f"{month} {metric}"
-                for month in selected_ilgili1_months
-                for metric in FIXED_METRICS
-                if f"{month} {metric}" in df.columns
-            ]
+                # Kümüle seçimi
+                show_cumulative_ilgili1 = st.checkbox("Kümüle Verileri Göster", value=False, key="cumulative_ilgili1")
 
-            # Optimized Kümülatif sütunları ekleme
-            ilgili1_target_columns += [
-                f"Kümüle {metric}"
-                for metric in FIXED_METRICS
-                if f"Kümüle {metric}" in df.columns
-            ]
+            # Optimized İlgili1 Target Columns Construction
+            ilgili1_target_columns = []
+            # Aylık veriler
+            for month in selected_ilgili1_months:
+                ilgili1_target_columns.extend([
+                    f"{month} {metric}"
+                    for metric in FIXED_METRICS
+                    if f"{month} {metric}" in df.columns
+                ])
+
+            # Kümüle veriler
+            if show_cumulative_ilgili1:
+                ilgili1_target_columns.extend([
+                    f"Kümüle {metric}"
+                    for metric in FIXED_METRICS
+                    if f"Kümüle {metric}" in df.columns
+                ])
 
             ilgili1_filtered_df = df[GENERAL_COLUMNS + ilgili1_target_columns]
 
@@ -579,44 +560,98 @@ def main():
 
     # Raporlama tabları
     with tabs_raporlama[0]:
-        zip_buffer = BytesIO()
-        with zipfile.ZipFile(zip_buffer, "w") as zip_file:
-            zip_file.writestr("veri.xlsx", excel_buffer.getvalue())
-            if trend_img_buffer:
-                zip_file.writestr("trend.png", trend_img_buffer.getvalue())
-            if combined_img_buffer:
-                zip_file.writestr(
-                    "kategori_analizi.png", combined_img_buffer.getvalue()
-                )
-            if comperative_img_buffer:
-                zip_file.writestr(
-                    "karsilastirma_analizi.png", comperative_img_buffer.getvalue()
-                )
-            if pivot_buffer:
-                zip_file.writestr("pivot_analizi.png", pivot_buffer.getvalue())
-            if "comparative_excel_buffer" in locals() and comparative_excel_buffer:
-                zip_file.writestr(
-                    "karsilastirma_analizi.xlsx", comparative_excel_buffer.getvalue()
-                )
-            if "pivot_excel_buffer" in locals() and pivot_excel_buffer:
-                zip_file.writestr("pivot_tablo.xlsx", pivot_excel_buffer.getvalue())
-        st.download_button(
-            "⬇ İndir (ZIP)", data=zip_buffer.getvalue(), file_name="rapor.zip"
-        )
+        if st.button("📦 ZIP Raporu Oluştur"):
+            with st.spinner("Rapor oluşturuluyor..."):
+                zip_buffer = BytesIO()
+                with zipfile.ZipFile(zip_buffer, "w") as zip_file:
+                    # Masraf Çeşidi Grubu 1 Analizi Excel'i
+                    masraf_excel_buffer = BytesIO()
+                    with pd.ExcelWriter(masraf_excel_buffer, engine="openpyxl") as writer:
+                        if "masraf_grubu_ozet" in st.session_state:
+                            st.session_state["masraf_grubu_ozet"].to_excel(writer, sheet_name="Özet", index=False)
+                        if "masraf_grubu_toplam_sayisal" in st.session_state:
+                            st.session_state["masraf_grubu_toplam_sayisal"].to_excel(writer, sheet_name="Sayısal Toplam", index=False)
+                        if "masraf_grubu_toplamlar" in st.session_state:
+                            st.session_state["masraf_grubu_toplamlar"].to_excel(writer, sheet_name="Toplamlar", index=False)
+                        if "masraf_grubu_toplamlar_sayisal" in st.session_state:
+                            st.session_state["masraf_grubu_toplamlar_sayisal"].to_excel(writer, sheet_name="Genel Toplam", index=False)
+                    zip_file.writestr("masraf_cesidi_grubu_1_analizi.xlsx", masraf_excel_buffer.getvalue())
+
+                    # İlgili 1 Analizi Excel'i
+                    ilgili1_excel_buffer = BytesIO()
+                    with pd.ExcelWriter(ilgili1_excel_buffer, engine="openpyxl") as writer:
+                        if "ilgili1_ozet" in st.session_state:
+                            st.session_state["ilgili1_ozet"].to_excel(writer, sheet_name="Özet", index=False)
+                        if "ilgili1_toplam_sayisal" in st.session_state:
+                            st.session_state["ilgili1_toplam_sayisal"].to_excel(writer, sheet_name="Sayısal Toplam", index=False)
+                        if "ilgili1_toplamlar" in st.session_state:
+                            st.session_state["ilgili1_toplamlar"].to_excel(writer, sheet_name="Toplamlar", index=False)
+                        if "ilgili1_toplamlar_sayisal" in st.session_state:
+                            st.session_state["ilgili1_toplamlar_sayisal"].to_excel(writer, sheet_name="Genel Toplam", index=False)
+                    zip_file.writestr("ilgili_1_analizi.xlsx", ilgili1_excel_buffer.getvalue())
+
+                    # Ham Veri Excel'i
+                    ham_veri_excel_buffer = BytesIO()
+                    with pd.ExcelWriter(ham_veri_excel_buffer, engine="openpyxl") as writer:
+                        if "ham_veri" in st.session_state:
+                            st.session_state["ham_veri"].to_excel(writer, sheet_name="Ham Veri", index=False)
+                        if "ham_veri_toplam_sayisal" in st.session_state:
+                            st.session_state["ham_veri_toplam_sayisal"].to_excel(writer, sheet_name="Sayısal Toplam", index=False)
+                    zip_file.writestr("ham_veri.xlsx", ham_veri_excel_buffer.getvalue())
+
+                    # Karşılaştırmalı Analiz Excel'i
+                    if "comparative_excel_buffer" in locals() and comparative_excel_buffer:
+                        comparative_df = pd.read_excel(comparative_excel_buffer)
+                        comparative_excel_buffer = BytesIO()
+                        with pd.ExcelWriter(comparative_excel_buffer, engine="openpyxl") as writer:
+                            comparative_df.to_excel(writer, sheet_name="Karşılaştırmalı Analiz", index=False)
+                        zip_file.writestr("karsilastirma_analizi.xlsx", comparative_excel_buffer.getvalue())
+
+                    # Pivot Tablo Excel'i
+                    if "pivot_excel_buffer" in locals() and pivot_excel_buffer:
+                        pivot_df = pd.read_excel(pivot_excel_buffer)
+                        pivot_excel_buffer = BytesIO()
+                        with pd.ExcelWriter(pivot_excel_buffer, engine="openpyxl") as writer:
+                            pivot_df.to_excel(writer, sheet_name="Pivot Tablo", index=False)
+                        zip_file.writestr("pivot_tablo.xlsx", pivot_excel_buffer.getvalue())
+
+                    # Add image files to ZIP
+                    if trend_img_buffer:
+                        zip_file.writestr("trend.png", trend_img_buffer.getvalue())
+                    if combined_img_buffer:
+                        zip_file.writestr("kategori_analizi.png", combined_img_buffer.getvalue())
+                    if comperative_img_buffer:
+                        zip_file.writestr("karsilastirma_analizi.png", comperative_img_buffer.getvalue())
+                    if pivot_buffer:
+                        zip_file.writestr("pivot_analizi.png", pivot_buffer.getvalue())
+
+                # Save the ZIP buffer to session state
+                st.session_state["zip_buffer"] = zip_buffer.getvalue()
+                st.success("Rapor oluşturuldu!")
+
+        # Show download button if ZIP is ready
+        if "zip_buffer" in st.session_state:
+            st.download_button(
+                "⬇ İndir (ZIP)",
+                data=st.session_state["zip_buffer"],
+                file_name="rapor.zip",
+                mime="application/zip"
+            )
 
     with tabs_raporlama[1]:
         if st.button("📄 PDF Raporu Oluştur"):
-            pdf = generate_pdf_report(
-                total_budget,
-                total_actual,
-                variance,
-                variance_pct,
-                trend_img_buffer,
-                comperative_img_buffer,
-            )
-            st.download_button(
-                "⬇ İndir (PDF)", data=pdf, file_name="rapor.pdf", mime="application/pdf"
-            )
+            with st.spinner("Rapor oluşturuluyor..."):
+                pdf = generate_pdf_report(
+                    total_budget,
+                    total_actual,
+                    variance,
+                    variance_pct,
+                    trend_img_buffer,
+                    comperative_img_buffer,
+                )
+                st.download_button(
+                    "⬇ İndir (PDF)", data=pdf, file_name="rapor.pdf", mime="application/pdf"
+                )
 
 
 if __name__ == "__main__":
