@@ -27,6 +27,7 @@ Kullanım:
 
 import streamlit as st
 from utils.error_handler import handle_error, display_friendly_error
+import pandas as pd
 
 
 @handle_error
@@ -58,23 +59,18 @@ def apply_filters(df, columns, key_prefix):
         >>> filtered_df = apply_filters(df, columns, "filter")
         >>> print(f"Filtrelenmiş satır sayısı: {len(filtered_df)}")
     """
-    selected_filters = {}
+    # Veri çerçevesini optimize et
+    df = df.copy()
+    
+    # Tüm filtreleri bir kerede uygula
+    mask = pd.Series(True, index=df.index)
+    
     for col in columns:
         if col not in df.columns:
             continue
             
-        # Kademeli filtreleme için geçici veri çerçevesi oluştur
-        temp_df = df.copy()
-        for other_col in columns:
-            if other_col == col:
-                continue
-            if f"{key_prefix}_{other_col}" in st.session_state:
-                selected = st.session_state[f"{key_prefix}_{other_col}"]
-                if selected:
-                    temp_df = temp_df[temp_df[other_col].isin(selected)]
-                    
         # Bu sütun için mevcut seçenekleri belirle
-        options = sorted(temp_df[col].dropna().unique().tolist(), key=lambda x: str(x))
+        options = sorted(df[col].dropna().unique().tolist(), key=lambda x: str(x))
 
         # Oturum durumundan mevcut seçimi al
         current_selection = st.session_state.get(f"{key_prefix}_{col}", [])
@@ -105,11 +101,9 @@ def apply_filters(df, columns, key_prefix):
                 help=f"{col} için filtre seçin",
             )
         
-        selected_filters[col] = selected
-
-    # Filtre uygulama
-    filtered_df = df.copy()
-    for col, selected in selected_filters.items():
         if selected:
-            filtered_df = filtered_df[filtered_df[col].isin(selected)]
+            mask &= df[col].isin(selected)
+    
+    # Tüm filtreleri bir kerede uygula
+    filtered_df = df[mask].copy()
     return filtered_df

@@ -247,13 +247,14 @@ def prepare_final_dataframe(df, filtered_df, selected_months, selected_report_ba
     }
     
     # Tüm sütunları birleştir
-    selected_columns = (
-        column_mapping['general'] + 
-        column_mapping['monthly'] + 
-        column_mapping['cumulative']
-    )
-            
-    return df[selected_columns]
+    selected_columns = []
+    for col_list in column_mapping.values():
+        selected_columns.extend(col_list)
+    
+    # Tek seferde sütunları seç
+    final_df = df[selected_columns].copy()
+    
+    return final_df
 
 
 @handle_critical_error
@@ -536,7 +537,7 @@ def main():
         )
 
     with tabs_analiz[4]:
-        pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+        pivot_excel_buffer = show_pivot_table(final_df)
 
     with tabs_analiz[5]:
         insights = generate_insights(final_df)
@@ -583,8 +584,7 @@ def main():
                 image_files = {
                     'trend.png': trend_img_buffer,
                     'kategori_analizi.png': combined_img_buffer,
-                    'karsilastirma_analizi.png': comperative_img_buffer,
-                    'pivot_analizi.png': pivot_buffer
+                    'karsilastirma_analizi.png': comperative_img_buffer
                 }
 
                 # ZIP oluştur

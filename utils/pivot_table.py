@@ -13,6 +13,7 @@ Ana Özellikler:
 - Kullanıcı dostu hata mesajları ve validasyon
 - Görselleştirilebilir tablo çıktısı (Plotly ile)
 - PNG formatında grafik çıktısı ve Excel formatında veri çıktısı
+- Verilerin orijinal sırasını koruma ve ayların kronolojik sırada gösterimi
 
 Kütüphaneler:
 -------------
@@ -69,6 +70,7 @@ def show_pivot_table(df: pd.DataFrame) -> Tuple[Optional[BytesIO], Optional[Byte
         - Eğer sayısal sütun yoksa veya gerekli seçimler yapılmadıysa, işlem gerçekleştirilmez.
         - Görselleştirme, maksimum 15 sütunla sınırlıdır.
         - Hatalar kullanıcı dostu şekilde arayüzde gösterilir.
+        - Veriler orijinal sırasını korur, aylar kronolojik sırada gösterilir.
     """
 
     st.subheader("📊 Dinamik Pivot Tablo Oluşturucu")
@@ -78,7 +80,6 @@ def show_pivot_table(df: pd.DataFrame) -> Tuple[Optional[BytesIO], Optional[Byte
 
     # Kullanıcı seçimleri
     row_col = st.multiselect("🧱 Satır Alanları", non_numeric_cols)
-    col_col = st.multiselect("📏 Sütun Alanları", non_numeric_cols)
     
     # Sidebar'dan seçilen ayları al
     selected_months = st.session_state.get("month_filter", ["Hepsi"])
@@ -117,15 +118,23 @@ def show_pivot_table(df: pd.DataFrame) -> Tuple[Optional[BytesIO], Optional[Byte
 
     val_col = st.selectbox("🔢 Değer Alanı", value_options)
 
+    # Sütun seçimi artık opsiyonel
+    col_col = st.multiselect("📏 Sütun Alanları (Opsiyonel)", non_numeric_cols)
+
     agg_func = st.selectbox(
         "🔧 Toplama Fonksiyonu", ["sum", "mean", "max", "min", "count"]
     )
 
-    if row_col and col_col and val_col:
+    if row_col and val_col:
         try:
             # Seçilen değer için veri sütunlarını belirle
             if value_type == "Aylık Değerler":
-                value_columns = [f"{month} {val_col}" for month in selected_months if f"{month} {val_col}" in df.columns]
+                # Ayları MONTHS listesindeki sıraya göre sırala
+                value_columns = []
+                for month in MONTHS:
+                    col_name = f"{month} {val_col}"
+                    if col_name in df.columns and month in selected_months:
+                        value_columns.append(col_name)
             else:  # Kümüle Değerler
                 value_columns = [f"Kümüle {val_col}"]
             
@@ -137,14 +146,46 @@ def show_pivot_table(df: pd.DataFrame) -> Tuple[Optional[BytesIO], Optional[Byte
                 return None, None
 
             # Pivot tablo oluştur
-            pivot = pd.pivot_table(
-                df,
-                index=row_col,
-                columns=col_col,
-                values=value_columns,
-                aggfunc=agg_func,
-                fill_value=0,
-            )
+            if col_col:
+                # Eğer sütun seçilmişse, normal pivot tablo oluştur
+                pivot = pd.pivot_table(
+                    df,
+                    index=row_col,
+                    columns=col_col,
+                    values=value_columns,
+                    aggfunc=agg_func,
+                    fill_value=0,
+                    sort=False  # Sıralamayı devre dışı bırak
+                )
+            else:
+                # Sütun seçilmemişse, değer sütunlarını kullan
+                pivot = pd.pivot_table(
+                    df,
+                    index=row_col,
+                    values=value_columns,
+                    aggfunc=agg_func,
+                    fill_value=0,
+                    sort=False  # Sıralamayı devre dışı bırak
+                )
+                
+                # Aylık değerler için sütunları MONTHS sırasına göre düzenle
+                if value_type == "Aylık Değerler":
+                    # Mevcut sütun isimlerini al
+                    current_columns = pivot.columns.tolist()
+                    # MONTHS sırasına göre sırala
+                    ordered_columns = []
+                    for month in MONTHS:
+                        for col in current_columns:
+                            if col.startswith(month):
+                                ordered_columns.append(col)
+                    # Sütunları yeniden sırala
+                    pivot = pivot[ordered_columns]
+
+            # Satırları orijinal sırada tut
+            if row_col:
+                # Orijinal veri setindeki sırayı koru
+                original_order = df[row_col].drop_duplicates().reset_index(drop=True)
+                pivot = pivot.reindex(original_order)
 
             st.dataframe(pivot, use_container_width=True)
 
@@ -158,35 +199,7 @@ def show_pivot_table(df: pd.DataFrame) -> Tuple[Optional[BytesIO], Optional[Byte
                 file_name="pivot_tablo.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             )
-
-            # Pivot görüntüsü oluştur
-            pivot_buffer = None
-            if len(pivot.columns) <= 15:
-                try:
-                    fig = px.imshow(
-                        pivot, text_auto=True, aspect="auto", color_continuous_scale="Blues"
-                    )
-                    st.plotly_chart(fig, use_container_width=True)
-
-                    png_bytes = fig.to_image(format="png")
-                    pivot_buffer = BytesIO(png_bytes)
-                    pivot_buffer.seek(0)
-
-                    st.download_button(
-                        label="⬇ İndir (PNG)",
-                        data=pivot_buffer,
-                        file_name="pivot_grafik.png",
-                        mime="image/png",
-                    )
-                except Exception as e:
-                    display_friendly_error(
-                        f"Grafik oluşturma hatası: {str(e)}",
-                        "Grafik oluşturulamadı, ancak Excel verisi hala mevcut."
-                    )
-            else:
-                st.info("Görselleştirme için sütun sayısı çok fazla (maksimum 15).")
-
-            return excel_buffer, pivot_buffer
+            return excel_buffer
 
         except Exception as e:
             display_friendly_error(
@@ -195,5 +208,5 @@ def show_pivot_table(df: pd.DataFrame) -> Tuple[Optional[BytesIO], Optional[Byte
             )
             return None, None
     else:
-        st.info("Lütfen satır, sütun ve değer alanlarını seçin.")
+        st.info("Lütfen satır ve değer alanlarını seçin.")
         return None, None

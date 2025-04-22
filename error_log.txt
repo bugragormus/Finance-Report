@@ -233,3 +233,25 @@ Stack Trace: Traceback (most recent call last):
 UnboundLocalError: cannot access local variable 'zip_buffer' where it is not associated with a value
 
 
+2025-04-22 09:45:41.241613: HATA (show_pivot_table): name 'selected_months' is not defined
+Stack Trace: Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 112, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/pivot_table.py", line 95, in show_pivot_table
+    for month in selected_months:
+                 ^^^^^^^^^^^^^^^
+NameError: name 'selected_months' is not defined
+
+
+2025-04-22 09:45:41.242085: HATA (CRITICAL-main): cannot unpack non-iterable NoneType object
+Stack Trace: Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: cannot unpack non-iterable NoneType object
+
+
