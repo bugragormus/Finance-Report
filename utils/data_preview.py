@@ -43,7 +43,7 @@ def show_filtered_data(
     style_func: Optional[Callable] = None, 
     title: Optional[str] = None,
     sticky_column: Optional[Union[str, int]] = None,
-    page_size: int = 1000
+    page_size: int = 301
 ) -> BytesIO:
     """
     DataFrame'i gösterir, istenirse stil uygular, Excel çıktısı verir.
@@ -180,7 +180,7 @@ def show_grouped_summary(
     title: Optional[str] = None, 
     style_func: Optional[Callable] = None,
     sticky_column: Optional[Union[str, int]] = None,
-    page_size: int = 1000
+    page_size: int = 301
 ) -> Optional[BytesIO]:
     """
     Gruplandırılmış veri özetini gösterir ve Excel çıktısı verir.

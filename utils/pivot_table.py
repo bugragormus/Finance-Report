@@ -32,6 +32,8 @@ import plotly.express as px
 from io import BytesIO
 import plotly.io as pio
 from typing import Tuple, Optional
+
+from utils.data_preview import show_column_totals
 from utils.error_handler import handle_error, display_friendly_error
 from config.constants import REPORT_BASE_COLUMNS, MONTHS, CUMULATIVE_COLUMNS
 
@@ -187,12 +189,20 @@ def show_pivot_table(df: pd.DataFrame) -> Tuple[Optional[BytesIO], Optional[Byte
                 original_order = df[row_col].drop_duplicates().reset_index(drop=True)
                 pivot = pivot.reindex(original_order)
 
+            # Pivot tabloyu göster
             st.dataframe(pivot, use_container_width=True)
+
+            # Satır toplamlarını hesapla ve göster
+            row_totals = pivot.sum(axis=1)
+            row_totals_df = pd.DataFrame(row_totals, columns=["Toplam"])
+            st.markdown("#### ➕ Satır Toplamları")
+            st.dataframe(row_totals_df, use_container_width=True)
 
             # Excel export
             excel_buffer = BytesIO()
             with pd.ExcelWriter(excel_buffer, engine="openpyxl") as writer:
-                pivot.to_excel(writer)
+                pivot.to_excel(writer, sheet_name="Pivot Tablo")
+                row_totals_df.to_excel(writer, sheet_name="Satır Toplamları")
             st.download_button(
                 label="⬇ İndir (Excel)",
                 data=excel_buffer.getvalue(),

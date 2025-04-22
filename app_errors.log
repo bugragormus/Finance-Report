@@ -241,3 +241,466 @@ Traceback (most recent call last):
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 TypeError: cannot unpack non-iterable NoneType object
 
+2025-04-22 14:03:47,379 - root - ERROR - HATA (show_trend_analysis): show_trend_analysis() missing 1 required positional argument: 'selected_months'
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 112, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+TypeError: show_trend_analysis() missing 1 required positional argument: 'selected_months'
+
+2025-04-22 14:03:57,293 - root - ERROR - HATA (show_trend_analysis): show_trend_analysis() missing 1 required positional argument: 'selected_months'
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 112, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+TypeError: show_trend_analysis() missing 1 required positional argument: 'selected_months'
+
+2025-04-22 14:04:34,653 - root - ERROR - HATA (show_trend_analysis): show_trend_analysis() missing 1 required positional argument: 'selected_months'
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 112, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+TypeError: show_trend_analysis() missing 1 required positional argument: 'selected_months'
+
+2025-04-22 14:04:38,172 - root - ERROR - HATA (show_trend_analysis): show_trend_analysis() missing 1 required positional argument: 'selected_months'
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 112, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+TypeError: show_trend_analysis() missing 1 required positional argument: 'selected_months'
+
+2025-04-22 14:04:47,141 - root - ERROR - HATA (show_trend_analysis): show_trend_analysis() missing 1 required positional argument: 'selected_months'
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 112, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+TypeError: show_trend_analysis() missing 1 required positional argument: 'selected_months'
+
+2025-04-22 14:05:04,241 - root - ERROR - HATA (show_trend_analysis): show_trend_analysis() missing 1 required positional argument: 'selected_months'
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 112, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+TypeError: show_trend_analysis() missing 1 required positional argument: 'selected_months'
+
+2025-04-22 14:06:02,334 - root - ERROR - HATA (show_trend_analysis): show_trend_analysis() missing 1 required positional argument: 'selected_months'
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 112, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+TypeError: show_trend_analysis() missing 1 required positional argument: 'selected_months'
+
+2025-04-22 14:24:10,080 - root - ERROR - HATA (show_trend_analysis): show_trend_analysis() missing 1 required positional argument: 'selected_months'
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 112, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+TypeError: show_trend_analysis() missing 1 required positional argument: 'selected_months'
+
+2025-04-22 14:24:10,097 - root - ERROR - HATA (show_grouped_summary): show_grouped_summary() missing 3 required positional arguments: 'group_column', 'target_columns', and 'filename'
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 112, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+TypeError: show_grouped_summary() missing 3 required positional arguments: 'group_column', 'target_columns', and 'filename'
+
+2025-04-22 14:38:20,951 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:38:42,197 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:38:57,346 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:39:11,937 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:39:32,144 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:39:42,545 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:40:01,675 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:40:17,228 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:43:42,819 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:43:52,254 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:45:08,371 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:45:17,654 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:45:32,748 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:46:04,267 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:46:21,824 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:46:27,278 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:47:14,311 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:47:19,341 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:47:31,280 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:47:57,257 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:47:59,112 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:48:25,347 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:48:29,549 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:48:42,244 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:48:58,801 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:49:08,193 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:49:09,316 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:49:15,461 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:49:19,079 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:49:23,104 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:49:24,175 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:53:00,445 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:53:29,253 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:54:51,250 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:55:07,802 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:55:31,700 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:57:25,641 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:57:43,118 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:59:02,066 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+
+2025-04-22 14:59:10,498 - root - ERROR - HATA (CRITICAL-main): not enough values to unpack (expected 2, got 0)
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 540, in main
+    pivot_excel_buffer, pivot_buffer = show_pivot_table(final_df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 0)
+

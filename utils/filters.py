@@ -27,57 +27,67 @@ Kullanım:
 
 import streamlit as st
 from utils.error_handler import handle_error, display_friendly_error
-import pandas as pd
+
 
 
 @handle_error
 def apply_filters(df, columns, key_prefix):
     """
     Streamlit arayüzünde seçilen filtre kriterlerine göre veriyi filtreler.
-    
+
     Bu fonksiyon:
     1. Her sütun için filtre seçeneklerini belirler
     2. Kademeli filtreleme uygular
     3. Kullanıcı seçimlerini yönetir
     4. Filtreleri veri çerçevesine uygular
-    
+
     Parameters:
         df (DataFrame): Filtrelenecek veri çerçevesi
         columns (list): Filtrelenecek sütunlar
         key_prefix (str): Filtre anahtar öneki (session_state anahtarları için)
-        
+
     Returns:
         DataFrame: Filtrelenmiş veri çerçevesi
-        
+
     Hata durumunda:
     - Kullanıcıya hata mesajı gösterilir
     - Filtre seçimleri sıfırlanır
     - Orijinal veri çerçevesi döndürülür
-    
+
     Örnek:
         >>> columns = ["Masraf Yeri", "Kategori"]
         >>> filtered_df = apply_filters(df, columns, "filter")
         >>> print(f"Filtrelenmiş satır sayısı: {len(filtered_df)}")
     """
-    # Veri çerçevesini optimize et
-    df = df.copy()
-    
-    # Tüm filtreleri bir kerede uygula
-    mask = pd.Series(True, index=df.index)
-    
+    selected_filters = {}
+
+
+
+
+
     for col in columns:
         if col not in df.columns:
             continue
-            
+
+        # Kademeli filtreleme için geçici veri çerçevesi oluştur
+        temp_df = df.copy()
+        for other_col in columns:
+            if other_col == col:
+                continue
+            if f"{key_prefix}_{other_col}" in st.session_state:
+                selected = st.session_state[f"{key_prefix}_{other_col}"]
+                if selected:
+                    temp_df = temp_df[temp_df[other_col].isin(selected)]
+
         # Bu sütun için mevcut seçenekleri belirle
-        options = sorted(df[col].dropna().unique().tolist(), key=lambda x: str(x))
+        options = sorted(temp_df[col].dropna().unique().tolist(), key=lambda x: str(x))
 
         # Oturum durumundan mevcut seçimi al
         current_selection = st.session_state.get(f"{key_prefix}_{col}", [])
-        
+
         # Mevcut seçimlerden artık mevcut olmayan değerleri temizle
         valid_defaults = [val for val in current_selection if val in options]
-        
+
         try:
             selected = st.multiselect(
                 f"🔍 {col}",
@@ -88,7 +98,7 @@ def apply_filters(df, columns, key_prefix):
             )
         except st.errors.StreamlitAPIException as e:
             display_friendly_error(
-                "Filtre değerleri değişti", 
+                "Filtre değerleri değişti",
                 "Lütfen filtre seçimlerinizi tekrar yapın."
             )
             # Bu filtre için oturum durumunu sıfırla
@@ -100,10 +110,15 @@ def apply_filters(df, columns, key_prefix):
                 default=[],
                 help=f"{col} için filtre seçin",
             )
-        
+
+        selected_filters[col] = selected
+
+    # Filtre uygulama
+    filtered_df = df.copy()
+    for col, selected in selected_filters.items():
         if selected:
-            mask &= df[col].isin(selected)
-    
-    # Tüm filtreleri bir kerede uygula
-    filtered_df = df[mask].copy()
+            filtered_df = filtered_df[filtered_df[col].isin(selected)]
+
+
+
     return filtered_df

@@ -133,14 +133,14 @@ def setup_sidebar_filters(df):
     """
     with st.sidebar:
         st.header("🔧 Filtre & Grafik Ayarları")
-        
+
         # Veri filtreleme
         try:
             # Veri çerçevesini optimize et
             df = df.copy()
             numeric_cols = df.select_dtypes(include=[np.number]).columns
             df[numeric_cols] = df[numeric_cols].fillna(0)
-            
+
             filtered_df = apply_filters(df, GENERAL_COLUMNS, "filter")
         except Exception as e:
             display_friendly_error(
@@ -182,22 +182,22 @@ def setup_sidebar_filters(df):
         )
         if "Hepsi" in selected_cumulative:
             selected_cumulative = cumulative_columns
-            
+
         # Filtre temizleme butonu
         if st.button("🗑️ Tüm Filtreleri Temizle"):
             clear_all_filters()
-            
+
     return filtered_df, selected_months, selected_report_bases, selected_cumulative
 
 
 def clear_all_filters():
     """
     Tüm filtreleri temizler.
-    
+
     Bu fonksiyon:
     1. Tüm filtre durumlarını sıfırlar
     2. Kullanıcıya bilgi mesajı gösterir
-    
+
     Hata durumunda:
     - Hata mesajını loglar
     - Kullanıcıya bilgi verir
@@ -227,10 +227,10 @@ def prepare_final_dataframe(df, filtered_df, selected_months, selected_report_ba
     Son veri çerçevesini hazırlar.
     """
     # Veri çerçevesini optimize et
-    df = df.copy()
-    numeric_cols = df.select_dtypes(include=[np.number]).columns
-    df[numeric_cols] = df[numeric_cols].fillna(0)
-    
+    filtered_df = filtered_df.copy()
+    numeric_cols = filtered_df.select_dtypes(include=[np.number]).columns
+    filtered_df[numeric_cols] = filtered_df[numeric_cols].fillna(0)
+
     # Sütun seçimi için mapping oluştur
     column_mapping = {
         'general': GENERAL_COLUMNS.copy(),
@@ -238,23 +238,23 @@ def prepare_final_dataframe(df, filtered_df, selected_months, selected_report_ba
             f"{month} {base_col}"
             for month in selected_months
             for base_col in selected_report_bases
-            if f"{month} {base_col}" in df.columns
+            if f"{month} {base_col}" in filtered_df.columns
         ],
         'cumulative': [
             cum_col for cum_col in selected_cumulative
-            if cum_col in df.columns
+            if cum_col in filtered_df.columns
         ]
     }
-    
+
     # Tüm sütunları birleştir
-    selected_columns = []
-    for col_list in column_mapping.values():
-        selected_columns.extend(col_list)
-    
-    # Tek seferde sütunları seç
-    final_df = df[selected_columns].copy()
-    
-    return final_df
+    selected_columns = (
+        column_mapping['general'] +
+        column_mapping['monthly'] +
+        column_mapping['cumulative']
+    )
+
+    return filtered_df[selected_columns]
+
 
 
 @handle_critical_error
@@ -264,7 +264,7 @@ def main():
     """
     # Sayfa yapılandırması
     setup_page_config()
-    
+
     pd.set_option("styler.render.max_elements", 500000)
     st.title("🏦 Finansal Performans Analiz Paneli")
 
@@ -272,10 +272,10 @@ def main():
     df = load_and_validate_data()
     if df is None:
         return
-        
+
     # Filtreler
     filtered_df, selected_months, selected_report_bases, selected_cumulative = setup_sidebar_filters(df)
-    
+
     # Final veri çerçevesini hazırlama
     try:
         final_df = prepare_final_dataframe(
@@ -344,12 +344,12 @@ def main():
                     f"{month} {metric}"
                     for month in selected_table_months
                     for metric in allowed_metrics
-                    if f"{month} {metric}" in df.columns
+                    if f"{month} {metric}" in filtered_df.columns
                 ],
                 'cumulative': [
                     f"Kümüle {metric}"
                     for metric in allowed_metrics
-                    if show_cumulative and f"Kümüle {metric}" in df.columns
+                    if show_cumulative and f"Kümüle {metric}" in filtered_df.columns
                 ]
             }
 
@@ -377,7 +377,7 @@ def main():
         with st.container():
             st.markdown("### 🧮 Masraf Grubu 1 - Year to Date")
             masraf_totals = calculate_group_totals(
-                final_df,
+                filtered_df,
                 group_column="Masraf Çeşidi Grubu 1",
                 selected_months=selected_months,
                 metrics=FIXED_METRICS[:-1]
@@ -423,17 +423,17 @@ def main():
                     f"{month} {metric}"
                     for month in selected_ilgili1_months
                     for metric in FIXED_METRICS
-                    if f"{month} {metric}" in df.columns
+                    if f"{month} {metric}" in filtered_df.columns
                 ],
                 'cumulative': [
                     f"Kümüle {metric}"
                     for metric in FIXED_METRICS
-                    if show_cumulative_ilgili1 and f"Kümüle {metric}" in df.columns
+                    if show_cumulative_ilgili1 and f"Kümüle {metric}" in filtered_df.columns
                 ]
             }
 
             ilgili1_target_columns = ilgili1_columns['monthly'] + ilgili1_columns['cumulative']
-            ilgili1_filtered_df = df[GENERAL_COLUMNS + ilgili1_target_columns]
+            ilgili1_filtered_df = filtered_df[GENERAL_COLUMNS + ilgili1_target_columns]
 
             show_grouped_summary(
                 ilgili1_filtered_df,
@@ -453,7 +453,7 @@ def main():
 
         with st.container():
             ilgili1_totals = calculate_group_totals(
-                final_df,
+                filtered_df,
                 group_column="İlgili 1",
                 selected_months=selected_months,
                 metrics=FIXED_METRICS[:-1]
