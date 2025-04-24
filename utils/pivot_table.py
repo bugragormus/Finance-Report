@@ -35,7 +35,7 @@ from typing import Tuple, Optional
 
 from utils.data_preview import show_column_totals
 from utils.error_handler import handle_error, display_friendly_error
-from config.constants import REPORT_BASE_COLUMNS, MONTHS, CUMULATIVE_COLUMNS
+from config.constants import FIXED_METRICS, MONTHS, CUMULATIVE_COLUMNS
 
 # Grafik export ayarları
 pio.kaleido.scope.default_format = "png"
@@ -54,7 +54,7 @@ def show_pivot_table(df: pd.DataFrame) -> Tuple[Optional[BytesIO], Optional[Byte
 
     Kullanıcı arayüzü üzerinden:
     - Satır ve sütun alanları (kategorik değişkenler)
-    - Değer alanı (REPORT_BASE_COLUMNS değerleri)
+    - Değer alanı (FIXED_METRICS değerleri)
     - Toplama fonksiyonu (sum, mean, max, min, count)
 
     seçilerek pivot tablo oluşturulur.
@@ -98,18 +98,18 @@ def show_pivot_table(df: pd.DataFrame) -> Tuple[Optional[BytesIO], Optional[Byte
     # Değer alanı seçimi
     value_options = []
     if value_type == "Aylık Değerler":
-        for base_col in REPORT_BASE_COLUMNS:
+        for metric in FIXED_METRICS:
             # Seçilen aylardan en az birinde bu değer varsa ekle
             for month in selected_months:
-                col_name = f"{month} {base_col}"
+                col_name = f"{month} {metric}"
                 if col_name in df.columns:
-                    value_options.append(base_col)
+                    value_options.append(metric)
                     break
     else:  # Kümüle Değerler
-        for base_col in CUMULATIVE_COLUMNS:
-            col_name = f"Kümüle {base_col}"
+        for metric in FIXED_METRICS:
+            col_name = f"Kümüle {metric}"
             if col_name in df.columns:
-                value_options.append(base_col)
+                value_options.append(metric)
 
     if not value_options:
         display_friendly_error(
@@ -118,7 +118,7 @@ def show_pivot_table(df: pd.DataFrame) -> Tuple[Optional[BytesIO], Optional[Byte
         )
         return None, None
 
-    val_col = st.selectbox("🔢 Değer Alanı", value_options)
+    val_cols = st.multiselect("🔢 Değer Alanları", value_options)
 
     # Sütun seçimi artık opsiyonel
     col_col = st.multiselect("📏 Sütun Alanları (Opsiyonel)", non_numeric_cols)
@@ -127,23 +127,27 @@ def show_pivot_table(df: pd.DataFrame) -> Tuple[Optional[BytesIO], Optional[Byte
         "🔧 Toplama Fonksiyonu", ["sum", "mean", "max", "min", "count"]
     )
 
-    if row_col and val_col:
+    if row_col and val_cols:
         try:
-            # Seçilen değer için veri sütunlarını belirle
+            # Seçilen değerler için veri sütunlarını belirle
+            value_columns = []
             if value_type == "Aylık Değerler":
                 # Ayları MONTHS listesindeki sıraya göre sırala
-                value_columns = []
                 for month in MONTHS:
-                    col_name = f"{month} {val_col}"
-                    if col_name in df.columns and month in selected_months:
-                        value_columns.append(col_name)
+                    for val_col in val_cols:
+                        col_name = f"{month} {val_col}"
+                        if col_name in df.columns and month in selected_months:
+                            value_columns.append(col_name)
             else:  # Kümüle Değerler
-                value_columns = [f"Kümüle {val_col}"]
+                for val_col in val_cols:
+                    col_name = f"Kümüle {val_col}"
+                    if col_name in df.columns:
+                        value_columns.append(col_name)
             
             if not value_columns:
                 display_friendly_error(
-                    f"Seçilen değer için veri bulunamadı",
-                    "Farklı bir değer seçin veya veri formatını kontrol edin."
+                    f"Seçilen değerler için veri bulunamadı",
+                    "Farklı değerler seçin veya veri formatını kontrol edin."
                 )
                 return None, None
 
@@ -183,18 +187,35 @@ def show_pivot_table(df: pd.DataFrame) -> Tuple[Optional[BytesIO], Optional[Byte
                     # Sütunları yeniden sırala
                     pivot = pivot[ordered_columns]
 
-            # Satırları orijinal sırada tut
-            if row_col:
-                # Orijinal veri setindeki sırayı koru
-                original_order = df[row_col].drop_duplicates().reset_index(drop=True)
-                pivot = pivot.reindex(original_order)
-
             # Pivot tabloyu göster
             st.dataframe(pivot, use_container_width=True)
 
             # Satır toplamlarını hesapla ve göster
-            row_totals = pivot.sum(axis=1)
-            row_totals_df = pd.DataFrame(row_totals, columns=["Toplam"])
+            if value_type == "Aylık Değerler":
+                # Her bir değer alanı için ayrı toplam hesapla
+                totals_dict = {}
+                for val_col in val_cols:
+                    # İlgili değer alanına ait sütunları bul
+                    val_columns = [col for col in pivot.columns if col.endswith(f" {val_col}")]
+                    if val_columns:
+                        # Bu değer alanı için toplam hesapla
+                        totals_dict[f"Toplam {val_col}"] = pivot[val_columns].sum(axis=1)
+                
+                # Toplamları DataFrame'e dönüştür
+                row_totals_df = pd.DataFrame(totals_dict)
+            else:  # Kümüle Değerler
+                # Her bir değer alanı için ayrı toplam hesapla
+                totals_dict = {}
+                for val_col in val_cols:
+                    # İlgili değer alanına ait sütunları bul
+                    val_columns = [col for col in pivot.columns if col.startswith(f"Kümüle {val_col}")]
+                    if val_columns:
+                        # Bu değer alanı için toplam hesapla
+                        totals_dict[f"Toplam {val_col}"] = pivot[val_columns].sum(axis=1)
+                
+                # Toplamları DataFrame'e dönüştür
+                row_totals_df = pd.DataFrame(totals_dict)
+
             st.markdown("#### ➕ Satır Toplamları")
             st.dataframe(row_totals_df, use_container_width=True)
 
