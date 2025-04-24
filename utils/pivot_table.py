@@ -95,10 +95,22 @@ def show_pivot_table(df: pd.DataFrame) -> Tuple[Optional[BytesIO], Optional[Byte
         horizontal=True
     )
 
+    # Sidebar'dan seçilen report base'leri al
+    selected_report_bases = st.session_state.get("report_base_filter", ["Hepsi"])
+    if "Hepsi" in selected_report_bases:
+        selected_report_bases = FIXED_METRICS
+
+    # İzin verilen metrikleri filtrele
+    allowed_metrics = [
+        metric for metric in FIXED_METRICS
+        if "Hepsi" in selected_report_bases or
+           any(metric in base for base in selected_report_bases)
+    ]
+
     # Değer alanı seçimi
     value_options = []
     if value_type == "Aylık Değerler":
-        for metric in FIXED_METRICS:
+        for metric in allowed_metrics:
             # Seçilen aylardan en az birinde bu değer varsa ekle
             for month in selected_months:
                 col_name = f"{month} {metric}"
@@ -106,7 +118,7 @@ def show_pivot_table(df: pd.DataFrame) -> Tuple[Optional[BytesIO], Optional[Byte
                     value_options.append(metric)
                     break
     else:  # Kümüle Değerler
-        for metric in FIXED_METRICS:
+        for metric in allowed_metrics:
             col_name = f"Kümüle {metric}"
             if col_name in df.columns:
                 value_options.append(metric)
@@ -118,7 +130,8 @@ def show_pivot_table(df: pd.DataFrame) -> Tuple[Optional[BytesIO], Optional[Byte
         )
         return None, None
 
-    val_cols = st.multiselect("🔢 Değer Alanları", value_options)
+    # Otomatik olarak tüm izin verilen metrikleri seç
+    val_cols = value_options
 
     # Sütun seçimi artık opsiyonel
     col_col = st.multiselect("📏 Sütun Alanları (Opsiyonel)", non_numeric_cols)
