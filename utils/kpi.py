@@ -25,6 +25,7 @@ Kullanım:
 import streamlit as st
 from typing import Dict
 from utils.error_handler import handle_error, display_friendly_error
+from config.constants import MONTHS
 
 
 def calculate_kpi_metrics(df) -> Dict[str, float]:
@@ -37,14 +38,26 @@ def calculate_kpi_metrics(df) -> Dict[str, float]:
     Returns:
         Dict[str, float]: Hesaplanan metrikler
     """
-    total_budget = df["Kümüle Bütçe"].sum()
-    total_actual = df["Kümüle Fiili"].sum()
-    total_be = (
-        df["Kümüle BE Bakiye"].sum()
-        if "Kümüle BE Bakiye" in df.columns
-        else 0
-    )
-    total_karsilik = df["Kümüle Fiili Karşılık Masrafı"].sum() if "Kümüle Fiili Karşılık Masrafı" in df.columns else 0
+    # Sidebar'dan seçilen ayları al
+    selected_months = st.session_state.get("month_filter", ["Hepsi"])
+    if "Hepsi" in selected_months:
+        selected_months = MONTHS
+
+    # Seçilen ayların toplam bütçe ve fiili verilerini hesapla
+    total_budget = 0
+    total_actual = 0
+    total_be = 0
+    total_karsilik = 0
+
+    for month in selected_months:
+        if f"{month} Bütçe" in df.columns:
+            total_budget += df[f"{month} Bütçe"].sum()
+        if f"{month} Fiili" in df.columns:
+            total_actual += df[f"{month} Fiili"].sum()
+        if f"{month} BE Bakiye" in df.columns:
+            total_be += df[f"{month} BE Bakiye"].sum()
+        if f"{month} Fiili Karşılık Masrafı" in df.columns:
+            total_karsilik += df[f"{month} Fiili Karşılık Masrafı"].sum()
 
     variance = total_budget - total_actual
     variance_pct = (variance / total_budget * 100) if total_budget != 0 else 0
@@ -90,10 +103,24 @@ def show_kpi_panel(df) -> None:
     Parameters:
         df (DataFrame): İşlenecek veri çerçevesi
     """
-    if "Kümüle Bütçe" not in df.columns or "Kümüle Fiili" not in df.columns:
+    # Sidebar'dan seçilen ayları al
+    selected_months = st.session_state.get("month_filter", ["Hepsi"])
+    if "Hepsi" in selected_months:
+        selected_months = MONTHS
+
+    # Seçilen aylar için gerekli sütunların varlığını kontrol et
+    required_columns = []
+    for month in selected_months:
+        required_columns.extend([
+            f"{month} Bütçe",
+            f"{month} Fiili"
+        ])
+
+    missing_columns = [col for col in required_columns if col not in df.columns]
+    if missing_columns:
         display_friendly_error(
-            "Tabloda Kümüle Değerler Bulunamadı!",
-            "Kümüle Bütçe ve Kümüle Fiili sütunlarının varlığını kontrol edin."
+            "Tabloda Gerekli Sütunlar Bulunamadı!",
+            f"Eksik sütunlar: {', '.join(missing_columns)}"
         )
         return
     

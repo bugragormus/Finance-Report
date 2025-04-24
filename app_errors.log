@@ -704,3 +704,33 @@ Traceback (most recent call last):
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ValueError: not enough values to unpack (expected 2, got 0)
 
+2025-04-24 15:03:10,428 - root - ERROR - HATA (show_kpi_panel): name 'MONTHS' is not defined
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 112, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/kpi.py", line 112, in show_kpi_panel
+    options=["Hepsi"] + [col.split()[0] for col in df.columns if " " in col and col.split()[0] in MONTHS],
+                                                                                                  ^^^^^^
+NameError: name 'MONTHS' is not defined
+
+2025-04-24 15:04:59,448 - root - ERROR - HATA (show_kpi_panel): name 'MONTHS' is not defined
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 112, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/kpi.py", line 98, in show_kpi_panel
+    selected_month = st.sidebar.selectbox("Ay Seçin", MONTHS)
+                                                      ^^^^^^
+NameError: name 'MONTHS' is not defined
+
+2025-04-24 15:07:33,251 - root - ERROR - HATA (show_kpi_panel): name 'MONTHS' is not defined
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 112, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/kpi.py", line 98, in show_kpi_panel
+    selected_month = st.sidebar.selectbox("Ay Seçin", MONTHS)
+                                                      ^^^^^^
+NameError: name 'MONTHS' is not defined
+
