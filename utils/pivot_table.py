@@ -3,7 +3,7 @@ pivot_table.py
 
 Bu modül, kullanıcıların etkileşimli bir arayüz üzerinden dinamik pivot tablolar oluşturmasını ve bu tabloları 
 görselleştirerek dışa aktarmasını sağlar. Streamlit arayüzü kullanılarak kolayca:
-- Satır ve sütun alanları seçilebilir
+- Satır alanları seçilebilir
 - Sayısal değerler için özet fonksiyonları uygulanabilir (toplam, ortalama, maksimum, minimum, adet)
 - Oluşturulan tablo hem Excel hem de PNG formatında indirilebilir
 
@@ -56,7 +56,7 @@ def show_pivot_table(df: pd.DataFrame) -> Tuple[Optional[BytesIO], Optional[Byte
     Ayrıca oluşturulan pivot tabloyu Excel ve PNG formatlarında indirme seçenekleri sunar.
 
     Kullanıcı arayüzü üzerinden:
-    - Satır ve sütun alanları (kategorik değişkenler)
+    - Satır alanları (kategorik değişkenler)
     - Değer alanı (FIXED_METRICS değerleri)
     - Toplama fonksiyonu (sum, mean, max, min, count)
 
@@ -136,9 +136,6 @@ def show_pivot_table(df: pd.DataFrame) -> Tuple[Optional[BytesIO], Optional[Byte
     # Otomatik olarak tüm izin verilen metrikleri seç
     val_cols = value_options
 
-    # Sütun seçimi artık opsiyonel
-    col_col = st.multiselect("📏 Sütun Alanları (Opsiyonel)", non_numeric_cols)
-
     agg_func = st.selectbox(
         "🔧 Toplama Fonksiyonu", ["sum", "mean", "max", "min", "count"]
     )
@@ -168,40 +165,27 @@ def show_pivot_table(df: pd.DataFrame) -> Tuple[Optional[BytesIO], Optional[Byte
                 return None, None
 
             # Pivot tablo oluştur
-            if col_col:
-                # Eğer sütun seçilmişse, normal pivot tablo oluştur
-                pivot = pd.pivot_table(
-                    df,
-                    index=row_col,
-                    columns=col_col,
-                    values=value_columns,
-                    aggfunc=agg_func,
-                    fill_value=0,
-                    sort=False  # Sıralamayı devre dışı bırak
-                )
-            else:
-                # Sütun seçilmemişse, değer sütunlarını kullan
-                pivot = pd.pivot_table(
-                    df,
-                    index=row_col,
-                    values=value_columns,
-                    aggfunc=agg_func,
-                    fill_value=0,
-                    sort=False  # Sıralamayı devre dışı bırak
-                )
+            pivot = pd.pivot_table(
+                df,
+                index=row_col,
+                values=value_columns,
+                aggfunc=agg_func,
+                fill_value=0,
+                sort=False  # Sıralamayı devre dışı bırak
+            )
                 
-                # Aylık değerler için sütunları MONTHS sırasına göre düzenle
-                if value_type == "Aylık Değerler":
-                    # Mevcut sütun isimlerini al
-                    current_columns = pivot.columns.tolist()
-                    # MONTHS sırasına göre sırala
-                    ordered_columns = []
-                    for month in MONTHS:
-                        for col in current_columns:
-                            if col.startswith(month):
-                                ordered_columns.append(col)
-                    # Sütunları yeniden sırala
-                    pivot = pivot[ordered_columns]
+            # Aylık değerler için sütunları MONTHS sırasına göre düzenle
+            if value_type == "Aylık Değerler":
+                # Mevcut sütun isimlerini al
+                current_columns = pivot.columns.tolist()
+                # MONTHS sırasına göre sırala
+                ordered_columns = []
+                for month in MONTHS:
+                    for col in current_columns:
+                        if col.startswith(month):
+                            ordered_columns.append(col)
+                # Sütunları yeniden sırala
+                pivot = pivot[ordered_columns]
 
             # Pivot tabloyu TL formatında göster
             display_pivot = format_currency_columns(pivot.copy(), [row_col])
