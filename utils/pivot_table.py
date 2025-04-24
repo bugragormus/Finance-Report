@@ -23,6 +23,8 @@ Kütüphaneler:
 - io.BytesIO: Bellek içi dosya nesneleriyle çalışma
 - openpyxl: Excel yazımı
 - utils.error_handler: Hata yakalama ve kullanıcı dostu hata gösterimi
+- utils.formatting: Para birimi formatı işlemleri
+- config.constants: Sabit değerler
 """
 
 
@@ -35,7 +37,8 @@ from typing import Tuple, Optional
 
 from utils.data_preview import show_column_totals
 from utils.error_handler import handle_error, display_friendly_error
-from config.constants import FIXED_METRICS, MONTHS, CUMULATIVE_COLUMNS
+from utils.formatting import format_currency_columns
+from config.constants import FIXED_METRICS, MONTHS, CUMULATIVE_COLUMNS, GENERAL_COLUMNS
 
 # Grafik export ayarları
 pio.kaleido.scope.default_format = "png"
@@ -200,8 +203,9 @@ def show_pivot_table(df: pd.DataFrame) -> Tuple[Optional[BytesIO], Optional[Byte
                     # Sütunları yeniden sırala
                     pivot = pivot[ordered_columns]
 
-            # Pivot tabloyu göster
-            st.dataframe(pivot, use_container_width=True)
+            # Pivot tabloyu TL formatında göster
+            display_pivot = format_currency_columns(pivot.copy(), [row_col])
+            st.dataframe(display_pivot, use_container_width=True)
 
             # Satır toplamlarını hesapla ve göster
             if value_type == "Aylık Değerler":
@@ -229,14 +233,16 @@ def show_pivot_table(df: pd.DataFrame) -> Tuple[Optional[BytesIO], Optional[Byte
                 # Toplamları DataFrame'e dönüştür
                 row_totals_df = pd.DataFrame(totals_dict)
 
+            # Satır toplamlarını TL formatında göster
+            display_totals = format_currency_columns(row_totals_df.copy(), [])
             st.markdown("#### ➕ Satır Toplamları")
-            st.dataframe(row_totals_df, use_container_width=True)
+            st.dataframe(display_totals, use_container_width=True)
 
             # Excel export
             excel_buffer = BytesIO()
             with pd.ExcelWriter(excel_buffer, engine="openpyxl") as writer:
-                pivot.to_excel(writer, sheet_name="Pivot Tablo")
-                row_totals_df.to_excel(writer, sheet_name="Satır Toplamları")
+                display_pivot.to_excel(writer, sheet_name="Pivot Tablo")
+                display_totals.to_excel(writer, sheet_name="Satır Toplamları")
             st.download_button(
                 label="⬇ İndir (Excel)",
                 data=excel_buffer.getvalue(),

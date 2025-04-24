@@ -31,6 +31,8 @@ import pandas as pd
 from typing import Tuple, Optional
 from utils.error_handler import handle_error, display_friendly_error
 from utils.warning_system import style_overused_rows
+from utils.formatting import format_currency_columns
+from config.constants import MONTHS, GENERAL_COLUMNS
 
 # Grafik export ayarları
 pio.kaleido.scope.default_format = "png"
@@ -39,8 +41,6 @@ pio.kaleido.scope.default_height = 600
 pio.kaleido.scope.default_colorway = px.colors.qualitative.Plotly
 pio.kaleido.scope.default_paper_bgcolor = "white"
 pio.kaleido.scope.default_plot_bgcolor = "white"
-
-from config.constants import MONTHS
 
 
 @handle_error
@@ -125,9 +125,15 @@ def show_comparative_analysis(
         # Sadece toplam sütunları al
         result_df = grouped[["Toplam Bütçe", "Toplam Fiili", "Kullanım (%)"]].reset_index()
         
+        # Grafik için orijinal sayısal değerleri kullan
+        graph_df = result_df.copy()
+        
+        # Tablo gösterimi için TL formatında göster
+        result_df = format_currency_columns(result_df, [group_by_col, "Kullanım (%)"])
+        
         # Grafik oluşturma
         fig = px.bar(
-            result_df.sort_values("Toplam Fiili", ascending=False),
+            graph_df.sort_values("Toplam Fiili", ascending=False),
             x=group_by_col,
             y=["Toplam Bütçe", "Toplam Fiili"],
             barmode="group",
@@ -143,6 +149,9 @@ def show_comparative_analysis(
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
             margin=dict(l=50, r=50, t=80, b=150),
         )
+
+        # Y ekseni değerlerini TL formatında göster
+        fig.update_yaxes(tickformat=",.0f ₺")
 
         st.plotly_chart(fig, use_container_width=True)
 

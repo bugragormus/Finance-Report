@@ -117,4 +117,26 @@ def round_significant(value: Union[int, float], digits: int = 2) -> float:
         return 0
     
     import math
-    return round(value, digits - 1 - int(math.floor(math.log10(abs(value))))) 
+    return round(value, digits - 1 - int(math.floor(math.log10(abs(value)))))
+
+
+def format_currency_columns(df: pd.DataFrame, general_columns: list) -> pd.DataFrame:
+    """
+    GENERAL_COLUMNS dışındaki tüm sayısal sütunları TL formatında gösterir.
+    
+    Parameters:
+        df (DataFrame): Formatlanacak DataFrame
+        general_columns (list): Formatlanmayacak sütunların listesi
+        
+    Returns:
+        DataFrame: Formatlanmış DataFrame
+    """
+    # Sayısal sütunları bul
+    numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
+    
+    # GENERAL_COLUMNS dışındaki sayısal sütunları formatla
+    for col in numeric_cols:
+        if col not in general_columns:
+            df[col] = df[col].apply(lambda x: format_currency(x) if pd.notnull(x) else x)
+    
+    return df 

@@ -34,6 +34,8 @@ import numpy as np
 from io import BytesIO
 from typing import Optional, List, Callable, Union
 from utils.error_handler import handle_error, display_friendly_error
+from utils.formatting import format_currency_columns
+from config.constants import GENERAL_COLUMNS
 
 
 @handle_error
@@ -100,6 +102,9 @@ def show_filtered_data(
         display_df = df.iloc[start_idx:end_idx]
     else:
         display_df = df
+    
+    # Sayısal sütunları TL formatında göster
+    display_df = format_currency_columns(display_df, GENERAL_COLUMNS)
     
     # Sütun yapılandırması - Önceden hesapla
     column_config = {}
@@ -399,6 +404,9 @@ def show_column_totals(
     else:
         totals_df = pd.DataFrame(df[numeric_columns].sum()).T
         totals_df.index = ["Toplam"]
+        
+        # Toplamları TL formatında göster
+        totals_df = format_currency_columns(totals_df, GENERAL_COLUMNS)
 
     # Save totals DataFrame to session state
     st.session_state[filename.replace(".xlsx", "")] = totals_df.copy()
