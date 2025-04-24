@@ -41,6 +41,7 @@ def load_data(uploaded_file):
     2. Sütun isimlerini temizler
     3. Zorunlu sütunları kontrol eder
     4. Veri doğrulama işlemlerini gerçekleştirir
+    5. Son satırı siler
     
     Parameters:
         uploaded_file (UploadedFile): Streamlit ile yüklenen Excel dosyası
@@ -63,6 +64,9 @@ def load_data(uploaded_file):
     """
     df = pd.read_excel(uploaded_file, engine="openpyxl")
     df.columns = [str(col).strip() for col in df.columns]
+
+    # Son satırı sil
+    df = df.iloc[:-1]
 
     # Zorunlu sütun kontrolü
     mandatory_columns = ["Masraf Yeri Adı", "Kümüle Bütçe", "Kümüle Fiili"]
