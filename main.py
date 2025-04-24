@@ -141,7 +141,11 @@ def setup_sidebar_filters(df):
             numeric_cols = df.select_dtypes(include=[np.number]).columns
             df[numeric_cols] = df[numeric_cols].fillna(0)
 
-            filtered_df = apply_filters(df, GENERAL_COLUMNS, "filter")
+            # Filtreleme seçeneklerinden çıkarılacak sütunlar
+            excluded_columns = ["İlgili 2", "İlgili 3", "Masraf Yeri", "Masraf Çeşidi"]
+            filtered_columns = [col for col in GENERAL_COLUMNS if col not in excluded_columns]
+
+            filtered_df = apply_filters(df, filtered_columns, "filter")
         except Exception as e:
             display_friendly_error(
                 f"Filtreleme sırasında hata oluştu: {str(e)}",
