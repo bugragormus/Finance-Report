@@ -380,11 +380,17 @@ def main():
         # ➕ Masraf Çeşidi Toplamları
         with st.container():
             st.markdown("### 🧮 Masraf Grubu 1 - Year to Date")
+            # Seçili metrikleri filtrele
+            selected_metrics = [
+                metric for metric in FIXED_METRICS[:-1]
+                if any(metric in base for base in selected_report_bases)
+            ]
+            
             masraf_totals = calculate_group_totals(
-                filtered_df,
+                final_df,
                 group_column="Masraf Çeşidi Grubu 1",
                 selected_months=selected_months,
-                metrics=FIXED_METRICS[:-1]
+                metrics=selected_metrics
             )
 
             show_filtered_data(
@@ -408,10 +414,10 @@ def main():
             st.markdown("## 👥 İlgili 1 Analizi")
             st.markdown("---")
 
-            with st.expander("📅 Ay Seçimi", expanded=True):
+            with st.expander("📅 Ay Bazlı Tablo Seçimi", expanded=True):
                 ilgili1_month_options = ["Hepsi"] + MONTHS
                 selected_ilgili1_months = st.multiselect(
-                    "İlgili 1 İçin Ay Seçimi",
+                    "Tabloya Dahil Edilecek Ay(lar)",
                     ilgili1_month_options,
                     default=["Hepsi"],
                     key="ilgili1_month_filter"
@@ -421,17 +427,24 @@ def main():
 
                 show_cumulative_ilgili1 = st.checkbox("Kümüle Verileri Göster", value=False, key="cumulative_ilgili1")
 
-            # İlgili1 sütunları
+            # İzin verilen metrikleri filtrele
+            allowed_metrics = [
+                metric for metric in FIXED_METRICS
+                if "Hepsi" in selected_report_bases or
+                   any(metric in base for base in selected_report_bases)
+            ]
+
+            # Sütun oluşturma
             ilgili1_columns = {
                 'monthly': [
                     f"{month} {metric}"
                     for month in selected_ilgili1_months
-                    for metric in FIXED_METRICS
+                    for metric in allowed_metrics
                     if f"{month} {metric}" in filtered_df.columns
                 ],
                 'cumulative': [
                     f"Kümüle {metric}"
-                    for metric in FIXED_METRICS
+                    for metric in allowed_metrics
                     if show_cumulative_ilgili1 and f"Kümüle {metric}" in filtered_df.columns
                 ]
             }
@@ -446,7 +459,8 @@ def main():
                 filename="ilgili1_ozet.xlsx",
                 title="#### 📊 İlgili 1 Bazında Detaylar",
                 style_func=style_negatives_red,
-                sticky_column="İlgili 1"
+                sticky_column="İlgili 1",
+                page_size=301
             )
 
             show_column_totals(
@@ -456,11 +470,17 @@ def main():
             )
 
         with st.container():
+            # Seçili metrikleri filtrele
+            selected_metrics = [
+                metric for metric in FIXED_METRICS[:-1]
+                if any(metric in base for base in selected_report_bases)
+            ]
+            
             ilgili1_totals = calculate_group_totals(
-                filtered_df,
+                final_df,
                 group_column="İlgili 1",
                 selected_months=selected_months,
-                metrics=FIXED_METRICS[:-1]
+                metrics=selected_metrics
             )
 
             show_filtered_data(
