@@ -189,7 +189,6 @@ def show_pivot_table(df: pd.DataFrame) -> Tuple[Optional[BytesIO], Optional[Byte
 
             # Pivot tabloyu TL formatında göster
             display_pivot = format_currency_columns(pivot.copy(), [row_col])
-            st.dataframe(display_pivot, use_container_width=True)
 
             # Satır toplamlarını hesapla ve göster
             if value_type == "Aylık Değerler":
@@ -201,9 +200,16 @@ def show_pivot_table(df: pd.DataFrame) -> Tuple[Optional[BytesIO], Optional[Byte
                     if val_columns:
                         # Bu değer alanı için toplam hesapla
                         totals_dict[f"Toplam {val_col}"] = pivot[val_columns].sum(axis=1)
-                
+
                 # Toplamları DataFrame'e dönüştür
                 row_totals_df = pd.DataFrame(totals_dict)
+
+                # Toplamları TL formatında düzenle
+                formatted_totals = format_currency_columns(row_totals_df.copy(), [])
+
+                # Formatlanmış toplamları pivot tabloya ekle
+                for col_name in formatted_totals.columns:
+                    display_pivot[col_name] = formatted_totals[col_name]
             else:  # Kümüle Değerler
                 # Her bir değer alanı için ayrı toplam hesapla
                 totals_dict = {}
@@ -213,9 +219,18 @@ def show_pivot_table(df: pd.DataFrame) -> Tuple[Optional[BytesIO], Optional[Byte
                     if val_columns:
                         # Bu değer alanı için toplam hesapla
                         totals_dict[f"Toplam {val_col}"] = pivot[val_columns].sum(axis=1)
-                
+
                 # Toplamları DataFrame'e dönüştür
                 row_totals_df = pd.DataFrame(totals_dict)
+
+                # Toplamları TL formatında düzenle
+                formatted_totals = format_currency_columns(row_totals_df.copy(), [])
+
+                # Formatlanmış toplamları pivot tabloya ekle
+                for col_name in formatted_totals.columns:
+                    display_pivot[col_name] = formatted_totals[col_name]
+
+            st.dataframe(display_pivot, use_container_width=True)
 
             # Satır toplamlarını TL formatında göster
             display_totals = format_currency_columns(row_totals_df.copy(), [])

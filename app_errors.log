@@ -1,0 +1,77 @@
+2025-04-24 17:08:37,595 - root - ERROR - HATA (generate_pdf_report): [Errno 2] No such file or directory: 'assets/logo.png'
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 112, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/report.py", line 134, in generate_pdf_report
+    pdf.add_page()
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/fpdf/fpdf.py", line 290, in add_page
+    self.header()
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/report.py", line 51, in header
+    self.image('assets/logo.png', 10, 8, 33)
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/fpdf/fpdf.py", line 150, in wrapper
+    return fn(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/fpdf/fpdf.py", line 971, in image
+    info=self._parsepng(name)
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/fpdf/fpdf.py", line 1772, in _parsepng
+    f=open(name,'rb')
+      ^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'assets/logo.png'
+
+2025-04-24 17:08:37,597 - root - ERROR - HATA (CRITICAL-main): Invalid binary data format: <class 'NoneType'>
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 659, in main
+    st.download_button(
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/runtime/metrics_util.py", line 410, in wrapped_func
+    result = non_optional_func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/elements/widgets/button.py", line 528, in download_button
+    return self._download_button(
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/elements/widgets/button.py", line 840, in _download_button
+    marshall_file(
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/elements/widgets/button.py", line 1108, in marshall_file
+    raise RuntimeError("Invalid binary data format: %s" % type(data))
+RuntimeError: Invalid binary data format: <class 'NoneType'>
+
+2025-04-24 17:09:05,109 - root - ERROR - HATA (generate_pdf_report): FPDF error: Undefined font: dejavu B
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 112, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/report.py", line 134, in generate_pdf_report
+    pdf.add_page()
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/fpdf/fpdf.py", line 290, in add_page
+    self.header()
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/report.py", line 53, in header
+    self.set_font('DejaVu', 'B', 15)
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/fpdf/fpdf.py", line 603, in set_font
+    self.error('Undefined font: '+family+' '+style)
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/fpdf/fpdf.py", line 227, in error
+    raise RuntimeError('FPDF error: '+msg)
+RuntimeError: FPDF error: Undefined font: dejavu B
+
+2025-04-24 17:09:05,111 - root - ERROR - HATA (CRITICAL-main): Invalid binary data format: <class 'NoneType'>
+Traceback (most recent call last):
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/utils/error_handler.py", line 150, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/PycharmProjects/Finance-Report/main.py", line 659, in main
+    st.download_button(
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/runtime/metrics_util.py", line 410, in wrapped_func
+    result = non_optional_func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/elements/widgets/button.py", line 528, in download_button
+    return self._download_button(
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/elements/widgets/button.py", line 840, in _download_button
+    marshall_file(
+  File "/Users/bugragrms/miniconda3/envs/PyCharmMiscProject/lib/python3.12/site-packages/streamlit/elements/widgets/button.py", line 1108, in marshall_file
+    raise RuntimeError("Invalid binary data format: %s" % type(data))
+RuntimeError: Invalid binary data format: <class 'NoneType'>
+
