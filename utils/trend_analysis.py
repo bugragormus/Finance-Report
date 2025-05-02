@@ -66,7 +66,7 @@ def show_trend_analysis(
                     "Ay": month,
                     "Bütçe": budget_val,
                     "Fiili": actual_val,
-                    "Fark": actual_val - budget_val,
+                    "Fark": budget_val - actual_val,
                 }
             )
 
